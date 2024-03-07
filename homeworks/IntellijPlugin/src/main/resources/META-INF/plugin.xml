@@ -1,14 +1,14 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
     <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
-    <id>com.example.justjoinplugin</id>
+    <id>zzpj.justjoinplugin</id>
 
     <!-- Public plugin name should be written in Title Case.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
     <name>JustJoinIT</name>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
-    <vendor email="support@yourcompany.com" url="https://www.yourcompany.com">YourCompany</vendor>
+    <vendor email="support@yourcompany.com" url="https://www.yourcompany.com">JavaGods</vendor>
 
     <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
@@ -27,8 +27,12 @@
 
     </extensions>
     <actions>
-        <action id="helloWorld" class="com.example.justjoinplugin.HelloWorldAction" text="Hello World">
-            <add-to-group group-id="ToolsMenu" anchor="first"></add-to-group>
+        <action id="justJoinPlugin" class="zzpj.justjoinplugin.JustJoinITAction" text="Find a Job 🔥">
+            <add-to-group group-id="ToolsMenu" anchor="first"/>
+            <keyboard-shortcut
+                    keymap="$default"
+                    first-keystroke="control alt W"
+                    />
         </action>
     </actions>
 </idea-plugin>

@@ -1,0 +1,16 @@
+{
+  "java": "java",
+  "js": "javascript",
+  "html": "html",
+  "php": "php",
+  "rb": "ruby",
+  "py": "python",
+  "sc": "scala",
+  "c": "c",
+  "cpp": "c",
+  "go": "go",
+  "sql": "data",
+  "css": "ux",
+  "scss": "ux",
+  "cs": "net"
+}
