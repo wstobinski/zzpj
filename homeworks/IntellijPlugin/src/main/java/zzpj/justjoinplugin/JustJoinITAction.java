@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import zzpj.util.MappingLoader;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
@@ -67,8 +68,10 @@ public class JustJoinITAction extends AnAction {
             protected @Nullable JComponent createCenterPanel() {
                 return browser.getComponent();
             }
+
         };
 
+        dialogWrapper.setSize(1200, 800);
         dialogWrapper.show();
     }
 }
