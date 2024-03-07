@@ -12,5 +12,6 @@
   "sql": "data",
   "css": "ux",
   "scss": "ux",
-  "cs": "net"
+  "cs": "net",
+  "scala": "scala"
 }
