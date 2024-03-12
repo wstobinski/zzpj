@@ -24,7 +24,12 @@ Example: If you are editing a .java file, you will be automatically redirected t
 3. Build the project by selecting `Build > Build Project` from the menu, or using the keyboard shortcut `Ctrl + F9` (Windows/Linux) or `Cmd + F9` (Mac).
 
 ## Run/Debug Configurations
-To launch plugin you will need to set up run configuration. To do this click an arrow next to Run button and select "Edit configurations...". Then click add new configuration and select Gradle from the list. Then you have to change the Run configuration to "runIde". The correct configuration is shown below.
+To launch the plugin you will need to set up a run configuration.  
+1. Click an arrow next to "Run" button and select "Edit configurations...".  
+2. Click "add new configuration" and select "Gradle" from the list.  
+3. Change the Run configuration to "runIde".
+
+The correct configuration is shown below.
 
 ![Configuration Screen](https://i.imgur.com/oR17x5H.jpg)
 
