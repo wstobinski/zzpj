@@ -23,6 +23,11 @@ Example: If you are editing a .java file, you will be automatically redirected t
 2. Ensure that all dependencies are resolved by IntelliJ IDEA.
 3. Build the project by selecting `Build > Build Project` from the menu, or using the keyboard shortcut `Ctrl + F9` (Windows/Linux) or `Cmd + F9` (Mac).
 
+## Run/Debug Configurations
+To launch plugin you will need to set up run configuration. To do this click an arrow next to Run button and select "Edit configurations...". Then click add new configuration and select Gradle from the list. Then you have to change the Run configuration to "runIde". The correct configuration is shown below.
+
+![Configuration Screen](https://i.imgur.com/oR17x5H.jpg)
+
 ## Running the Plugin
 1. After successful compilation, the plugin can be run in a test IntelliJ IDEA environment.
 2. To run the plugin, select `Run > Run 'Plugin Name'` from the menu, or use the keyboard shortcut `Shift + F10`.
@@ -35,4 +40,4 @@ Alternatively, open actions tab with `Ctrl + Shift + A` and search for "Find a j
 You can also use a `Ctrl + Alt + W` shortcut to run the action instantly. 
 
 ## Plugin screenshots
-![Recipe Screen](https://i.imgur.com/vCFQggy.jpg)
+![Plugin Screen](https://i.imgur.com/vCFQggy.jpg)
