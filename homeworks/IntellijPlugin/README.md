@@ -33,3 +33,6 @@ The plugin action is located in the "Tools" section. Locate "Find a job 🔥" ac
 An embedded web browser with JustJoinIT page will appear automatically.  
 Alternatively, open actions tab with `Ctrl + Shift + A` and search for "Find a job 🔥".  
 You can also use a `Ctrl + Alt + W` shortcut to run the action instantly. 
+
+## Plugin screenshots
+![Recipe Screen](https://i.imgur.com/vCFQggy.jpg)
