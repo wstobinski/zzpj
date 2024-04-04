@@ -1,5 +1,6 @@
 package com.handballleague.model;
 
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Objects;
@@ -7,9 +8,22 @@ import java.util.Objects;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 @ToString
+@Entity
+@Table(name = "Player")
 public class Player {
-    private final String uuid;
+    @Id
+    @SequenceGenerator(
+            name = "player_sequence",
+            sequenceName = "player_sequence",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "student_sequence"
+    )
+    private String uuid;
     private String firstName;
     private String lastName;
     private String phoneNumber;
