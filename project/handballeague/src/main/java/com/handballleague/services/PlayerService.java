@@ -23,4 +23,12 @@ public class PlayerService {
     public void addNewPlayer(Player player) {
         playerRepository.save(player);
     }
+
+    public void deletePlayer(Long id) {
+        if(playerRepository.existsById(Long.toString(id))) {
+            playerRepository.deleteById(Long.toString(id));
+        } else {
+            throw new IllegalStateException("Player with id: " + id + " not found.");
+        }
+    }
 }
