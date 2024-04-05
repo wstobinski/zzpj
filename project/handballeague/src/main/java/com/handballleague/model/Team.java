@@ -40,6 +40,9 @@ public class Team {
     @JoinColumn(name = "player_id", referencedColumnName = "uuid")
     private List<Player> players;
 
+    public Team(String teamName) {
+        this.teamName = teamName;
+    }
 
     @Override
     public boolean equals(Object o) {

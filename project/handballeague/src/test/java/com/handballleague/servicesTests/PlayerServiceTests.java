@@ -203,7 +203,7 @@ public class PlayerServiceTests {
     }
 
     @Test
-    void deletePatientWithIdLessThanZero_ThrowingExc(){
+    void deletePlayerWithIdLessThanZero_ThrowingExc(){
         //given
         long id = -10;
 
@@ -217,7 +217,7 @@ public class PlayerServiceTests {
     }
 
     @Test
-    void deletePatientWhenPatientNotFound_ThrowingExc(){
+    void deletePlayerWhenPlayerNotFound_ThrowingExc(){
         //given
         long id = 10;
         given(playerRepository.existsById(String.valueOf(id))).willReturn(false);
@@ -234,7 +234,7 @@ public class PlayerServiceTests {
     /** UPDATE METHOD TESTS **/
 
     @Test
-    void updatePatientWithValidInput_ReturnsPlayer() {
+    void updatePlayerWithValidInput_ReturnsPlayer() {
         //given
         Player p = new Player("John",
                 "Smith",
@@ -267,7 +267,7 @@ public class PlayerServiceTests {
     }
 
     @Test
-    void updatePatientWithIdLessThanZero_ThrowsExc() {
+    void updatePlayerWithIdLessThanZero_ThrowsExc() {
         //given
         long id = -10;
         Player p = new Player("Adam",
@@ -287,7 +287,7 @@ public class PlayerServiceTests {
     }
 
     @Test
-    void updatePatientWithNullPlayerParameter_ThrowsExc() {
+    void updatePlayerWithNullPlayerParameter_ThrowsExc() {
         //given
         long id = 10;
         Player p = null;
@@ -302,7 +302,7 @@ public class PlayerServiceTests {
     }
 
     @Test
-    void updatePatientThatDoesNotExist_ThrowsExc() {
+    void updatePlayerThatDoesNotExist_ThrowsExc() {
         //given
         long id = 10;
         Player p = new Player("Adam",
@@ -323,7 +323,7 @@ public class PlayerServiceTests {
     }
 
     @Test
-    void updatePatientWithInvalidFirstName_ThrowsExc(){
+    void updatePlayerWithInvalidFirstName_ThrowsExc(){
         //given
         long id = 10;
         Player p = new Player("",
@@ -344,7 +344,7 @@ public class PlayerServiceTests {
     }
 
     @Test
-    void updatePatientWithInvalidLastName_ThrowsExc(){
+    void updatePlayerWithInvalidLastName_ThrowsExc(){
         //given
         long id = 10;
         Player p = new Player("Adam",
@@ -364,7 +364,7 @@ public class PlayerServiceTests {
         verify(playerRepository, never()).save(any());
     }
     @Test
-    void updatePatientWithInvalidPhoneNumber_ThrowsExc(){
+    void updatePlayerWithInvalidPhoneNumber_ThrowsExc(){
         //given
         long id = 10;
         Player p = new Player("Adam",
@@ -385,7 +385,7 @@ public class PlayerServiceTests {
     }
 
     @Test
-    void updatePatientWithInvalidPitchNumber_ThrowsExc(){
+    void updatePlayerWithInvalidPitchNumber_ThrowsExc(){
         //given
         long id = 10;
         Player p = new Player("Adam",

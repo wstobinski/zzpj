@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TeamService implements HandBallService<Team>{
@@ -31,20 +32,19 @@ public class TeamService implements HandBallService<Team>{
 
     @Override
     public Team getById(Long id) throws InvalidArgumentException, ObjectNotFoundInDataBaseException {
-        if(id <= 0)
+        if (id <= 0)
             throw new InvalidArgumentException("Passed id is invalid.");
 
-        Team foundTeam = teamRepository.findById(id).get();
-
-        if (foundTeam == null)
+        Optional<Team> optionalTeam = teamRepository.findById(id);
+        if (optionalTeam.isEmpty())
             throw new ObjectNotFoundInDataBaseException("Object with given id was not found in database.");
 
-        return foundTeam;
+        return optionalTeam.get();
     }
 
     @Override
     public Team create(Team team) throws InvalidArgumentException, EntityAlreadyExistsException {
-        if(team == null) throw new InvalidArgumentException("Passed parameter Team is invalid");
+        if(team == null) throw new InvalidArgumentException("Passed parameter is invalid");
         if(checkIfEntityExistsInDb(team)) throw new EntityAlreadyExistsException("Team with given data already exists in database");
         if(team.getTeamName().isEmpty()) throw new InvalidArgumentException("At least one of team parameters is invalid.");
 
@@ -69,7 +69,9 @@ public class TeamService implements HandBallService<Team>{
         if (id <= 0)
             throw new InvalidArgumentException("Passed id is invalid.");
         if (newTeam == null)
-            throw new InvalidArgumentException("New player is null.");
+            throw new InvalidArgumentException("New team is null.");
+        if (newTeam.getTeamName().isEmpty())
+            throw new InvalidArgumentException("Passed invalid arguments (team name).");
 
         Team teamToChange = teamRepository.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundInDataBaseException("Team with given id was not found in database."));
