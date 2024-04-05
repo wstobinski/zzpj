@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class PlayerService implements HandBallService<Player>{
@@ -27,15 +29,14 @@ public class PlayerService implements HandBallService<Player>{
 
     @Override
     public Player getById(Long id) throws InvalidArgumentException, ObjectNotFoundInDataBaseException {
-        if(id <= 0)
+        if (id <= 0)
             throw new InvalidArgumentException("Passed id is invalid.");
 
-        Player foundPlayer = playerRepository.findById(String.valueOf(id)).get();
-
-        if (foundPlayer == null)
+        Optional<Player> optionalPlayer = playerRepository.findById(String.valueOf(id));
+        if (optionalPlayer.isEmpty())
             throw new ObjectNotFoundInDataBaseException("Object with given id was not found in database.");
 
-        return foundPlayer;
+        return optionalPlayer.get();
     }
 
     @Override
@@ -69,6 +70,10 @@ public class PlayerService implements HandBallService<Player>{
             throw new InvalidArgumentException("Passed id is invalid.");
         if (newPlayer == null)
             throw new InvalidArgumentException("New player is null.");
+        if(newPlayer.getFirstName().isEmpty() ||
+                newPlayer.getLastName().isEmpty() ||
+                newPlayer.getPhoneNumber().isEmpty() ||
+                newPlayer.getPitchNumber() <= 0) throw new InvalidArgumentException("At least one of players parameters is invalid.");
 
         Player playerToChange = playerRepository.findById(String.valueOf(id))
                 .orElseThrow(() -> new ObjectNotFoundInDataBaseException("Player with given id was not found in database."));

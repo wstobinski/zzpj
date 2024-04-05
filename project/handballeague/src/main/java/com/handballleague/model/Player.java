@@ -68,7 +68,6 @@ public class Player {
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
         this.pitchNumber = pitchNumber;
-//        this.position = position;
         this.isCaptain = isCaptain;
         this.isSuspended = isSuspended;
     }
