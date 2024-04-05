@@ -49,24 +49,19 @@ public class Player {
             nullable = false
     )
     private int pitchNumber;
-//    @ManyToOne
-//    @JoinColumn(name = "position_id", nullable = false)
-//    private Position position;
     @Column(
             name = "is_captain",
             nullable = false,
             columnDefinition = "boolean"
     )
-    private boolean isCaptain;
+    private boolean isCaptain = false;
     @Column(
             name = "is_suspended",
             nullable = false,
             columnDefinition = "boolean"
     )
-    private boolean isSuspended;
-//    @ManyToOne
-//    @JoinColumn(name = "team_id")
-//    private Team team;
+    private boolean isSuspended = false;
+
 
     public Player(String firstName, String lastName, String phoneNumber, int pitchNumber, boolean isCaptain, boolean isSuspended) {
         this.firstName = firstName;
@@ -84,9 +79,6 @@ public class Player {
         if (o == null || getClass() != o.getClass()) return false;
         Player player = (Player) o;
         return pitchNumber == player.pitchNumber &&
-                isCaptain == player.isCaptain &&
-                isSuspended == player.isSuspended &&
-                Objects.equals(uuid, player.uuid) &&
                 Objects.equals(firstName, player.firstName) &&
                 Objects.equals(lastName, player.lastName) &&
                 Objects.equals(phoneNumber, player.phoneNumber);
