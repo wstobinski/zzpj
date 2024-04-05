@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -30,11 +31,27 @@ public class Team {
 
     @Column(
             name = "team_name",
-            nullable = false
+            nullable = false,
+            unique = true
     )
     private String teamName;
 
     @OneToMany(cascade = {CascadeType.ALL})
     @JoinColumn(name = "player_id", referencedColumnName = "uuid")
     private List<Player> players;
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Team team = (Team) o;
+        return Objects.equals(teamName, team.teamName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uuid, teamName, players);
+    }
+
 }

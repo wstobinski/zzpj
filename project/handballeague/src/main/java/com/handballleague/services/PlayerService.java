@@ -20,10 +20,12 @@ public class PlayerService implements HandBallService<Player>{
         this.playerRepository = playerRepository;
     }
 
+    @Override
     public List<Player> getAll() {
         return playerRepository.findAll();
     }
 
+    @Override
     public Player getById(Long id) throws InvalidArgumentException, ObjectNotFoundInDataBaseException {
         if(id <= 0)
             throw new InvalidArgumentException("Passed id is invalid.");
@@ -36,6 +38,7 @@ public class PlayerService implements HandBallService<Player>{
         return foundPlayer;
     }
 
+    @Override
     public Player create(Player player) throws InvalidArgumentException, EntityAlreadyExistsException{
         if(player == null) throw new InvalidArgumentException("Passed parameter is invalid");
         if(checkIfEntityExistsInDb(player)) throw new EntityAlreadyExistsException("Player with given data already exists in database");
@@ -49,6 +52,7 @@ public class PlayerService implements HandBallService<Player>{
         return player;
     }
 
+    @Override
     public boolean delete(Long id) throws InvalidArgumentException, ObjectNotFoundInDataBaseException{
         if(id <= 0) throw new InvalidArgumentException("Passed id is invalid.");
         if(playerRepository.existsById(Long.toString(id))) {
@@ -59,6 +63,7 @@ public class PlayerService implements HandBallService<Player>{
         return true;
     }
 
+    @Override
     public Player update(Long id, Player newPlayer) throws InvalidArgumentException {
         if (id <= 0)
             throw new InvalidArgumentException("Passed id is invalid.");
@@ -78,7 +83,7 @@ public class PlayerService implements HandBallService<Player>{
         return playerRepository.save(playerToChange);
     }
 
-
+    @Override
     public boolean checkIfEntityExistsInDb(Player player) {
         Iterable<Player> allPlayers = playerRepository.findAll();
 

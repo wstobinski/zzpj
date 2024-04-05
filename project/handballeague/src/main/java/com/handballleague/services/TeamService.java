@@ -1,5 +1,8 @@
 package com.handballleague.services;
 
+import com.handballleague.exceptions.EntityAlreadyExistsException;
+import com.handballleague.exceptions.InvalidArgumentException;
+import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
 import com.handballleague.model.Player;
 import com.handballleague.model.Team;
 import com.handballleague.repositories.PlayerRepository;
@@ -10,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class TeamService {
+public class TeamService implements HandBallService<Team>{
     private final TeamRepository teamRepository;
     private final PlayerRepository playerRepository;
 
@@ -20,12 +23,73 @@ public class TeamService {
         this.playerRepository = playerRepository;
     }
 
-    public List<Team> getTeams() {
+    @Override
+    public List<Team> getAll() {
         return teamRepository.findAll();
     }
 
-    public void addNewTeam(Team team) {
+
+    @Override
+    public Team getById(Long id) throws InvalidArgumentException, ObjectNotFoundInDataBaseException {
+        if(id <= 0)
+            throw new InvalidArgumentException("Passed id is invalid.");
+
+        Team foundTeam = teamRepository.findById(id).get();
+
+        if (foundTeam == null)
+            throw new ObjectNotFoundInDataBaseException("Object with given id was not found in database.");
+
+        return foundTeam;
+    }
+
+    @Override
+    public Team create(Team team) throws InvalidArgumentException, EntityAlreadyExistsException {
+        if(team == null) throw new InvalidArgumentException("Passed parameter Team is invalid");
+        if(checkIfEntityExistsInDb(team)) throw new EntityAlreadyExistsException("Team with given data already exists in database");
+        if(team.getTeamName().isEmpty()) throw new InvalidArgumentException("At least one of team parameters is invalid.");
+
         teamRepository.save(team);
+
+        return team;
+    }
+
+    @Override
+    public boolean delete(Long id) throws InvalidArgumentException, ObjectNotFoundInDataBaseException{
+        if(id <= 0) throw new InvalidArgumentException("Passed id is invalid.");
+        if(teamRepository.existsById(id)) {
+            teamRepository.deleteById(id);
+        } else {
+            throw new ObjectNotFoundInDataBaseException("Team with id: " + id + " not found in database.");
+        }
+        return true;
+    }
+
+    @Override
+    public Team update(Long id, Team newTeam) throws InvalidArgumentException {
+        if (id <= 0)
+            throw new InvalidArgumentException("Passed id is invalid.");
+        if (newTeam == null)
+            throw new InvalidArgumentException("New player is null.");
+
+        Team teamToChange = teamRepository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundInDataBaseException("Team with given id was not found in database."));
+
+        teamToChange.setTeamName(newTeam.getTeamName());
+        teamToChange.setPlayers(newTeam.getPlayers());
+
+        return teamRepository.save(teamToChange);
+    }
+
+    @Override
+    public boolean checkIfEntityExistsInDb(Team team) {
+        Iterable<Team> allTeams = teamRepository.findAll();
+
+        for(Team t : allTeams) {
+            if(team.equals(t)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public Team addPlayerToTeam(Long teamId, Long playerId) {
@@ -41,13 +105,4 @@ public class TeamService {
 
         return team;
     }
-
-    public void deleteTeam(Long id) {
-        if(teamRepository.existsById(id)) {
-            teamRepository.deleteById(id);
-        } else {
-            throw new IllegalStateException("Team with id: " + id + " not found.");
-        }
-    }
-
 }
