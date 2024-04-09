@@ -1,3 +1,10 @@
+# Amber - projekt testowy z repozytorium https://github.com/zzpj/pl-java2024 - praca domowa (nowe funkcje języka Java)
+Wszystkie zadania TODO zostały wykonane. ✅  
+Wszystkie testy kończą się sukcesem. ✅  
+Poniższy zrzut ekranu przedstawia rezultat akcji `mvn test`.
+![test-results.png](img%2Ftest-results.png)
+Oryginalny plik README znajduje się poniżej
+
 # Projekt Amber - doskonalenie i rozwój języka
 
 ![project-amber-timeline.png](img%2Fproject-amber-timeline.png)
