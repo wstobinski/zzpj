@@ -6,6 +6,7 @@ import com.handballleague.repositories.TeamRepository;
 import com.handballleague.services.PlayerService;
 import com.handballleague.services.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,39 +23,65 @@ public class TeamController {
     }
 
     @GetMapping
-    public List<Team> getTeams() {
-        return teamService.getAll();
+    public ResponseEntity<?> getTeams() {
+        try {
+            List<Team> teams = teamService.getAll();
+            return ResponseEntity.ok(teams);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @PostMapping
-    public void registerNewTeam(@RequestBody Team team) {
-        teamService.create(team);
+    public ResponseEntity<?> registerNewTeam(@RequestBody Team team) {
+        try {
+            teamService.create(team);
+            return ResponseEntity.ok("Team created successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @PostMapping("/{teamId}/players")
-    public ResponseEntity<Team> addPlayerToTeam(@PathVariable Long teamId, @RequestBody Long playerId) {
+    public ResponseEntity<?> addPlayerToTeam(@PathVariable Long teamId, @RequestBody Long playerId) {
         if (playerId == null) {
             return ResponseEntity.badRequest().build();
         }
-        Team updatedTeam = teamService.addPlayerToTeam(teamId, playerId);
-        return ResponseEntity.ok(updatedTeam);
+        try {
+            Team updatedTeam = teamService.addPlayerToTeam(teamId, playerId);
+            return ResponseEntity.ok(updatedTeam);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
-    @DeleteMapping(path = "/{teamId}")
-    public void deleteTeam(@PathVariable("teamId") Long id) {
-        teamService.delete(id);
+    @DeleteMapping("/{teamId}")
+    public ResponseEntity<?> deleteTeam(@PathVariable("teamId") Long id) {
+        try {
+            teamService.delete(id);
+            return ResponseEntity.ok("Team deleted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @GetMapping("/{teamId}")
-    public ResponseEntity<Team> getTeamById(@PathVariable Long teamId) {
-        Team team = teamService.getById(teamId);
-        return ResponseEntity.ok(team);
+    public ResponseEntity<?> getTeamById(@PathVariable Long teamId) {
+        try {
+            Team team = teamService.getById(teamId);
+            return ResponseEntity.ok(team);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     @PutMapping("/{teamId}")
-    public ResponseEntity<Team> updateTeam(@PathVariable Long teamId, @RequestBody Team team) {
-        Team newTeam = teamService.update(teamId, team);
-
-        return ResponseEntity.ok(newTeam);
+    public ResponseEntity<?> updateTeam(@PathVariable Long teamId, @RequestBody Team team) {
+        try {
+            Team newTeam = teamService.update(teamId, team);
+            return ResponseEntity.ok(newTeam);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 }
