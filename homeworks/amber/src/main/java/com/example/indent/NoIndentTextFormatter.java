@@ -3,9 +3,11 @@ package com.example.indent;
 public class NoIndentTextFormatter {
 
     String noIndentText(String text) {
-        // TODO: implement here
-        // remove indent
+        StringBuilder resultBuilder = new StringBuilder();
+        for (String line : text.split("\n")) {
+            resultBuilder.append(line.trim()).append("\n");
+        }
 
-        return "";
+        return resultBuilder.toString();
     }
 }

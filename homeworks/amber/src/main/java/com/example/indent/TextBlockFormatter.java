@@ -4,9 +4,11 @@ public class TextBlockFormatter {
     private final int CODE_TEXT_BLOCK_INDENT = 4;
 
     String formatLinesToCodeBlockIndent(String code) {
-        // TODO: implement here
-        // use CODE_TEXT_BLOCK_INDENT as padding value
+        StringBuilder resultBuilder = new StringBuilder();
+        for (String line : code.split("\n")) {
+            resultBuilder.append(line.indent(CODE_TEXT_BLOCK_INDENT));
+        }
 
-        return "";
+        return resultBuilder.toString();
     }
 }

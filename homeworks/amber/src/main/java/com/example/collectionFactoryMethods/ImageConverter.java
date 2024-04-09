@@ -1,7 +1,6 @@
 package com.example.collectionFactoryMethods;
 
 import java.util.Set;
-import java.util.TreeSet;
 
 public class ImageConverter {
     private final String JPG_FILE_KEY = "jpg";
@@ -11,8 +10,7 @@ public class ImageConverter {
 
     public Set<String> getAvailableFileKeys() {
         // TODO: implement here
-        // return immutable set of file keys
 
-        return new TreeSet<>();
+        return Set.of(JPG_FILE_KEY, PNG_FILE_KEY, BMP_FILE_KEY);
     }
 }
