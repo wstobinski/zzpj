@@ -41,12 +41,25 @@ public class LeagueController {
     }
 
     @PostMapping("/{leagueId}/teams")
-    public ResponseEntity<?> addPlayerToTeam(@PathVariable Long leagueId, @RequestBody Long teamId) {
+    public ResponseEntity<?> addTeamToLeague(@PathVariable Long leagueId, @RequestBody Long teamId) {
         if (teamId == null) {
             return ResponseEntity.badRequest().build();
         }
         try {
             League updatedLeague = leagueService.addLeagueToTeam(leagueId, teamId);
+            return ResponseEntity.ok(updatedLeague);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{leagueId}/teams")
+    public ResponseEntity<?> removeTeamFromLeague(@PathVariable Long leagueId, @RequestBody Long teamId) {
+        if (teamId == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        try {
+            League updatedLeague = leagueService.removeTeamFromLeague(leagueId, teamId);
             return ResponseEntity.ok(updatedLeague);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

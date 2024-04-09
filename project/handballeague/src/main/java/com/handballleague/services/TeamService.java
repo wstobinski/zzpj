@@ -107,4 +107,18 @@ public class TeamService implements HandBallService<Team>{
 
         return team;
     }
+
+    public Team removePlayerFromTeam(Long teamId, Long playerId) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new RuntimeException("Team not found"));
+
+        Player player = playerRepository.findById(String.valueOf(playerId))
+                .orElseThrow(() -> new RuntimeException("Player not found"));
+
+        team.getPlayers().remove(player);
+
+        teamRepository.save(team);
+
+        return team;
+    }
 }

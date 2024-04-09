@@ -55,6 +55,19 @@ public class TeamController {
         }
     }
 
+    @DeleteMapping("/{teamId}/players")
+    public ResponseEntity<?> removePlayerFromTeam(@PathVariable Long teamId, @RequestBody Long playerId) {
+        if (playerId == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        try {
+            Team updatedTeam = teamService.removePlayerFromTeam(teamId, playerId);
+            return ResponseEntity.ok(updatedTeam);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
     @DeleteMapping("/{teamId}")
     public ResponseEntity<?> deleteTeam(@PathVariable("teamId") Long id) {
         try {

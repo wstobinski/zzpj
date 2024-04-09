@@ -112,4 +112,18 @@ public class LeagueService implements HandBallService<League>{
         return league;
     }
 
+    public League removeTeamFromLeague(Long leagueId, Long teamId) {
+        League league = leagueRepository.findById(leagueId)
+                .orElseThrow(() -> new RuntimeException("League not found"));
+
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new RuntimeException("Team not found"));
+
+        league.getTeams().remove(team);
+
+        leagueRepository.save(league);
+
+        return league;
+    }
+
 }

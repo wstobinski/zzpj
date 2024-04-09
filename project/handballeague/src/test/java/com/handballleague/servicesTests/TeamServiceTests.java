@@ -49,6 +49,7 @@ public class TeamServiceTests {
         autoCloseable.close();
     }
 
+    //TODO: Testy na usuwanie gracza z zespołu
 
     /** CREATE METHOD TESTS **/
 
