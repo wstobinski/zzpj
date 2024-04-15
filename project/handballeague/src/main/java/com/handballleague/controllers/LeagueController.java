@@ -1,7 +1,6 @@
 package com.handballleague.controllers;
 
 import com.handballleague.model.League;
-import com.handballleague.model.Team;
 import com.handballleague.services.LeagueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -1,14 +1,6 @@
 package com.handballleague.configs;
 
-import com.handballleague.model.POSITIONS;
-import com.handballleague.model.Player;
-import com.handballleague.model.Position;
-import com.handballleague.repositories.PlayerRepository;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.List;
 
 @Configuration
 public class PlayerConfig {

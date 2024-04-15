@@ -4,7 +4,6 @@ import com.handballleague.exceptions.EntityAlreadyExistsException;
 import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
 import com.handballleague.model.League;
-import com.handballleague.model.Player;
 import com.handballleague.model.Team;
 import com.handballleague.repositories.LeagueRepository;
 import com.handballleague.repositories.TeamRepository;
