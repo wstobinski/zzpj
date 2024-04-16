@@ -29,7 +29,7 @@ public class LeagueService implements HandBallService<League>{
         if(league == null) throw new InvalidArgumentException("Passed parameter is invalid");
         if(checkIfEntityExistsInDb(league)) throw new EntityAlreadyExistsException("League with given data already exists in database");
         if(league.getName().isEmpty() ||
-            league.getStartDate() == null) throw new InvalidArgumentException("At least one of team parameters is invalid.");
+            league.getStartDate() == null) throw new InvalidArgumentException("At least one of league parameters is invalid.");
 
         leagueRepository.save(league);
 
@@ -95,6 +95,12 @@ public class LeagueService implements HandBallService<League>{
             }
         }
         return false;
+    }
+
+    @Override
+    public boolean checkIfEntityExistsInDb(Long leagueID) {
+        return leagueRepository.findAll().stream().filter(league -> league.getUuid().equals(leagueID)).toList().size() == 1;
+
     }
 
     public League addLeagueToTeam(Long leagueId, Long teamId) {

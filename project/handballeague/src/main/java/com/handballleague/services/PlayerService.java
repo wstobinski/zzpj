@@ -97,4 +97,10 @@ public class PlayerService implements HandBallService<Player>{
         }
         return false;
     }
+
+    @Override
+    public boolean checkIfEntityExistsInDb(Long entityID) {
+        return playerRepository.findAll().stream().filter(player -> player.getUuid().equals(entityID)).toList().size() == 1;
+
+    }
 }

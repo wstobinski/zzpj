@@ -14,4 +14,6 @@ public interface HandBallService<T> {
     List<T> getAll();
 
     boolean checkIfEntityExistsInDb(T entity);
+
+    boolean checkIfEntityExistsInDb(Long entityID);
 }

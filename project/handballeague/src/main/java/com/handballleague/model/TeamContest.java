@@ -15,11 +15,11 @@ public class TeamContest {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long uuid;
 
-    @OneToOne(cascade = {CascadeType.ALL})
+    @ManyToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "team_id", referencedColumnName = "uuid")
-    private Team teams;
+    private Team team;
 
-    @OneToOne(cascade = {CascadeType.ALL})
+    @ManyToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "league_id", referencedColumnName = "uuid")
     private League league;
 
@@ -38,8 +38,8 @@ public class TeamContest {
     @Column(nullable = false)
     private int losses;
 
-    public TeamContest(Team teams, League league, int points, int goalsAcquired, int goalsLost, int wins, int draws, int losses) {
-        this.teams = teams;
+    public TeamContest(Team team, League league, int points, int goalsAcquired, int goalsLost, int wins, int draws, int losses) {
+        this.team = team;
         this.league = league;
         this.points = points;
         this.goalsAcquired = goalsAcquired;
@@ -51,5 +51,18 @@ public class TeamContest {
 
     public int getGamesPlayed() {
         return wins + draws + losses;
+    }
+    public void updateTo(TeamContest newTeamContest) {
+        if (newTeamContest != null) {
+            this.setPoints(newTeamContest.getPoints());
+            this.setGoalsAcquired(newTeamContest.getGoalsAcquired());
+            this.setGoalsLost(newTeamContest.getGoalsLost());
+            this.setWins(newTeamContest.getWins());
+            this.setDraws(newTeamContest.getDraws());
+            this.setLosses(newTeamContest.getLosses());
+        }
+
+
+
     }
 }

@@ -94,6 +94,12 @@ public class TeamService implements HandBallService<Team>{
         return false;
     }
 
+    @Override
+    public boolean checkIfEntityExistsInDb(Long entityID) {
+        return teamRepository.findAll().stream().filter(team -> team.getUuid().equals(entityID)).toList().size() == 1;
+
+    }
+
     public Team addPlayerToTeam(Long teamId, Long playerId) {
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new RuntimeException("Team not found"));
