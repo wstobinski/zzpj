@@ -2,6 +2,7 @@ package com.handballleague.controllers;
 
 import com.handballleague.model.Team;
 import com.handballleague.services.TeamService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,77 +22,63 @@ public class TeamController {
 
     @GetMapping
     public ResponseEntity<?> getTeams() {
-        try {
-            List<Team> teams = teamService.getAll();
-            return ResponseEntity.ok(teams);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+
+        List<Team> teams = teamService.getAll();
+        return ResponseEntity.ok(teams);
+
     }
 
     @PostMapping
-    public ResponseEntity<?> registerNewTeam(@RequestBody Team team) {
-        try {
-            teamService.create(team);
-            return ResponseEntity.ok("Team created successfully");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+    public ResponseEntity<?> registerNewTeam(@Valid @RequestBody Team team) {
+
+        teamService.create(team);
+        return ResponseEntity.ok("Team created successfully");
+
     }
 
     @PostMapping("/{teamId}/players")
     public ResponseEntity<?> addPlayerToTeam(@PathVariable Long teamId, @RequestBody Long playerId) {
-        if (playerId == null) {
+        if (playerId == null || teamId == null) {
             return ResponseEntity.badRequest().build();
         }
-        try {
-            Team updatedTeam = teamService.addPlayerToTeam(teamId, playerId);
-            return ResponseEntity.ok(updatedTeam);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+
+        Team updatedTeam = teamService.addPlayerToTeam(teamId, playerId);
+        return ResponseEntity.ok(updatedTeam);
+
     }
 
     @DeleteMapping("/{teamId}/players")
     public ResponseEntity<?> removePlayerFromTeam(@PathVariable Long teamId, @RequestBody Long playerId) {
-        if (playerId == null) {
+        if (playerId == null || teamId == null) {
             return ResponseEntity.badRequest().build();
         }
-        try {
-            Team updatedTeam = teamService.removePlayerFromTeam(teamId, playerId);
-            return ResponseEntity.ok(updatedTeam);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+
+        Team updatedTeam = teamService.removePlayerFromTeam(teamId, playerId);
+        return ResponseEntity.ok(updatedTeam);
+
     }
 
     @DeleteMapping("/{teamId}")
     public ResponseEntity<?> deleteTeam(@PathVariable("teamId") Long id) {
-        try {
-            teamService.delete(id);
-            return ResponseEntity.ok("Team deleted successfully");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+
+        teamService.delete(id);
+        return ResponseEntity.ok("Team deleted successfully");
+
     }
 
     @GetMapping("/{teamId}")
     public ResponseEntity<?> getTeamById(@PathVariable Long teamId) {
-        try {
-            Team team = teamService.getById(teamId);
-            return ResponseEntity.ok(team);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+
+        Team team = teamService.getById(teamId);
+        return ResponseEntity.ok(team);
+
     }
 
     @PutMapping("/{teamId}")
-    public ResponseEntity<?> updateTeam(@PathVariable Long teamId, @RequestBody Team team) {
-        try {
-            Team newTeam = teamService.update(teamId, team);
-            return ResponseEntity.ok(newTeam);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+    public ResponseEntity<?> updateTeam(@PathVariable Long teamId, @Valid @RequestBody Team team) {
+
+        Team newTeam = teamService.update(teamId, team);
+        return ResponseEntity.ok(newTeam);
+
     }
 }

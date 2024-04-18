@@ -14,6 +14,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -101,7 +102,7 @@ public class PlayerServiceTests {
         assertThatThrownBy(
                 () -> underTestService.create(p))
                 .isInstanceOf(EntityAlreadyExistsException.class)
-                .hasMessageContaining("Player with given data already exists in database");
+                .hasMessageContaining("Player with given data already exists in the database");
 
         //then
         verify(playerRepository, times(1)).save(any());
@@ -225,7 +226,7 @@ public class PlayerServiceTests {
         //when
         assertThatThrownBy(() -> underTestService.delete(id))
                 .isInstanceOf(ObjectNotFoundInDataBaseException.class)
-                .hasMessageContaining("Player with id: 10 not found in database.");
+                .hasMessageContaining("Player with id: 10 not found in the database.");
 
         //then
         verify(playerRepository, never()).deleteById(any());
@@ -316,7 +317,7 @@ public class PlayerServiceTests {
         //when
         assertThatThrownBy(() -> underTestService.update(id, p))
                 .isInstanceOf(ObjectNotFoundInDataBaseException.class)
-                .hasMessageContaining("Player with given id was not found in database.");
+                .hasMessageContaining("Player with given id was not found in the database.");
 
         //then
         verify(playerRepository, never()).save(any());
@@ -450,7 +451,7 @@ public class PlayerServiceTests {
         //when
         assertThatThrownBy(() -> underTestService.getById(id))
                 .isInstanceOf(ObjectNotFoundInDataBaseException.class)
-                .hasMessageContaining("Object with given id was not found in database.");
+                .hasMessageContaining("Object with given id was not found in the database.");
     }
 
     /** checkIfEntityExistsInDb */

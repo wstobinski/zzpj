@@ -1,6 +1,8 @@
 package com.handballleague.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.Objects;
@@ -33,11 +35,13 @@ public class Player {
             name = "first_name",
             nullable = false
     )
+    @Size(min = 2, max = 50, message = "First name needs to be between [2,50] characters")
     private String firstName;
     @Column(
             name = "last_name",
             nullable = false
     )
+    @Size(min = 2, max = 50, message = "Last name needs to be between [2,50] characters")
     private String lastName;
     @Column(
             name = "phone_number",
@@ -48,6 +52,7 @@ public class Player {
             name = "pitch_number",
             nullable = false
     )
+    @Positive(message = "Pitch number needs to be a positive number")
     private int pitchNumber;
     @Column(
             name = "is_captain",

@@ -29,7 +29,7 @@ public class TeamContestService implements HandBallService<TeamContest>{
     @Override
     public TeamContest create(TeamContest teamContest) throws InvalidArgumentException, EntityAlreadyExistsException {
         if(teamContest == null) throw new InvalidArgumentException("Passed parameter is invalid");
-        if(checkIfEntityExistsInDb(teamContest)) throw new EntityAlreadyExistsException("TeamContest with given data already exists in database");
+        if(checkIfEntityExistsInDb(teamContest)) throw new EntityAlreadyExistsException("TeamContest with given data already exists in the database");
         if(teamContest.getTeam() == null ||
                 teamContest.getLeague() == null) throw new InvalidArgumentException("Team contest needs to be connected with both Team and Contest entities");
 
@@ -97,7 +97,7 @@ public class TeamContestService implements HandBallService<TeamContest>{
             throw new InvalidArgumentException("Passed id is invalid.");
 
         return teamContestRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundInDataBaseException("TeamContest with given id was not found in database."));
+                .orElseThrow(() -> new ObjectNotFoundInDataBaseException("TeamContest with given id was not found in the database."));
     }
 
     @Override

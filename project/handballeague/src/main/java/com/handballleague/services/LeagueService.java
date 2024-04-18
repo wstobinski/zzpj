@@ -27,7 +27,7 @@ public class LeagueService implements HandBallService<League>{
     @Override
     public League create(League league) throws InvalidArgumentException, EntityAlreadyExistsException {
         if(league == null) throw new InvalidArgumentException("Passed parameter is invalid");
-        if(checkIfEntityExistsInDb(league)) throw new EntityAlreadyExistsException("League with given data already exists in database");
+        if(checkIfEntityExistsInDb(league)) throw new EntityAlreadyExistsException("League with given data already exists in the database");
         if(league.getName().isEmpty() ||
             league.getStartDate() == null) throw new InvalidArgumentException("At least one of league parameters is invalid.");
 
@@ -42,7 +42,7 @@ public class LeagueService implements HandBallService<League>{
         if(leagueRepository.existsById(id)) {
             leagueRepository.deleteById(id);
         } else {
-            throw new ObjectNotFoundInDataBaseException("League with id: " + id + " not found in database.");
+            throw new ObjectNotFoundInDataBaseException("League with id: " + id + " not found in the database.");
         }
         return true;
     }
@@ -58,7 +58,7 @@ public class LeagueService implements HandBallService<League>{
             throw new InvalidArgumentException("Passed invalid arguments.");
 
         League leagueToChange = leagueRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundInDataBaseException("League with given id was not found in database."));
+                .orElseThrow(() -> new ObjectNotFoundInDataBaseException("League with given id was not found in the database."));
 
         leagueToChange.setName(newLeague.getName());
         leagueToChange.setStartDate(newLeague.getStartDate());
@@ -75,7 +75,7 @@ public class LeagueService implements HandBallService<League>{
 
         Optional<League> optionalLeague = leagueRepository.findById(id);
         if (optionalLeague.isEmpty())
-            throw new ObjectNotFoundInDataBaseException("Object with given id was not found in database.");
+            throw new ObjectNotFoundInDataBaseException("Object with given id was not found in the database.");
 
         return optionalLeague.get();
     }
@@ -105,10 +105,10 @@ public class LeagueService implements HandBallService<League>{
 
     public League addLeagueToTeam(Long leagueId, Long teamId) {
         League league = leagueRepository.findById(leagueId)
-                .orElseThrow(() -> new RuntimeException("League not found"));
+                .orElseThrow(() -> new ObjectNotFoundInDataBaseException("League not found"));
 
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new RuntimeException("Team not found"));
+                .orElseThrow(() -> new ObjectNotFoundInDataBaseException("Team not found"));
 
         league.getTeams().add(team);
 
@@ -119,10 +119,10 @@ public class LeagueService implements HandBallService<League>{
 
     public League removeTeamFromLeague(Long leagueId, Long teamId) {
         League league = leagueRepository.findById(leagueId)
-                .orElseThrow(() -> new RuntimeException("League not found"));
+                .orElseThrow(() -> new ObjectNotFoundInDataBaseException("League not found"));
 
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new RuntimeException("Team not found"));
+                .orElseThrow(() -> new ObjectNotFoundInDataBaseException("Team not found"));
 
         league.getTeams().remove(team);
 

@@ -1,6 +1,7 @@
 package com.handballleague.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,6 +34,7 @@ public class Team {
             nullable = false,
             unique = true
     )
+    @Size(min = 3, max = 50, message = "Team name needs to be between [3,50] characters")
     private String teamName;
 
     @OneToMany(cascade = {CascadeType.ALL})

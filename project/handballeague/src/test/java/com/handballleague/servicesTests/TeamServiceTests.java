@@ -117,7 +117,7 @@ public class TeamServiceTests {
         assertThatThrownBy(
                 () -> underTestService.create(t))
                 .isInstanceOf(EntityAlreadyExistsException.class)
-                .hasMessageContaining("Team with given data already exists in database");
+                .hasMessageContaining("Team with given data already exists in the database");
 
         //then
         verify(teamRepository, times(1)).save(any());
@@ -187,7 +187,7 @@ public class TeamServiceTests {
         //when
         assertThatThrownBy(() -> underTestService.delete(id))
                 .isInstanceOf(ObjectNotFoundInDataBaseException.class)
-                .hasMessageContaining("Team with id: 10 not found in database.");
+                .hasMessageContaining("Team with id: 10 not found in the database.");
 
         //then
         verify(teamRepository, never()).deleteById(any());
@@ -298,7 +298,7 @@ public class TeamServiceTests {
         //when
         assertThatThrownBy(() -> underTestService.update(id, t))
                 .isInstanceOf(ObjectNotFoundInDataBaseException.class)
-                .hasMessageContaining("Team with given id was not found in database.");
+                .hasMessageContaining("Team with given id was not found in the database.");
 
         //then
         verify(teamRepository, never()).save(any());
@@ -382,7 +382,7 @@ public class TeamServiceTests {
         //when
         assertThatThrownBy(() -> underTestService.getById(id))
                 .isInstanceOf(ObjectNotFoundInDataBaseException.class)
-                .hasMessageContaining("Object with given id was not found in database.");
+                .hasMessageContaining("Object with given id was not found in the database.");
     }
 
     /** checkIfEntityExistsInDb */

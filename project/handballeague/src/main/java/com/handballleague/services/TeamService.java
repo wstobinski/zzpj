@@ -37,7 +37,7 @@ public class TeamService implements HandBallService<Team>{
 
         Optional<Team> optionalTeam = teamRepository.findById(id);
         if (optionalTeam.isEmpty())
-            throw new ObjectNotFoundInDataBaseException("Object with given id was not found in database.");
+            throw new ObjectNotFoundInDataBaseException("Object with given id was not found in the database.");
 
         return optionalTeam.get();
     }
@@ -45,7 +45,7 @@ public class TeamService implements HandBallService<Team>{
     @Override
     public Team create(Team team) throws InvalidArgumentException, EntityAlreadyExistsException {
         if(team == null) throw new InvalidArgumentException("Passed parameter is invalid");
-        if(checkIfEntityExistsInDb(team)) throw new EntityAlreadyExistsException("Team with given data already exists in database");
+        if(checkIfEntityExistsInDb(team)) throw new EntityAlreadyExistsException("Team with given data already exists in the database");
         if(team.getTeamName().isEmpty()) throw new InvalidArgumentException("At least one of team parameters is invalid.");
 
         teamRepository.save(team);
@@ -59,7 +59,7 @@ public class TeamService implements HandBallService<Team>{
         if(teamRepository.existsById(id)) {
             teamRepository.deleteById(id);
         } else {
-            throw new ObjectNotFoundInDataBaseException("Team with id: " + id + " not found in database.");
+            throw new ObjectNotFoundInDataBaseException("Team with id: " + id + " not found in the database.");
         }
         return true;
     }
@@ -74,7 +74,7 @@ public class TeamService implements HandBallService<Team>{
             throw new InvalidArgumentException("Passed invalid arguments (team name).");
 
         Team teamToChange = teamRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundInDataBaseException("Team with given id was not found in database."));
+                .orElseThrow(() -> new ObjectNotFoundInDataBaseException("Team with given id was not found in the database."));
 
         teamToChange.setTeamName(newTeam.getTeamName());
         teamToChange.setPlayers(newTeam.getPlayers());
@@ -102,10 +102,10 @@ public class TeamService implements HandBallService<Team>{
 
     public Team addPlayerToTeam(Long teamId, Long playerId) {
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new RuntimeException("Team not found"));
+                .orElseThrow(() -> new ObjectNotFoundInDataBaseException("Team not found"));
 
         Player player = playerRepository.findById(String.valueOf(playerId))
-                .orElseThrow(() -> new RuntimeException("Player not found"));
+                .orElseThrow(() -> new ObjectNotFoundInDataBaseException("Player not found"));
 
         team.getPlayers().add(player);
 
@@ -116,10 +116,10 @@ public class TeamService implements HandBallService<Team>{
 
     public Team removePlayerFromTeam(Long teamId, Long playerId) {
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new RuntimeException("Team not found"));
+                .orElseThrow(() -> new ObjectNotFoundInDataBaseException("Team not found"));
 
         Player player = playerRepository.findById(String.valueOf(playerId))
-                .orElseThrow(() -> new RuntimeException("Player not found"));
+                .orElseThrow(() -> new ObjectNotFoundInDataBaseException("Player not found"));
 
         team.getPlayers().remove(player);
 

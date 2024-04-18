@@ -1,6 +1,7 @@
 package com.handballleague.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,18 +25,24 @@ public class TeamContest {
     private League league;
 
     @Column(nullable = false)
+    @Positive(message = "Points cannot be negative")
     private int points;
     @Column(nullable = false)
+    @Positive(message = "GoalsAcquired cannot be negative")
     private int goalsAcquired;
     @Column(nullable = false)
+    @Positive(message = "GoalsLost cannot be negative")
     private int goalsLost;
     @Transient
     private int gamesPlayed;
     @Column(nullable = false)
+    @Positive(message = "Wins number cannot be negative")
     private int wins;
     @Column(nullable = false)
+    @Positive(message = "Draws number cannot be negative")
     private int draws;
     @Column(nullable = false)
+    @Positive(message = "Losses number cannot be negative")
     private int losses;
 
     public TeamContest(Team team, League league, int points, int goalsAcquired, int goalsLost, int wins, int draws, int losses) {
