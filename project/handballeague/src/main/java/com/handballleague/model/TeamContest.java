@@ -16,11 +16,11 @@ public class TeamContest {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long uuid;
 
-    @ManyToOne(cascade = {CascadeType.ALL})
+    @ManyToOne
     @JoinColumn(name = "team_id", referencedColumnName = "uuid")
     private Team team;
 
-    @ManyToOne(cascade = {CascadeType.ALL})
+    @ManyToOne
     @JoinColumn(name = "league_id", referencedColumnName = "uuid")
     private League league;
 
