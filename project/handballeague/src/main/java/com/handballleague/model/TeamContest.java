@@ -1,48 +1,50 @@
 package com.handballleague.model;
 
+import com.handballleague.model.ids.TeamContestID;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @NoArgsConstructor
+
 @Getter
 @Setter
 @Entity
+@IdClass(TeamContestID.class)
 @Table(name = "team_contest")
 public class TeamContest {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long uuid;
 
+    @Id
     @ManyToOne
     @JoinColumn(name = "team_id", referencedColumnName = "uuid")
     private Team team;
 
+    @Id
     @ManyToOne
     @JoinColumn(name = "league_id", referencedColumnName = "uuid")
     private League league;
 
     @Column(nullable = false)
-    @Positive(message = "Points cannot be negative")
+    @Min(value = 0, message = "Points cannot be negative")
     private int points;
     @Column(nullable = false)
-    @Positive(message = "GoalsAcquired cannot be negative")
+    @Min(value = 0, message = "GoalsAcquired cannot be negative")
     private int goalsAcquired;
     @Column(nullable = false)
-    @Positive(message = "GoalsLost cannot be negative")
+    @Min(value = 0, message = "GoalsLost cannot be negative")
     private int goalsLost;
     @Transient
     private int gamesPlayed;
     @Column(nullable = false)
-    @Positive(message = "Wins number cannot be negative")
+    @Min(value = 0, message = "Number of wins cannot be negative")
     private int wins;
     @Column(nullable = false)
-    @Positive(message = "Draws number cannot be negative")
+    @Min(value = 0, message = "Number of draws cannot be negative")
     private int draws;
     @Column(nullable = false)
-    @Positive(message = "Losses number cannot be negative")
+    @Min(value = 0, message = "Number of losses cannot be negative")
     private int losses;
 
     public TeamContest(Team team, League league, int points, int goalsAcquired, int goalsLost, int wins, int draws, int losses) {
@@ -73,3 +75,4 @@ public class TeamContest {
 
     }
 }
+

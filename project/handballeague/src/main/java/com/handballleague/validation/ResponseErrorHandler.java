@@ -15,6 +15,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 @ControllerAdvice
@@ -79,7 +80,7 @@ public class ResponseErrorHandler extends ResponseEntityExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setLocalDateTime(LocalDateTime.now());
         errorResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        errorResponse.setErrors(List.of("Internal server error occurred"));
+        errorResponse.setErrors(List.of("Internal server error occurred", ex.getMessage()));
 
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }

@@ -54,7 +54,7 @@ public class TeamContestService implements HandBallService<TeamContest>{
         if (league == null) {
             throw new InvalidArgumentException("Provided League does not exist in the database");
         }
-        boolean teamContestExists = this.checkIfEntityExistsInDb(leagueID, teamID);
+        boolean teamContestExists = this.checkIfEntityExistsInDb(teamID, leagueID);
         if (teamContestExists) {
             throw new EntityAlreadyExistsException("TeamContest for provided league and team already exists");
         }
@@ -111,14 +111,14 @@ public class TeamContestService implements HandBallService<TeamContest>{
     }
 
     @Override
-    public boolean checkIfEntityExistsInDb(Long teamContestID) {
-        return teamContestRepository.findAll().stream().filter(teamContest -> teamContest.getUuid().equals(teamContestID)).toList().size() == 1;
+    public boolean checkIfEntityExistsInDb(Long entityID) {
+        throw new RuntimeException("Not applicable");
     }
 
 
     public boolean checkIfEntityExistsInDb(Long teamID, Long leagueID) {
         return teamContestRepository.findAll().stream().filter(teamContest -> teamContest.getTeam().getUuid().equals(teamID)
-                && teamContest.getLeague().getUuid().equals(leagueID)).toList().size() == 1;
+                && teamContest.getLeague().getUuid().equals(leagueID)).toList().size() > 0;
 
     }
 
