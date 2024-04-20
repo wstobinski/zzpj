@@ -4,12 +4,16 @@ import com.handballleague.exceptions.EntityAlreadyExistsException;
 import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
 import com.handballleague.model.League;
+import com.handballleague.model.Round;
 import com.handballleague.model.Team;
 import com.handballleague.repositories.LeagueRepository;
+import com.handballleague.repositories.RoundRepository;
 import com.handballleague.repositories.TeamRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,13 +21,36 @@ import java.util.Optional;
 public class LeagueService implements HandBallService<League>{
     private final LeagueRepository leagueRepository;
     private final TeamRepository teamRepository;
+    private final RoundRepository roundRepository;
 
     @Autowired
-    public LeagueService(LeagueRepository leagueRepository, TeamRepository teamRepository) {
+    public LeagueService(LeagueRepository leagueRepository, TeamRepository teamRepository, RoundRepository roundRepository) {
         this.leagueRepository = leagueRepository;
         this.teamRepository = teamRepository;
+        this.roundRepository = roundRepository;
     }
 
+
+    @Transactional
+    public void generateSchedule(League league, int numberOfRounds) {
+        if (numberOfRounds <= 0) {
+            throw new InvalidArgumentException("Number of rounds has to be a positive integer");
+        }
+        if (roundRepository.existsById(String.valueOf(league.getUuid()))) {
+            throw new EntityAlreadyExistsException("Schedule already generated for this league");
+        }
+
+        for (int i = 0; i < numberOfRounds; i++) {
+
+            Round round = Round.builder()
+                    .number(i + 1)
+                    .contest(league)
+                    .startDate(LocalDateTime.now().plusDays(7L * i))
+                    .build();
+            roundRepository.save(round);
+
+        }
+    }
     @Override
     public League create(League league) throws InvalidArgumentException, EntityAlreadyExistsException {
         if(league == null) throw new InvalidArgumentException("Passed parameter is invalid");

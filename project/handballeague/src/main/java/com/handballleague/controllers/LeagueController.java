@@ -1,7 +1,9 @@
 package com.handballleague.controllers;
 
 import com.handballleague.model.League;
+import com.handballleague.model.Round;
 import com.handballleague.services.LeagueService;
+import com.handballleague.services.RoundService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +15,12 @@ import java.util.List;
 @RequestMapping(path = "api/v1/leagues")
 public class LeagueController {
     private final LeagueService leagueService;
+    private final RoundService roundService;
 
     @Autowired
-    public LeagueController(LeagueService leagueService) {
+    public LeagueController(LeagueService leagueService, RoundService roundService) {
         this.leagueService = leagueService;
+        this.roundService =roundService;
     }
 
     @GetMapping
@@ -25,6 +29,12 @@ public class LeagueController {
         List<League> leagues = leagueService.getAll();
         return ResponseEntity.ok(leagues);
 
+    }
+
+    @GetMapping("/{leagueId}/rounds")
+    public ResponseEntity<?> getLeagueRounds(@PathVariable Long leagueId) {
+        List<Round> rounds = roundService.getByLeagueId(leagueId);
+        return ResponseEntity.ok(rounds);
     }
 
     @PostMapping
@@ -42,6 +52,14 @@ public class LeagueController {
         }
         League updatedLeague = leagueService.addLeagueToTeam(leagueId, teamId);
         return ResponseEntity.ok(updatedLeague);
+
+    }
+
+    @PostMapping("/{leagueId}/generate-schedule")
+    public ResponseEntity<?> generateScheduleForLeague(@PathVariable Long leagueId, @RequestParam int rounds) {
+        League league = leagueService.getById(leagueId);
+        leagueService.generateSchedule(league, rounds);
+        return ResponseEntity.ok("Schedule generated successfully");
 
     }
 

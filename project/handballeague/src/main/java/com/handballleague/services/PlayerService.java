@@ -39,7 +39,7 @@ public class PlayerService implements HandBallService<Player>{
     }
 
     @Override
-    public Player create(@Valid Player player) throws InvalidArgumentException, EntityAlreadyExistsException{
+    public Player create(Player player) throws InvalidArgumentException, EntityAlreadyExistsException{
         if(player == null) throw new InvalidArgumentException("Passed parameter is invalid");
         if(checkIfEntityExistsInDb(player)) throw new EntityAlreadyExistsException("Player with given data already exists in the database");
         if(player.getFirstName().isEmpty() ||
