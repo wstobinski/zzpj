@@ -2,6 +2,7 @@ package com.handballleague.controllers;
 
 import com.handballleague.model.League;
 import com.handballleague.model.Round;
+import com.handballleague.services.JWTService;
 import com.handballleague.services.LeagueService;
 import com.handballleague.services.RoundService;
 import jakarta.validation.Valid;
@@ -16,11 +17,13 @@ import java.util.List;
 public class LeagueController {
     private final LeagueService leagueService;
     private final RoundService roundService;
+    private final JWTService jwtService;
 
     @Autowired
-    public LeagueController(LeagueService leagueService, RoundService roundService) {
+    public LeagueController(LeagueService leagueService, RoundService roundService, JWTService jwtService) {
         this.leagueService = leagueService;
-        this.roundService =roundService;
+        this.roundService = roundService;
+        this.jwtService = jwtService;
     }
 
     @GetMapping
@@ -38,48 +41,66 @@ public class LeagueController {
     }
 
     @PostMapping
-    public ResponseEntity<?> registerNewLeague(@Valid @RequestBody League league) {
-
-        leagueService.create(league);
-        return ResponseEntity.ok("League created successfully");
-
+    public ResponseEntity<?> registerNewLeague(@Valid @RequestBody League league, @RequestHeader(name = "Authorization") String token) {
+        ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
+        if (response.getStatusCode().is2xxSuccessful()) {
+            leagueService.create(league);
+            return ResponseEntity.ok("League created successfully");
+        } else {
+            return response;
+        }
     }
 
     @PostMapping("/{leagueId}/teams")
-    public ResponseEntity<?> addTeamToLeague(@PathVariable Long leagueId, @RequestBody Long teamId) {
-        if (teamId == null) {
-            return ResponseEntity.badRequest().build();
+    public ResponseEntity<?> addTeamToLeague(@PathVariable Long leagueId, @RequestBody Long teamId, @RequestHeader(name = "Authorization") String token) {
+        ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
+        if (response.getStatusCode().is2xxSuccessful()) {
+            if (teamId == null) {
+                return ResponseEntity.badRequest().build();
+            }
+            League updatedLeague = leagueService.addLeagueToTeam(leagueId, teamId);
+            return ResponseEntity.ok(updatedLeague);
+        } else {
+            return response;
         }
-        League updatedLeague = leagueService.addLeagueToTeam(leagueId, teamId);
-        return ResponseEntity.ok(updatedLeague);
-
     }
 
     @PostMapping("/{leagueId}/generate-schedule")
-    public ResponseEntity<?> generateScheduleForLeague(@PathVariable Long leagueId, @RequestParam int rounds) {
-        League league = leagueService.getById(leagueId);
-        leagueService.generateSchedule(league, rounds);
-        return ResponseEntity.ok("Schedule generated successfully");
-
+    public ResponseEntity<?> generateScheduleForLeague(@PathVariable Long leagueId, @RequestParam int rounds, @RequestHeader(name = "Authorization") String token) {
+        ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
+        if (response.getStatusCode().is2xxSuccessful()) {
+            League league = leagueService.getById(leagueId);
+            leagueService.generateSchedule(league, rounds);
+            return ResponseEntity.ok("Schedule generated successfully");
+        } else {
+            return response;
+        }
     }
 
     @DeleteMapping("/{leagueId}/teams")
-    public ResponseEntity<?> removeTeamFromLeague(@PathVariable Long leagueId, @RequestBody Long teamId) {
-        if (teamId == null) {
-            return ResponseEntity.badRequest().build();
+    public ResponseEntity<?> removeTeamFromLeague(@PathVariable Long leagueId, @RequestBody Long teamId, @RequestHeader(name = "Authorization") String token) {
+        ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
+        if (response.getStatusCode().is2xxSuccessful()) {
+            if (teamId == null) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            League updatedLeague = leagueService.removeTeamFromLeague(leagueId, teamId);
+            return ResponseEntity.ok(updatedLeague);
+        } else {
+            return response;
         }
-
-        League updatedLeague = leagueService.removeTeamFromLeague(leagueId, teamId);
-        return ResponseEntity.ok(updatedLeague);
-
     }
 
     @DeleteMapping("/{leagueId}")
-    public ResponseEntity<?> deleteTeam(@PathVariable("leagueId") Long id) {
-
-        leagueService.delete(id);
-        return ResponseEntity.ok("League deleted successfully");
-
+    public ResponseEntity<?> deleteTeam(@PathVariable("leagueId") Long id, @RequestHeader(name = "Authorization") String token) {
+        ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
+        if (response.getStatusCode().is2xxSuccessful()) {
+            leagueService.delete(id);
+            return ResponseEntity.ok("League deleted successfully");
+        } else {
+            return response;
+        }
     }
 
     @GetMapping("/{leagueId}")
@@ -91,10 +112,14 @@ public class LeagueController {
     }
 
     @PutMapping("/{leagueId}")
-    public ResponseEntity<?> updateTeam(@PathVariable Long leagueId, @Valid @RequestBody League league) {
-
-        League newLeague = leagueService.update(leagueId, league);
-        return ResponseEntity.ok(newLeague);
-
+    public ResponseEntity<?> updateTeam(@PathVariable Long leagueId, @Valid @RequestBody League league, @RequestHeader(name = "Authorization") String token) {
+        ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
+        ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "arbiter");
+        if (response.getStatusCode().is2xxSuccessful() || response2.getStatusCode().is2xxSuccessful()) {
+            League newLeague = leagueService.update(leagueId, league);
+            return ResponseEntity.ok(newLeague);
+        } else {
+            return response2;
+        }
     }
 }

@@ -1,6 +1,8 @@
 package com.handballleague.controllers;
 
 import com.handballleague.model.Player;
+import com.handballleague.model.TeamContest;
+import com.handballleague.services.JWTService;
 import com.handballleague.services.PlayerService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +17,11 @@ import java.util.Map;
 @RequestMapping(path = "api/v1/players")
 public class PlayerController {
     private final PlayerService playerService;
-
+    private final JWTService jwtService;
     @Autowired
-    public PlayerController(PlayerService playerService) {
+    public PlayerController(PlayerService playerService, JWTService jwtService) {
         this.playerService = playerService;
+        this.jwtService = jwtService;
     }
 
     @GetMapping
@@ -30,17 +33,29 @@ public class PlayerController {
     }
 
     @PostMapping()
-    public ResponseEntity<String> registerNewPlayer(@Valid @RequestBody Player player) {
-        playerService.create(player);
-        return ResponseEntity.ok("Player created successfully");
+    public ResponseEntity<?> registerNewPlayer(@Valid @RequestBody Player player, @RequestHeader(name = "Authorization") String token) {
+        ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
+        ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "captain");
+        if (response.getStatusCode().is2xxSuccessful() || response2.getStatusCode().is2xxSuccessful()) {
+            playerService.create(player);
+            return ResponseEntity.ok("Player created successfully");
+        } else {
+            return response2;
+        }
     }
 
     @DeleteMapping(path = "/{playerId}")
-    public ResponseEntity<?> deletePlayer(@PathVariable("playerId") Long id) {
-        boolean deleted = playerService.delete(id);
-        Map<String, Boolean> response = new HashMap<>();
-        response.put("Deleted state", deleted);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<?> deletePlayer(@PathVariable("playerId") Long id, @RequestHeader(name = "Authorization") String token) {
+        ResponseEntity<?> response1 = jwtService.handleAuthorization(token, "admin");
+        ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "captain");
+        if (response1.getStatusCode().is2xxSuccessful() || response2.getStatusCode().is2xxSuccessful()) {
+            boolean deleted = playerService.delete(id);
+            Map<String, Boolean> response = new HashMap<>();
+            response.put("Deleted state", deleted);
+            return ResponseEntity.ok(response);
+        } else {
+            return response2;
+        }
     }
 
     @GetMapping("/{playerId}")
@@ -52,11 +67,15 @@ public class PlayerController {
     }
 
     @PutMapping("/{playerId}")
-    public ResponseEntity<?> updatePlayer(@Valid @PathVariable Long playerId, @RequestBody Player player) {
-
-        Player newPlayer = playerService.update(playerId, player);
-        return ResponseEntity.ok(newPlayer);
-
+    public ResponseEntity<?> updatePlayer(@Valid @PathVariable Long playerId, @RequestBody Player player, @RequestHeader(name = "Authorization") String token) {
+        ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
+        ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "captain");
+        if (response.getStatusCode().is2xxSuccessful() || response2.getStatusCode().is2xxSuccessful()) {
+            Player newPlayer = playerService.update(playerId, player);
+            return ResponseEntity.ok(newPlayer);
+        } else {
+            return response2;
+        }
     }
 
 }
