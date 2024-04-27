@@ -1,5 +1,6 @@
 import {Injectable} from "@angular/core";
 import { Storage } from '@ionic/storage';
+import {FormGroup} from "@angular/forms";
 
 @Injectable({
   providedIn: 'root'
@@ -26,4 +27,9 @@ export class Utils {
   removeStorageObject(key: string): Promise<any> {
     return this.storage.remove(key);
   }
+
+  formHasError(form: FormGroup, fieldName: string, errorType: string) {
+    return form.get(fieldName)?.hasError(errorType) && form.get(fieldName)?.touched;
+  }
+
 }
