@@ -47,6 +47,29 @@ public class UserController {
         }
     }
 
+    @PutMapping("/{userId}")
+    public ResponseEntity<?> updateUser(@PathVariable Long userId, @RequestBody User user, @RequestHeader(name = "Authorization") String token) {
+        ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
+        if (response.getStatusCode().is2xxSuccessful()) {
+            User newUser = userService.update(userId, user);
+            return ResponseEntity.ok(newUser);
+        } else {
+            ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "captain");
+            if (response2.getStatusCode().is2xxSuccessful()){
+                User newUser = userService.update(userId, user);
+                return ResponseEntity.ok(newUser);
+            } else {
+                ResponseEntity<?> response3 = jwtService.handleAuthorization(token, "arbiter");
+                if (response3.getStatusCode().is2xxSuccessful()) {
+                    User newUser = userService.update(userId, user);
+                    return ResponseEntity.ok(newUser);
+                } else {
+                    return response3;
+                }
+            }
+        }
+    }
+
     @GetMapping("/getUsers")
     public ResponseEntity<?> getUsers(@RequestHeader(name = "Authorization") String token) {
         try {

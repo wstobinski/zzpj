@@ -30,6 +30,9 @@ public class UserService implements HandBallService<User> {
         if (entity == null) throw new InvalidArgumentException("Passed parameter is invalid");
         if (checkIfEntityExistsInDb(entity))
             throw new EntityAlreadyExistsException("User with given data already exists in database");
+        if (userRepository.existsByEmail(entity.getEmail())) {
+            throw new EntityAlreadyExistsException("User with given data already exists in database");
+        }
         if (entity.getEmail().isEmpty() ||
                 entity.getPassword().isEmpty() ||
                 entity.getRole().isEmpty())

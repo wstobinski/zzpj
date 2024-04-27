@@ -1,10 +1,10 @@
 package com.handballleague.controllers;
 
 import com.handballleague.model.TeamContest;
+import com.handballleague.services.JWTService;
 import com.handballleague.services.TeamContestService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,11 +15,14 @@ import java.util.List;
 public class TeamContestController {
 
     private final TeamContestService teamContestService;
+    private final JWTService jwtService;
 
     @Autowired
-    public TeamContestController(TeamContestService teamContestService) {
+    public TeamContestController(TeamContestService teamContestService, JWTService jwtService) {
         this.teamContestService = teamContestService;
+        this.jwtService = jwtService;
     }
+
     @GetMapping
     public ResponseEntity<?> getTeamContests() {
 
@@ -29,19 +32,27 @@ public class TeamContestController {
     }
 
     @PostMapping
-    public ResponseEntity<?> registerNewTeamContest(@RequestParam Long leagueID, @RequestParam Long teamID) {
-
-        teamContestService.create(leagueID, teamID);
-        return ResponseEntity.ok("TeamContest created successfully");
+    public ResponseEntity<?> registerNewTeamContest(@RequestParam Long leagueID, @RequestParam Long teamID,
+                                                    @RequestHeader(name = "Authorization") String token) {
+        ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
+        if (response.getStatusCode().is2xxSuccessful()) {
+            teamContestService.create(leagueID, teamID);
+            return ResponseEntity.ok("TeamContest created successfully");
+        } else {
+            return response;
+        }
 
     }
 
     @DeleteMapping("/{teamContestID}")
-    public ResponseEntity<?> deleteTeamContest(@PathVariable Long teamContestID) {
-
-        teamContestService.delete(teamContestID);
-        return ResponseEntity.ok("TeamContest deleted successfully");
-
+    public ResponseEntity<?> deleteTeamContest(@PathVariable Long teamContestID, @RequestHeader(name = "Authorization") String token) {
+        ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
+        if (response.getStatusCode().is2xxSuccessful()) {
+            teamContestService.delete(teamContestID);
+            return ResponseEntity.ok("TeamContest deleted successfully");
+        } else {
+            return response;
+        }
     }
 
     @GetMapping("/{teamContestID}")
@@ -53,11 +64,15 @@ public class TeamContestController {
     }
 
     @PutMapping("/{teamContestID}")
-    public ResponseEntity<?> updateTeamContest(@PathVariable Long teamContestID, @Valid @RequestBody TeamContest teamContest) {
-
-        TeamContest newTeamContest = teamContestService.update(teamContestID, teamContest);
-        return ResponseEntity.ok(newTeamContest);
-
+    public ResponseEntity<?> updateTeamContest(@PathVariable Long teamContestID, @Valid @RequestBody TeamContest teamContest,
+                                               @RequestHeader(name = "Authorization") String token) {
+        ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
+        if (response.getStatusCode().is2xxSuccessful()) {
+            TeamContest newTeamContest = teamContestService.update(teamContestID, teamContest);
+            return ResponseEntity.ok(newTeamContest);
+        } else {
+            return response;
+        }
     }
 
 }
