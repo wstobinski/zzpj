@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators} from "@angular/forms";
 import {Utils} from "../../utils/utils";
+import {AuthService} from "../../services/auth.service";
+import {UserService} from "../../services/user.service";
 
 @Component({
   selector: 'app-login',
@@ -15,7 +17,8 @@ export class LoginPage implements OnInit {
 
 
   constructor(private formBuilder: FormBuilder,
-              private utils: Utils) { }
+              private utils: Utils,
+              private userService: UserService) { }
 
   ngOnInit() {
 
@@ -31,15 +34,21 @@ export class LoginPage implements OnInit {
     if (this.activationForm == null) {
       this.activationForm = this.formBuilder.group({
         code: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(8)]],
-        password: ['', [Validators.required, Validators.minLength(8)]]
-      });
+        password: ['', [Validators.required, Validators.minLength(8)]],
+        passwordConfirm: ['', [Validators.required, Validators.minLength(8)]]
+      }, {validators: this.passwordMismatchValidator});
     }
   }
 
-  onSubmit() {
+  onLogin() {
     const requestObj = this.loginForm.getRawValue();
     console.log(requestObj);
-    console.log(this.loginForm)
+    this.userService.login(requestObj).then(r => console.log(r));
+
+
+  }
+  onActivate() {
+
   }
 
   getCardTitle() {
@@ -50,11 +59,24 @@ export class LoginPage implements OnInit {
     return this.loginFormPresented ? "Got activation code? Activate your account here!" : "Already have an account? Login here!"
   }
 
-  onSubmitActivation() {
 
-  }
 
-  formHasError(formGroup: any, fieldName: string, errorType: string) {
+  formControlHasError(formGroup: any, fieldName: string, errorType: string) {
     return this.utils.formHasError(formGroup, fieldName, errorType);
   }
+  formHasError(formGroup: FormGroup, errorType: string) {
+    return formGroup.hasError(errorType) && formGroup.touched;
+  }
+
+  passwordMismatchValidator: ValidatorFn = (
+    control: AbstractControl,
+  ): ValidationErrors | null => {
+    const password = control.get('password');
+    const passwordConfirm = control.get('passwordConfirm');
+
+    return password && passwordConfirm && password.value !== passwordConfirm.value
+      ? { passwordMismatch: true }
+      : null;
+  };
+
 }
