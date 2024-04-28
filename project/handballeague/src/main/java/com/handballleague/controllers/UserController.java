@@ -4,11 +4,11 @@ import com.handballleague.model.User;
 import com.handballleague.services.JWTService;
 import com.handballleague.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "api/v1/users")
@@ -39,7 +39,7 @@ public class UserController {
     public ResponseEntity<?> logInUser(@RequestBody User entity) {
 
         String token = userService.logInUser(entity);
-        return ResponseEntity.ok(token);
+        return ResponseEntity.ok().body(Map.of("token", token));
 
     }
 
