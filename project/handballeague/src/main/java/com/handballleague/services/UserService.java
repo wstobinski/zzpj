@@ -3,8 +3,6 @@ package com.handballleague.services;
 import com.handballleague.exceptions.EntityAlreadyExistsException;
 import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
-import com.handballleague.model.Player;
-import com.handballleague.model.Team;
 import com.handballleague.model.User;
 import com.handballleague.repositories.UserRepository;
 import org.mindrot.jbcrypt.BCrypt;
@@ -38,8 +36,7 @@ public class UserService implements HandBallService<User> {
                 entity.getRole().isEmpty())
             throw new InvalidArgumentException("At least one of user parameters is invalid.");
         entity.setPassword(BCrypt.hashpw(entity.getPassword(), BCrypt.gensalt()));
-        userRepository.save(entity);
-        return null;
+        return userRepository.save(entity);
     }
 
     public String logInUser(User entity) {

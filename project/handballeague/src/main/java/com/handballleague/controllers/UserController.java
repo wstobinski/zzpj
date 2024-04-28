@@ -24,27 +24,23 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestHeader(name = "Authorization") String token, @RequestBody User entity) {
-        try {
-            ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
-            if (response.getStatusCode().is2xxSuccessful()) {
-                userService.create(entity);
-                return ResponseEntity.ok("User created successfully");
-            } else {
-                return response;
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+
+        ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
+        if (response.getStatusCode().is2xxSuccessful()) {
+            userService.create(entity);
+            return ResponseEntity.ok("User created successfully");
+        } else {
+            return response;
         }
+
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> logInUser(@RequestBody User entity) {
-        try {
-            String token = userService.logInUser(entity);
-            return ResponseEntity.ok(token);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+
+        String token = userService.logInUser(entity);
+        return ResponseEntity.ok(token);
+
     }
 
     @PutMapping("/{userId}")
@@ -72,17 +68,15 @@ public class UserController {
 
     @GetMapping("/getUsers")
     public ResponseEntity<?> getUsers(@RequestHeader(name = "Authorization") String token) {
-        try {
-            ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
-            if (response.getStatusCode().is2xxSuccessful()) {
-                List<User> users = userService.getAll();
-                return ResponseEntity.ok(users);
-            } else {
-                return response;
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+
+        ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
+        if (response.getStatusCode().is2xxSuccessful()) {
+            List<User> users = userService.getAll();
+            return ResponseEntity.ok(users);
+        } else {
+            return response;
         }
+
     }
 
 }
