@@ -39,7 +39,8 @@ public class UserController {
     public ResponseEntity<?> logInUser(@RequestBody User entity) {
 
         String token = userService.logInUser(entity);
-        return ResponseEntity.ok().body(Map.of("token", token));
+        return ResponseEntity.ok().body(Map.of("response", Map.of("token", token, "user", entity),
+                "ok", true));
 
     }
 

@@ -3,6 +3,7 @@ import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, 
 import {Utils} from "../../utils/utils";
 import {AuthService} from "../../services/auth.service";
 import {UserService} from "../../services/user.service";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
   selector: 'app-login',
@@ -18,7 +19,10 @@ export class LoginPage implements OnInit {
 
   constructor(private formBuilder: FormBuilder,
               private utils: Utils,
-              private userService: UserService) { }
+              private userService: UserService,
+              private authService: AuthService,
+              private route: ActivatedRoute,
+              private router: Router) { }
 
   ngOnInit() {
 
@@ -43,7 +47,14 @@ export class LoginPage implements OnInit {
   onLogin() {
     const requestObj = this.loginForm.getRawValue();
     console.log(requestObj);
-    this.userService.login(requestObj).then(r => console.log(r));
+    this.userService.login(requestObj).then(r => {
+      console.log(r);
+      this.authService.setUserAuthData(r.response.token);
+      this.userService.setUser(r.response.user);
+      console.log(this.route);
+      const redirectURL = this.route.snapshot.params['returnUrl'] || '/home';
+      this.router.navigateByUrl(redirectURL);
+    });
 
 
   }

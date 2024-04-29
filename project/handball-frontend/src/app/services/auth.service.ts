@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, map} from "rxjs";
+import {BehaviorSubject, map, take} from "rxjs";
 import {UserAuthData} from "../model/UserAuthData";
 import {Utils} from "../utils/utils";
+import {jwtDecode} from "jwt-decode";
 
 @Injectable({
   providedIn: 'root'
@@ -34,10 +35,60 @@ export class AuthService {
     }
   }
 
+  setUserAuthData(token: string) {
+    const decoded : {
+      role: string,
+      iat: number,
+      exp: number
+    } = jwtDecode(token);
+    console.log(decoded)
+    const userAuthData: UserAuthData = {
+      token: token,
+      role: decoded.role
+    };
+    this._userAuthData.next(userAuthData);
+    this.storeUserAuthData(userAuthData);
+  }
+  private storeUserAuthData(userAuthData: UserAuthData) {
+    this.utils.setStorageObject('userAuthData', userAuthData);
+  }
+
   get token() {
     return this.userAuthData.pipe(map(userAuthData => {
       return userAuthData ? userAuthData.token : null;
     }));
+  }
+
+  get isAuthenticated() {
+    return this.userAuthData.pipe(
+      map(userAuthData => {
+        if (userAuthData) {
+          return !!userAuthData.token;
+        } else {
+          return false;
+        }
+      })
+    );
+  }
+
+  get decodedToken(): any {
+    return this.userAuthData.pipe(
+      map(userAuthData => {
+        if (userAuthData) {
+          return jwtDecode(userAuthData.token);
+        } else {
+          return null;
+        }
+      })
+    );
+  }
+
+  logout() {
+    this.utils.removeStorageObject('userAuthData').then(() => {
+      this.utils.removeStorageObject('user').then(() => {
+        window.location.reload();
+      });
+    });
   }
 
 }

@@ -1,9 +1,8 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
-import {catchError} from 'rxjs/operators';
 import {AuthService} from "./auth.service";
 import {UserAuthData} from "../model/UserAuthData";
-import {firstValueFrom, Observable, throwError} from "rxjs";
+import {firstValueFrom} from "rxjs";
 import {environment} from "../../environments/environment";
 import {ApiResponse} from "../model/ApiResponse";
 
