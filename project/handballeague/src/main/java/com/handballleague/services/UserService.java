@@ -5,17 +5,25 @@ import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
 import com.handballleague.model.User;
 import com.handballleague.repositories.UserRepository;
+import jakarta.mail.*;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 
 @Service
 public class UserService implements HandBallService<User> {
     private final UserRepository userRepository;
     private final JWTService jwtService;
+
+    @Value("${mail.password}")
+    private String password;
 
     @Autowired
     public UserService(UserRepository userRepository, JWTService jwtService) {
@@ -32,10 +40,8 @@ public class UserService implements HandBallService<User> {
             throw new EntityAlreadyExistsException("User with given data already exists in database");
         }
         if (entity.getEmail().isEmpty() ||
-                entity.getPassword().isEmpty() ||
                 entity.getRole().isEmpty())
             throw new InvalidArgumentException("At least one of user parameters is invalid.");
-        entity.setPassword(BCrypt.hashpw(entity.getPassword(), BCrypt.gensalt()));
         return userRepository.save(entity);
     }
 
@@ -117,5 +123,4 @@ public class UserService implements HandBallService<User> {
     public boolean checkIfEntityExistsInDb(Long entityID) {
         return userRepository.findAll().stream().filter(user -> user.getUuid().equals(entityID)).toList().size() == 1;
     }
-
 }

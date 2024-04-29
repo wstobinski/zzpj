@@ -7,6 +7,7 @@ import com.handballleague.model.User;
 import com.handballleague.repositories.UserRepository;
 import com.handballleague.services.JWTService;
 import com.handballleague.services.UserService;
+import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -256,4 +257,5 @@ public class UserServiceTests {
                 .hasMessageContaining("User with id: " + id + " not found in database.");
         verify(userRepository, never()).deleteById(id);
     }
+
 }
