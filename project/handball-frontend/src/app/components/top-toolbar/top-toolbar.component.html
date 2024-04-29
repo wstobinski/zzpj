@@ -10,7 +10,8 @@
     <ion-buttons slot="end">
       <ion-button *ngIf="user" (click)="logout()">
         <ion-icon name="log-out-outline" slot="start"></ion-icon>
-        <ion-label >Logout ({{user?.firstName}} {{user?.lastName}})</ion-label>
+        <ion-label *ngIf="user.firstName && user.lastName" >Logout ({{user?.firstName}} {{user?.lastName}})</ion-label>
+        <ion-label *ngIf="user.email && (!user.firstName && !user.lastName)" >Logout ({{user?.email}})</ion-label>
       </ion-button>
       <ion-button *ngIf="!user" (click)="goTo('login')">
         <ion-icon name="log-in-outline" slot="start"></ion-icon>

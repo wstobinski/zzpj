@@ -14,6 +14,7 @@ export class UserService {
 
   constructor(private utils: Utils,
               private apiService: ApiService) {
+    console.log('user init')
     this.initUser();
   }
 
