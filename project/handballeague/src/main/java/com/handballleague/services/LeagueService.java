@@ -15,7 +15,9 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
 @Service
@@ -35,56 +37,49 @@ public class LeagueService implements HandBallService<League>{
 
 
     @Transactional
-    public void generateSchedule(League league) {
+    public void generateSchedule(League league, LocalDateTime startDate) {
         List<Team> teams = league.getTeams();
-        for(Team t: teams) {
-            System.out.println(t.getTeamName());
-        }
+
         if (teams.size() % 2 != 0) {
             teams.add(null);  // Add dummy team for an odd number of teams
         }
         int numRounds = teams.size() - 1;
         int numMatchesPerRound = teams.size() / 2;
 
+        LocalDateTime firstSunday = startDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+        LocalDateTime matchDate;
+
         for (int round = 0; round < numRounds; round++) {
+            matchDate = firstSunday.plusWeeks(round).withHour(16).withMinute(0).withSecond(0).withNano(0);
             // Create the Round first
             Round currentRound = new Round();
             currentRound.setUuid(generateRandomLongUUID());
             currentRound.setNumber(round + 1);
             currentRound.setContest(league);
-            currentRound.setStartDate(LocalDateTime.now().plusDays(7L * round));
+            currentRound.setStartDate(matchDate);
 
             // Save the Round to generate an ID
             roundRepository.save(currentRound);
 
-            System.out.println("Current round: " + currentRound);
-
-//            System.out.println("All rounds in db: " + roundRepository.findAll().getFirst().getUuid());
-
             for (int match = 0; match < numMatchesPerRound; match++) {
-                int homeIndex = (round + match) % (teams.size() - 1);
-                int awayIndex = (teams.size() - 1 - match + round) % (teams.size() - 1);
-                if (match == 0) {
-                    awayIndex = teams.size() - 1;
-                }
-                Team home = teams.get(homeIndex);
-                Team away = teams.get(awayIndex);
-                System.out.println("Home: " + home.getTeamName() + ", " + home.getUuid() + ": Away " + away.getTeamName() + ", " + away.getUuid());
+                Team home = teams.get(match);
+                Team away = teams.get(teams.size() - 1 - match);
+
                 if (home != null && away != null) {
                     Match newMatch = new Match();
                     newMatch.setUuid(generateRandomLongUUID());
-                    newMatch.setGameDate(LocalDateTime.now().plusDays(7L * round));
+                    newMatch.setGameDate(matchDate);
                     newMatch.setHomeTeam(home);
                     newMatch.setAwayTeam(away);
                     newMatch.setRound(currentRound);  // Associate with the saved Round
-                    System.out.println("New Match: " + newMatch);
                     matchRepository.save(newMatch);  // Save the Match
                 }
             }
-            rotateTeams(teams);  // Rotate teams for the next round
+            Team firstTeam = teams.get(1);  // First team fixed, start rotation from the second team
+            teams.remove(1);
+            teams.add(firstTeam);
         }
     }
-
 
     private void rotateTeams(List<Team> teams) {
         Team temp = teams.removeFirst();
