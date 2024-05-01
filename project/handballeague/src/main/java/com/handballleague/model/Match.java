@@ -11,8 +11,12 @@ import java.time.LocalDateTime;
 @Table(name = "match")
 public class Match {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long uuid;
+
+
+    @ManyToOne
+    @JoinColumn(name = "round_id")
+    private Round round;
 
     @Column
     private LocalDateTime gameDate;
@@ -25,14 +29,11 @@ public class Match {
     @JoinColumn(name = "away_team_id", referencedColumnName = "uuid")
     private Team awayTeam;
 
-    @ManyToOne
-    @JoinColumn(name = "round_id") // Ensure this matches with the primary key name of Round
-    private Round round;
-
     //TODO: Add referee
 
 
-    public Match(LocalDateTime gameDate, Team homeTeam, Team awayTeam) {
+    public Match(Long uuid,LocalDateTime gameDate, Team homeTeam, Team awayTeam) {
+        this.uuid =uuid;
         this.gameDate = gameDate;
         this.homeTeam = homeTeam;
         this.awayTeam = awayTeam;
@@ -40,5 +41,15 @@ public class Match {
 
     public Match() {
 
+    }
+
+    @Override
+    public String toString() {
+        return "Match{" +
+                "uuid=" + uuid +
+                ", gameDate=" + gameDate +
+                ", homeTeam=" + homeTeam.getUuid() +
+                ", awayTeam=" + awayTeam.getUuid() +
+                '}';
     }
 }
