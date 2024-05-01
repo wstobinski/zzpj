@@ -12,17 +12,17 @@
         <ion-button (click)="logout()">
           <ion-icon name="log-out-outline" slot="start"></ion-icon>
           @if (user.firstName && user.lastName) {
-            <ion-label >Logout ({{user?.firstName}} {{user?.lastName}})</ion-label>
+            <ion-label >Wyloguj ({{user?.firstName}} {{user?.lastName}})</ion-label>
           }
           @if (user.email && (!user.firstName && !user.lastName)) {
-            <ion-label >Logout ({{user?.email}})</ion-label>
+            <ion-label >Wyloguj ({{user?.email}})</ion-label>
           }
         </ion-button>
       }
       @if (!user) {
         <ion-button (click)="goTo('login')">
           <ion-icon name="log-in-outline" slot="start"></ion-icon>
-          <ion-label >Login</ion-label>
+          <ion-label >Zaloguj się</ion-label>
         </ion-button>
       }
     </ion-buttons>

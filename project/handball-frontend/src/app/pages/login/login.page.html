@@ -5,7 +5,7 @@
     <ion-col>
       <ion-item class="ion-align-self-center" lines="none">
         <ion-text color="secondary">
-          <h3>Login or activate your account</h3>
+          <h3>Zaloguj się lub aktywuj swoje konto</h3>
         </ion-text>
       </ion-item>
     </ion-col>
@@ -25,108 +25,108 @@
           @if (loginFormPresented) {
             <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
               <ion-item>
-                <ion-label position="stacked">Your email</ion-label>
-                <ion-input placeholder="Enter your email here..." type="email" formControlName="email"></ion-input>
+                <ion-label position="stacked">Email</ion-label>
+                <ion-input placeholder="Tutaj wprowadź email..." type="email" formControlName="email"></ion-input>
               </ion-item>
               @if (formControlHasError(loginForm, 'email', 'required')) {
                 <ion-item lines="none">
                   <ion-label class="error-label">
-                    Email is required
+                    Email jest wymagany
                   </ion-label>
                 </ion-item>
               }
               @if (formControlHasError(loginForm, 'email', 'email')) {
                 <ion-item lines="none">
                   <ion-label class="error-label">
-                    Enter a valid email address
+                    Wprowadź poprawny adres email
                   </ion-label>
                 </ion-item>
               }
               <ion-item>
-                <ion-label position="stacked">Your password</ion-label>
-                <ion-input placeholder="Enter your password here..." type="password" formControlName="password"></ion-input>
+                <ion-label position="stacked">Hasło</ion-label>
+                <ion-input placeholder="Tutaj wprowadź hasło..." type="password" formControlName="password"></ion-input>
               </ion-item>
               @if (formControlHasError(loginForm, 'password', 'required')) {
                 <ion-item lines="none">
                   <ion-label class="error-label">
-                    Password is required
+                    Hasło jest wymagane
                   </ion-label>
                 </ion-item>
               }
               @if (formControlHasError(loginForm, 'password', 'minlength')) {
                 <ion-item lines="none">
                   <ion-label class="error-label">
-                    Password needs to be at least 8 characters long
+                    Hasło musi mieć minimum 8 znaków
                   </ion-label>
                 </ion-item>
               }
-              <ion-button [disabled]="!loginForm.valid" type="submit">Login</ion-button>
+              <ion-button [disabled]="!loginForm.valid" type="submit">Zaloguj się</ion-button>
             </form>
           }
           @if (!loginFormPresented) {
             <form [formGroup]="activationForm" (ngSubmit)="onActivate()">
               <ion-item>
-                <ion-label position="stacked">Your activation code</ion-label>
-                <ion-input placeholder="Enter your code here..." type="text" formControlName="code"></ion-input>
+                <ion-label position="stacked">Kod aktywacyjny</ion-label>
+                <ion-input placeholder="Tutaj wprowadź kod aktywacyjny..." type="text" formControlName="code"></ion-input>
               </ion-item>
               @if (formControlHasError(activationForm, 'code', 'required')) {
                 <ion-item lines="none">
                   <ion-label class="error-label">
-                    Activation code is required
+                    Kod aktywacyjny jest wymagany
                   </ion-label>
                 </ion-item>
               }
               @if (formControlHasError(activationForm, 'code', 'minlength')) {
                 <ion-item lines="none">
                   <ion-label class="error-label">
-                    Activation code should be 8 characters long
+                    Kod aktywacyjny powinien mieć 6 znaków
                   </ion-label>
                 </ion-item>
               }
               @if (formControlHasError(activationForm, 'code', 'maxlength')) {
                 <ion-item lines="none">
                   <ion-label class="error-label">
-                    Activation code should be 8 characters long
+                    Kod aktywacyjny powinien mieć 6 znaków
                   </ion-label>
                 </ion-item>
               }
               <ion-item>
-                <ion-label position="stacked">Your password</ion-label>
-                <ion-input placeholder="Enter your password here..." type="password" formControlName="password"></ion-input>
+                <ion-label position="stacked">Hasło</ion-label>
+                <ion-input placeholder="Tutaj wprowadź hasło..." type="password" formControlName="password"></ion-input>
               </ion-item>
               @if (formControlHasError(activationForm, 'password', 'required')) {
                 <ion-item lines="none">
                   <ion-label class="error-label">
-                    Password is required
+                    Hasło jest wymagane
                   </ion-label>
                 </ion-item>
               }
               @if (formControlHasError(activationForm, 'password', 'minlength')) {
                 <ion-item lines="none">
                   <ion-label class="error-label">
-                    Password needs to be at least 8 characters long
+                    Hasło musi mieć minimum 8 znaków
                   </ion-label>
                 </ion-item>
               }
               <ion-item>
-                <ion-label position="stacked">Confirm your password</ion-label>
+                <ion-label position="stacked">Potwierdź hasło</ion-label>
                 <ion-input placeholder="Confirm your password here..." type="password" formControlName="passwordConfirm"></ion-input>
               </ion-item>
               @if (formControlHasError(activationForm, 'password', 'required')) {
                 <ion-item lines="none">
                   <ion-label class="error-label">
-                    Password confirmation is required
+                    Potwierdzenie hasła jest wymagane
                   </ion-label>
                 </ion-item>
               }
               @if (activationForm.controls['passwordConfirm'].touched && formHasError(activationForm, 'passwordMismatch')) {
                 <ion-item lines="none">
                   <ion-label class="error-label">
-                    Passwords do not match
+                    Hasła nie pasują do siebie
                   </ion-label>
                 </ion-item>
               }
-              <ion-button [disabled]="!activationForm.valid" type="submit">Activate</ion-button>
+              <ion-button [disabled]="!activationForm.valid" type="submit">Aktywuj konto</ion-button>
             </form>
           }
         </ion-card-content>

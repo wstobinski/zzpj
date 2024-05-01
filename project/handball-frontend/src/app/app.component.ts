@@ -13,13 +13,14 @@ export class AppComponent {
     this.initApp();
   }
 
-  initApp() {
-  this.initStorage().then(r => {
+  async initApp() {
+    await this.initStorage();
     console.log("Storage init!");
-    this.authService.getUserAuthData()
-  })
 
+    // Wait for the completion of getUserAuthData() before proceeding
+    await this.authService.getUserAuthData();
 
+    // Continue with further initialization logic here
   }
 
   async initStorage() {

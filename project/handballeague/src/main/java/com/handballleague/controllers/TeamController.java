@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "api/v1/teams")
@@ -26,7 +27,8 @@ public class TeamController {
     public ResponseEntity<?> getTeams() {
 
         List<Team> teams = teamService.getAll();
-        return ResponseEntity.ok(teams);
+        return ResponseEntity.ok().body(Map.of("response", teams,
+                "ok", true));
 
     }
 

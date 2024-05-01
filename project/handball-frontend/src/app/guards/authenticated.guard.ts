@@ -1,14 +1,7 @@
-import {
-  ActivatedRouteSnapshot,
-  CanActivate,
-  CanActivateFn,
-  NavigationExtras,
-  Router,
-  RouterStateSnapshot
-} from '@angular/router';
-import {inject, Injectable} from "@angular/core";
+import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '@angular/router';
+import {Injectable} from "@angular/core";
 import {AuthService} from "../services/auth.service";
-import {firstValueFrom, map, Observable, switchMap, take, tap} from "rxjs";
+import {Observable, switchMap, take, tap} from "rxjs";
 import {Utils} from "../utils/utils";
 
 @Injectable({
@@ -22,11 +15,15 @@ export class AuthenticatedGuard implements CanActivate {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> | Observable<boolean> | boolean {
     return this.authService.isAuthenticated.pipe(
       take(1),
-      map(isAuthenticated => {
+      switchMap(async isAuthenticated => {
+        console.log('IS AUTH ', isAuthenticated)
         if (!isAuthenticated) {
-          this.utils.presentAlertToast(`You need to login to access ${route.url} page`);
+          isAuthenticated = await this.authService.manualLoginCheck();
+          if (!isAuthenticated) {
+            this.utils.presentAlertToast(`You need to login to access ${route.url} page`);
+          }
         }
-        return isAuthenticated
+        return isAuthenticated;
       }),
       tap(isAuthenticated => {
         if (!isAuthenticated) {

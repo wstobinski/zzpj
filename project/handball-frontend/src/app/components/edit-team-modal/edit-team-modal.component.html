@@ -1,0 +1,81 @@
+<ion-content>
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="end">
+        <ion-icon size="large" (click)="onClose()" name="close-outline"></ion-icon>
+      </ion-buttons>
+      <ion-title>{{title}}</ion-title>
+
+    </ion-toolbar>
+  </ion-header>
+  <form [formGroup]="teamFormGroup" (keyup)="markUnsavedChanges()" (ngSubmit)="onTeamEdit()">
+    <ion-list>
+      <ion-item>
+        <ion-label position="floating">Nazwa zespołu</ion-label>
+        <ion-input formControlName="teamName"></ion-input>
+      </ion-item>
+      @if (formHasError('teamName', 'required')) {
+        <ion-item lines="none">
+          <ion-label class="error-label">
+            Nazwa zespołu jest wymagana
+          </ion-label>
+        </ion-item>
+      }
+      <ion-item>
+        <ion-select cancel-text="Anuluj" label-placement="floating" label="Kapitan zespołu" formControlName="captain">
+          @for (player of team.players; track $index) {
+            <ion-select-option [value]="player">{{player.firstName}} {{player.lastName}}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+    </ion-list>
+  </form>
+  <ion-item lines="none">
+    <ion-label>Podgląd zawodników</ion-label>
+    <ion-toggle (ionChange)="onShowPlayersToggle($event)"></ion-toggle>
+  </ion-item>
+  @if (showPlayers) {
+    <ion-list>
+      @for (player of team.players; track $index) {
+        <ion-item lines="none">
+          <ion-text color="secondary">
+            <h5>Zawodnik nr {{$index + 1}}</h5>
+          </ion-text>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Imię i nazwisko</ion-label>
+          @if (player.captain) {
+            <ion-input [value]="player.firstName.concat(' ', player.lastName, ' (KAPITAN) ')" readonly="true"></ion-input>
+          } @else {
+            <ion-input [value]="player.firstName.concat(' ', player.lastName)" readonly="true"></ion-input>
+          }
+
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Numer na boisku</ion-label>
+          <ion-input [value]="player.pitchNumber" readonly="true"></ion-input>
+        </ion-item>
+        @if (player.captain && player.email) {
+          <ion-item>
+            <ion-label position="stacked">Adres email</ion-label>
+            <ion-input [value]="player.email" readonly="true"></ion-input>
+          </ion-item>
+        }
+      }
+    </ion-list>
+  }
+
+  <ion-row class="ion-padding">
+    <ion-col size-lg="3" offset-lg="3">
+      <ion-button type="submit" color="primary" expand="block" [disabled]="!teamFormGroup.valid">
+        <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
+        Zapisz
+      </ion-button>
+    </ion-col>
+    <ion-col size-lg="3">
+      <ion-button color="medium" expand="block" fill="outline" (click)="onClose()">
+        Anuluj
+      </ion-button>
+    </ion-col>
+  </ion-row>
+</ion-content>

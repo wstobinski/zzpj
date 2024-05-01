@@ -36,7 +36,7 @@ export class MainMenuComponent  implements OnInit {
   }
 
   getLoginPageName() {
-    return this.user ? "Account" : "Login";
+    return this.user ? "Konto" : "Zaloguj się";
   }
 
   getLoginPageIcon() {

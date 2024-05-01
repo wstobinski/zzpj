@@ -4,10 +4,12 @@ import {IonicModule} from "@ionic/angular";
 import {CommonModule} from "@angular/common";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {TopToolbarComponent} from "./components/top-toolbar/top-toolbar.component";
+import {EditTeamModalComponent} from "./components/edit-team-modal/edit-team-modal.component";
+import {ActionMenuPopoverComponent} from "./components/action-menu-popover/action-menu-popover.component";
 
 @NgModule({
-  declarations: [MainMenuComponent, TopToolbarComponent],
-  exports: [MainMenuComponent, TopToolbarComponent],
+  declarations: [MainMenuComponent, TopToolbarComponent, EditTeamModalComponent, ActionMenuPopoverComponent],
+  exports: [MainMenuComponent, TopToolbarComponent, EditTeamModalComponent, ActionMenuPopoverComponent],
   imports: [
     CommonModule,
     IonicModule,

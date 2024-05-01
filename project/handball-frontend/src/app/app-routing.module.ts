@@ -21,12 +21,17 @@ const routes: Routes = [
     loadChildren: () => import('./pages/teams/teams.module').then( m => m.TeamsPageModule),
     canActivate: [AuthenticatedGuard]
   },
+  {
+    path: 'generic',
+    loadChildren: () => import('./pages/generic/generic.module').then( m => m.GenericPageModule)
+  },
+
 
 ];
 
 @NgModule({
   imports: [
-    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })
+    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules, initialNavigation: 'enabledNonBlocking' })
   ],
   exports: [RouterModule]
 })
