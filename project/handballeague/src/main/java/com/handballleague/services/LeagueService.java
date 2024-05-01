@@ -87,7 +87,7 @@ public class LeagueService implements HandBallService<League>{
 
 
     private void rotateTeams(List<Team> teams) {
-        Team temp = teams.remove(1);
+        Team temp = teams.removeFirst();
         teams.add(temp);
     }
 

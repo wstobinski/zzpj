@@ -15,7 +15,7 @@ import java.util.List;
 @Table(name = "league")
 public class League extends Contest{
     @OneToMany(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "team_id", referencedColumnName = "uuid")
+    @JoinColumn(name = "league_id", referencedColumnName = "uuid")
     private List<Team> teams;
 
     public League(String name, LocalDateTime startDate) {
