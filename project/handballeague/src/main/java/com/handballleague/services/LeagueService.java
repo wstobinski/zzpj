@@ -38,52 +38,62 @@ public class LeagueService implements HandBallService<League>{
 
     @Transactional
     public void generateSchedule(League league, LocalDateTime startDate) {
-        List<Team> teams = league.getTeams();
+        List<Team> teams = new ArrayList<>(league.getTeams());
+        int numTeams = teams.size();
+        int numRounds = numTeams;  // Each team plays numTeams - 1 games, numTeams rounds
 
-        if (teams.size() % 2 != 0) {
-            teams.add(null);  // Add dummy team for an odd number of teams
+        // Ensure we handle an odd number of teams correctly by adding an explicit bye week.
+        if (numTeams % 2 != 0) {
+            numTeams++;  // This creates an implicit "bye" team
         }
-        int numRounds = teams.size() - 1;
-        int numMatchesPerRound = teams.size() / 2;
 
         LocalDateTime firstSunday = startDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
-        LocalDateTime matchDate;
 
-        for (int round = 0; round < numRounds; round++) {
-            matchDate = firstSunday.plusWeeks(round).withHour(16).withMinute(0).withSecond(0).withNano(0);
-            // Create the Round first
+        for (int round = 0; round < numTeams - 1; round++) {
+            LocalDateTime matchDate = firstSunday.plusWeeks(round).withHour(16).withMinute(0).withSecond(0).withNano(0);
+
             Round currentRound = new Round();
             currentRound.setUuid(generateRandomLongUUID());
             currentRound.setNumber(round + 1);
             currentRound.setContest(league);
             currentRound.setStartDate(matchDate);
-
-            // Save the Round to generate an ID
             roundRepository.save(currentRound);
 
-            for (int match = 0; match < numMatchesPerRound; match++) {
-                Team home = teams.get(match);
-                Team away = teams.get(teams.size() - 1 - match);
+            for (int match = 0; match < numTeams / 2; match++) {
+                // Calculate home and away teams for this match
+                int homeIndex = (round + match) % (numTeams - 1);
+                int awayIndex = (round - match + numTeams - 1) % (numTeams - 1);
+                if (awayIndex == numTeams - 1) {
+                    awayIndex = homeIndex;
+                    homeIndex = numTeams - 1; // Rotate the bye position
+                }
 
-                if (home != null && away != null) {
-                    Match newMatch = new Match();
-                    newMatch.setUuid(generateRandomLongUUID());
-                    newMatch.setGameDate(matchDate);
-                    newMatch.setHomeTeam(home);
-                    newMatch.setAwayTeam(away);
-                    newMatch.setRound(currentRound);  // Associate with the saved Round
-                    matchRepository.save(newMatch);  // Save the Match
+                if (homeIndex < league.getTeams().size() && awayIndex < league.getTeams().size()) {
+                    Team home = teams.get(homeIndex);
+                    Team away = teams.get(awayIndex);
+
+                    if (home != null && away != null && home != away) {  // Check both teams are valid (non-null)
+                        Match newMatch = new Match();
+                        newMatch.setUuid(generateRandomLongUUID());
+                        newMatch.setGameDate(matchDate);
+                        newMatch.setHomeTeam(home);
+                        newMatch.setAwayTeam(away);
+                        newMatch.setRound(currentRound);
+                        matchRepository.save(newMatch);
+                    }
                 }
             }
-            Team firstTeam = teams.get(1);  // First team fixed, start rotation from the second team
-            teams.remove(1);
-            teams.add(firstTeam);
         }
     }
 
-    private void rotateTeams(List<Team> teams) {
-        Team temp = teams.removeFirst();
-        teams.add(temp);
+
+
+
+    private void rotateTeams(List<Team> teams, boolean hasDummy) {
+        int fixIndex = hasDummy ? 1 : 0; // Fix the first team if no dummy, otherwise fix the second
+        Team fixed = teams.remove(fixIndex);
+        Collections.rotate(teams, 1);
+        teams.add(fixIndex, fixed);
     }
 
     public static long generateRandomLongUUID() {
