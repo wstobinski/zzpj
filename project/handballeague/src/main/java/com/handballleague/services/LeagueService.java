@@ -40,19 +40,16 @@ public class LeagueService implements HandBallService<League>{
     public void generateSchedule(League league, LocalDateTime startDate) {
         List<Team> teams = new ArrayList<>(league.getTeams());
         int numTeams = teams.size();
-        boolean hasDummy = false;
 
         // If odd number of teams, add a dummy team for bye weeks
         if (numTeams % 2 != 0) {
             teams.add(null);
-            hasDummy = true;
             numTeams++;
         }
 
         LocalDateTime firstSunday = startDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
-        int numRounds = hasDummy ? numTeams - 1 : numTeams;  // Each team plays every other team once
 
-        for (int round = 0; round < numRounds; round++) {
+        for (int round = 0; round < numTeams - 1; round++) {
             LocalDateTime matchDate = firstSunday.plusWeeks(round).withHour(16).withMinute(0).withSecond(0).withNano(0);
 
             Round currentRound = new Round();
@@ -66,37 +63,44 @@ public class LeagueService implements HandBallService<League>{
                 int homeIndex = match;
                 int awayIndex = (numTeams - 1) - match;
 
-                // Rotate teams
-                homeIndex = (homeIndex + round) % numTeams;
-                awayIndex = (awayIndex + round) % numTeams;
-
                 if (homeIndex == awayIndex || teams.get(homeIndex) == null || teams.get(awayIndex) == null) {
                     continue;  // Skip if dummy team involved or same team
+                } else {
+                    Team home = teams.get(homeIndex);
+                    Team away = teams.get(awayIndex);
+
+                    Match newMatch = new Match();
+                    newMatch.setUuid(generateRandomLongUUID());
+                    newMatch.setGameDate(matchDate);
+                    newMatch.setHomeTeam(home);
+                    newMatch.setAwayTeam(away);
+                    newMatch.setRound(currentRound);
+                    matchRepository.save(newMatch);
                 }
-
-                Team home = teams.get(homeIndex);
-                Team away = teams.get(awayIndex);
-
-                Match newMatch = new Match();
-                newMatch.setUuid(generateRandomLongUUID());
-                newMatch.setGameDate(matchDate);
-                newMatch.setHomeTeam(home);
-                newMatch.setAwayTeam(away);
-                newMatch.setRound(currentRound);
-                matchRepository.save(newMatch);
             }
+
+            rotateTeams(teams);
         }
     }
 
 
     //.withHour(16).withMinute(0).withSecond(0).withNano(0);
 
-    private void rotateTeams(List<Team> teams, boolean hasDummy) {
-        int fixIndex = hasDummy ? 1 : 0; // Fix the first team if no dummy, otherwise fix the second
-        Team fixed = teams.remove(fixIndex);
-        Collections.rotate(teams, 1);
-        teams.add(fixIndex, fixed);
+    // Rotate the list elements except the first one
+    public static void rotateTeams(List<Team> teams) {
+        if (teams.size() < 2) return; // No need to rotate if there isn't enough elements
+
+        // Store the second element
+        Team temp = teams.get(1);
+
+        // Shift elements to the left
+        for (int i = 1; i < teams.size() - 1; i++) {
+            teams.set(i, teams.get(i + 1));
+        }
+        // Move the stored element to the end of the list
+        teams.set(teams.size() - 1, temp);
     }
+
 
     public static long generateRandomLongUUID() {
         UUID uuid = UUID.randomUUID();
