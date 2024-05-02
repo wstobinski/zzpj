@@ -40,16 +40,19 @@ public class LeagueService implements HandBallService<League>{
     public void generateSchedule(League league, LocalDateTime startDate) {
         List<Team> teams = new ArrayList<>(league.getTeams());
         int numTeams = teams.size();
-        int numRounds = numTeams;  // Each team plays numTeams - 1 games, numTeams rounds
+        boolean hasDummy = false;
 
-        // Ensure we handle an odd number of teams correctly by adding an explicit bye week.
+        // If odd number of teams, add a dummy team for bye weeks
         if (numTeams % 2 != 0) {
-            numTeams++;  // This creates an implicit "bye" team
+            teams.add(null);
+            hasDummy = true;
+            numTeams++;
         }
 
         LocalDateTime firstSunday = startDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+        int numRounds = hasDummy ? numTeams - 1 : numTeams;  // Each team plays every other team once
 
-        for (int round = 0; round < numTeams - 1; round++) {
+        for (int round = 0; round < numRounds; round++) {
             LocalDateTime matchDate = firstSunday.plusWeeks(round).withHour(16).withMinute(0).withSecond(0).withNano(0);
 
             Round currentRound = new Round();
@@ -60,34 +63,33 @@ public class LeagueService implements HandBallService<League>{
             roundRepository.save(currentRound);
 
             for (int match = 0; match < numTeams / 2; match++) {
-                // Calculate home and away teams for this match
-                int homeIndex = (round + match) % (numTeams - 1);
-                int awayIndex = (round - match + numTeams - 1) % (numTeams - 1);
-                if (awayIndex == numTeams - 1) {
-                    awayIndex = homeIndex;
-                    homeIndex = numTeams - 1; // Rotate the bye position
+                int homeIndex = match;
+                int awayIndex = (numTeams - 1) - match;
+
+                // Rotate teams
+                homeIndex = (homeIndex + round) % numTeams;
+                awayIndex = (awayIndex + round) % numTeams;
+
+                if (homeIndex == awayIndex || teams.get(homeIndex) == null || teams.get(awayIndex) == null) {
+                    continue;  // Skip if dummy team involved or same team
                 }
 
-                if (homeIndex < league.getTeams().size() && awayIndex < league.getTeams().size()) {
-                    Team home = teams.get(homeIndex);
-                    Team away = teams.get(awayIndex);
+                Team home = teams.get(homeIndex);
+                Team away = teams.get(awayIndex);
 
-                    if (home != null && away != null && home != away) {  // Check both teams are valid (non-null)
-                        Match newMatch = new Match();
-                        newMatch.setUuid(generateRandomLongUUID());
-                        newMatch.setGameDate(matchDate);
-                        newMatch.setHomeTeam(home);
-                        newMatch.setAwayTeam(away);
-                        newMatch.setRound(currentRound);
-                        matchRepository.save(newMatch);
-                    }
-                }
+                Match newMatch = new Match();
+                newMatch.setUuid(generateRandomLongUUID());
+                newMatch.setGameDate(matchDate);
+                newMatch.setHomeTeam(home);
+                newMatch.setAwayTeam(away);
+                newMatch.setRound(currentRound);
+                matchRepository.save(newMatch);
             }
         }
     }
 
 
-
+    //.withHour(16).withMinute(0).withSecond(0).withNano(0);
 
     private void rotateTeams(List<Team> teams, boolean hasDummy) {
         int fixIndex = hasDummy ? 1 : 0; // Fix the first team if no dummy, otherwise fix the second
