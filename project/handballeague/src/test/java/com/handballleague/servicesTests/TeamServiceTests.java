@@ -16,6 +16,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -471,8 +472,8 @@ public class TeamServiceTests {
 
         // Given
         List<Team> teams = Arrays.asList(t1, t2);
-
-        when(teamRepository.findAll()).thenReturn(teams);
+        Sort sortByTeamId = Sort.by(Sort.Direction.ASC, "uuid");
+        when(teamRepository.findAll(sortByTeamId)).thenReturn(teams);
 
         // When
         List<Team> retrievedTeams = underTestService.getAll();
