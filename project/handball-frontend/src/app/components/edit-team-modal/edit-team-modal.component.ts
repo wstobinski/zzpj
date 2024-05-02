@@ -18,18 +18,25 @@ export class EditTeamModalComponent  implements OnInit {
               private utils: Utils) { }
   @Input() title: string;
   @Input() team: Team;
+  @Input() mode: 'EDIT' | 'ADD';
   teamCaptain: Player;
   hasUnsavedChanges: boolean = false;
   teamFormGroup: FormGroup;
   showPlayers: boolean = false;
   ngOnInit() {
 
-    this.teamCaptain = this.team.players.find((player) => player.captain);
-    this.teamFormGroup = this.formBuilder.group({
-      teamName: [this.team.teamName, [Validators.required]],
-      captain: [this.teamCaptain, [Validators.required]]
+    if (this.mode === "EDIT") {
+      this.teamCaptain = this.team.players.find((player) => player.captain);
+      this.teamFormGroup = this.formBuilder.group({
+        teamName: [this.team.teamName, [Validators.required]],
+        captain: [this.teamCaptain, [Validators.required]]
+      });
+    } else {
+      this.teamFormGroup = this.formBuilder.group({
+        teamName: ['', [Validators.required]]
     });
 
+    }
   }
 
   onClose() {
@@ -57,12 +64,19 @@ export class EditTeamModalComponent  implements OnInit {
   }
 
   onTeamEdit() {
-    this.team = Object.assign(this.team, this.teamFormGroup.value);
-    const oldCaptain = this.teamCaptain;
-    const newCaptain: Player = this.teamFormGroup.controls['captain'].value;
-    newCaptain.captain = true
-    oldCaptain.captain = false;
-    this.modalController.dismiss({team: this.team, newCaptain, oldCaptain}, 'submit');
+    if (this.mode === "EDIT") {
+      this.team = Object.assign(this.team, this.teamFormGroup.value);
+      const oldCaptain = this.teamCaptain;
+      const newCaptain: Player = this.teamFormGroup.controls['captain'].value;
+      newCaptain.captain = true
+      oldCaptain.captain = false;
+      this.modalController.dismiss({team: this.team, newCaptain, oldCaptain}, this.mode);
+    } else {
+      this.team = new Team();
+      this.team = Object.assign(this.team, this.teamFormGroup.value);
+      this.modalController.dismiss({team: this.team}, this.mode);
+    }
+
   }
 
   onShowPlayersToggle($event: ToggleCustomEvent) {

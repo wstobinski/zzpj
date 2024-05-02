@@ -36,8 +36,8 @@ public class TeamController {
     public ResponseEntity<?> registerNewTeam(@Valid @RequestBody Team team, @RequestHeader(name = "Authorization") String token) {
         ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
         if (response.getStatusCode().is2xxSuccessful()) {
-            teamService.create(team);
-            return ResponseEntity.ok("Team created successfully");
+            Team newTeam = teamService.create(team);
+            return ResponseEntity.ok(Map.of("ok", true, "message", "Team created successfully", "response", newTeam));
         } else {
             return response;
         }
@@ -78,7 +78,7 @@ public class TeamController {
         ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
         if (response.getStatusCode().is2xxSuccessful()) {
             teamService.delete(id);
-            return ResponseEntity.ok("Team deleted successfully");
+            return ResponseEntity.ok(Map.of("ok", true, "message", "Team deleted successfully"));
         } else {
             return response;
         }
@@ -88,7 +88,7 @@ public class TeamController {
     public ResponseEntity<?> getTeamById(@PathVariable Long teamId) {
 
         Team team = teamService.getById(teamId);
-        return ResponseEntity.ok(team);
+        return ResponseEntity.ok(Map.of("ok", true, "response", team));
 
     }
 

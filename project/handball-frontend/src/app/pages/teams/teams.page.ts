@@ -54,11 +54,12 @@ export class TeamsPage extends GenericPage implements OnInit {
       component: EditTeamModalComponent,
       componentProps: {
         team,
-        title: `Edytuj zespół ${team.teamName}`
+        title: `Edytuj zespół ${team?.teamName}`,
+        mode: team? 'EDIT' : 'ADD'
       }
     });
     modal.onWillDismiss().then(async data => {
-      if (data && data.data && data.role === 'submit') {
+      if (data && data.data && data.role === 'EDIT') {
         this.teamsService.updateTeam(data.data.team as Team).then(r => {
           if (r.ok) {
             if (data.data.oldCaptain.uuid !== data.data.newCaptain.uuid) {
@@ -84,6 +85,23 @@ export class TeamsPage extends GenericPage implements OnInit {
             this.utils.presentAlertToast("Wystąpił błąd podczas edycji zespołu");
           }
         });
+      } else if (data && data.data && data.role === 'ADD') {
+        this.teamsService.createTeam(data.data.team).then(async r => {
+          if (r.ok) {
+            const newTeams = await this.teamsService.getAllTeams();
+            this.teams = newTeams.response;
+            this.utils.presentInfoToast("Utworzenie zespołu zakończono sukcesem");
+          } else {
+            this.utils.presentAlertToast("Wystąpił błąd podczas tworzenia zespołu");
+          }
+        }).catch(e => {
+          console.log(e);
+          if (e.status === 401) {
+            this.utils.presentAlertToast("Wystąpił błąd podczas tworzenia zespołu. Twoja sesja wygasła. Zaloguj się ponownie");
+          } else {
+            this.utils.presentAlertToast("Wystąpił błąd podczas tworzenia zespołu");
+          }
+        })
       }
     });
     return await modal.present();
@@ -95,12 +113,17 @@ export class TeamsPage extends GenericPage implements OnInit {
       () => {
       this.teamsService.deleteTeam(team.uuid).then(r => {
         if (r.ok) {
+          this.teams = this.teams.filter(t => t.uuid !== team.uuid);
           this.utils.presentInfoToast(`Zespół ${team.teamName} usunięto pomyślnie`);
         } else {
           this.utils.presentAlertToast(`Wystąpił błąd przy usuwaniu zespołu`);
         }
       }).catch(error => {
-        this.utils.presentAlertToast("Wystąpił błąd przy usuwaniu zespołu");
+        if (error.status === 401) {
+          this.utils.presentAlertToast("Wystąpił błąd przy usuwaniu zespołu. Twoja sesja wygasła. Zaloguj się ponownie");
+        } else {
+          this.utils.presentAlertToast("Wystąpił błąd przy usuwaniu zespołu");
+        }
       });
       this.utils.presentInfoToast(`Zespół ${team.teamName} usunięto pomyślnie`);
       }, () => {

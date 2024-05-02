@@ -20,6 +20,10 @@ export class TeamsService {
 
   }
 
+  async createTeam(team: Team): Promise<ApiResponse> {
+    return await this.apiService.post("/teams", team);
+  }
+
   async updateTeam(team: Team): Promise<ApiResponse> {
     return await this.apiService.put<ApiResponse>(`/teams/${team.uuid}`, team);
   }
