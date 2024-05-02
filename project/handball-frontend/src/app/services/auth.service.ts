@@ -71,6 +71,14 @@ export class AuthService {
     );
   }
 
+  async manualLoginCheck() {
+    console.log('manualLoginCheck');
+    const userAuthData: UserAuthData = await this.utils.getStorageObject('userAuthData');
+    this._userAuthData.next(userAuthData);
+    return !!userAuthData;
+  }
+
+
   get decodedToken(): any {
     return this.userAuthData.pipe(
       map(userAuthData => {

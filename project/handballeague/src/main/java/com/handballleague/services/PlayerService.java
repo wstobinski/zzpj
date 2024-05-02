@@ -7,6 +7,7 @@ import com.handballleague.model.Player;
 import com.handballleague.repositories.PlayerRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,7 +24,8 @@ public class PlayerService implements HandBallService<Player>{
 
     @Override
     public List<Player> getAll() {
-        return playerRepository.findAll();
+        Sort sortByPlayerId = Sort.by(Sort.Direction.ASC, "uuid");
+        return playerRepository.findAll(sortByPlayerId);
     }
 
     @Override

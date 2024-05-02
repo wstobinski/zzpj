@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "api/v1/teams")
@@ -26,7 +27,8 @@ public class TeamController {
     public ResponseEntity<?> getTeams() {
 
         List<Team> teams = teamService.getAll();
-        return ResponseEntity.ok(teams);
+        return ResponseEntity.ok().body(Map.of("response", teams,
+                "ok", true));
 
     }
 
@@ -34,8 +36,8 @@ public class TeamController {
     public ResponseEntity<?> registerNewTeam(@Valid @RequestBody Team team, @RequestHeader(name = "Authorization") String token) {
         ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
         if (response.getStatusCode().is2xxSuccessful()) {
-            teamService.create(team);
-            return ResponseEntity.ok("Team created successfully");
+            Team newTeam = teamService.create(team);
+            return ResponseEntity.ok(Map.of("ok", true, "message", "Team created successfully", "response", newTeam));
         } else {
             return response;
         }
@@ -76,7 +78,7 @@ public class TeamController {
         ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
         if (response.getStatusCode().is2xxSuccessful()) {
             teamService.delete(id);
-            return ResponseEntity.ok("Team deleted successfully");
+            return ResponseEntity.ok(Map.of("ok", true, "message", "Team deleted successfully"));
         } else {
             return response;
         }
@@ -86,7 +88,7 @@ public class TeamController {
     public ResponseEntity<?> getTeamById(@PathVariable Long teamId) {
 
         Team team = teamService.getById(teamId);
-        return ResponseEntity.ok(team);
+        return ResponseEntity.ok(Map.of("ok", true, "response", team));
 
     }
 
@@ -96,7 +98,7 @@ public class TeamController {
         ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "captain");
         if (response.getStatusCode().is2xxSuccessful() || response2.getStatusCode().is2xxSuccessful()) {
             Team newTeam = teamService.update(teamId, team);
-            return ResponseEntity.ok(newTeam);
+            return ResponseEntity.ok(Map.of("ok", true, "response", newTeam));
         } else {
             return response2;
         }

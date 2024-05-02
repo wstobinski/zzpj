@@ -37,7 +37,7 @@ export class LoginPage implements OnInit {
     this.loginFormPresented = !this.loginFormPresented;
     if (this.activationForm == null) {
       this.activationForm = this.formBuilder.group({
-        code: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(8)]],
+        code: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]],
         password: ['', [Validators.required, Validators.minLength(8)]],
         passwordConfirm: ['', [Validators.required, Validators.minLength(8)]]
       }, {validators: this.passwordMismatchValidator});
@@ -63,11 +63,11 @@ export class LoginPage implements OnInit {
   }
 
   getCardTitle() {
-    return this.loginFormPresented ? "Login to Handball League" : "Activate your Handball League Account"
+    return this.loginFormPresented ? "Zaloguj się do Handball League" : "Aktywuj swoje konto Handball League"
   }
 
   getCardSubtitle() {
-    return this.loginFormPresented ? "Got activation code? Activate your account here!" : "Already have an account? Login here!"
+    return this.loginFormPresented ? "Masz kod aktywacyjny? Aktywuj konto tutaj!" : "Masz już konto? Zaloguj się tutaj!"
   }
 
 

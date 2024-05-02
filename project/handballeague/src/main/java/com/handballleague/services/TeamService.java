@@ -8,6 +8,7 @@ import com.handballleague.model.Team;
 import com.handballleague.repositories.PlayerRepository;
 import com.handballleague.repositories.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,7 +27,8 @@ public class TeamService implements HandBallService<Team>{
 
     @Override
     public List<Team> getAll() {
-        return teamRepository.findAll();
+        Sort sortByTeamId = Sort.by(Sort.Direction.ASC, "uuid");
+        return teamRepository.findAll(sortByTeamId);
     }
 
 

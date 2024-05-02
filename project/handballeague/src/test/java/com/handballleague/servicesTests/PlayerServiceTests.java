@@ -14,6 +14,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.ArrayList;
@@ -513,8 +514,8 @@ public class PlayerServiceTests {
                         false,
                         false)
         );
-
-        when(playerRepository.findAll()).thenReturn(players);
+        Sort sortByPlayerId = Sort.by(Sort.Direction.ASC, "uuid");
+        when(playerRepository.findAll(sortByPlayerId)).thenReturn(players);
 
         // When
         List<Player> retrievedPlayers = underTestService.getAll();

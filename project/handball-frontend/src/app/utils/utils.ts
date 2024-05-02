@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import { Storage } from '@ionic/storage';
 import {FormGroup} from "@angular/forms";
-import {ToastController} from "@ionic/angular";
+import {ActionSheetController, ToastController} from "@ionic/angular";
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +9,8 @@ import {ToastController} from "@ionic/angular";
 export class Utils {
 
   constructor(private storage: Storage,
-              private toastController: ToastController) {
+              private toastController: ToastController,
+              private actionSheetController: ActionSheetController) {
   }
 
   setStorageObject(key:string, value: any) {
@@ -52,6 +53,43 @@ export class Utils {
       ]
     });
     toast.present();
+  }
+
+  async presentInfoToast(message: string, duration: number = 4000) {
+    const toast = await this.toastController.create({
+      header: message,
+      position: 'bottom',
+      duration: duration,
+      buttons: [{
+        text: 'Cancel',
+        role: 'cancel',
+        handler: () => {
+        }
+      }
+      ]
+    });
+    toast.present();
+  }
+
+  async presentYesNoActionSheet(title: string, yesButtonTitle: string, noButtonTitle: string, yesHandler: any, noHandler: any) {
+    const actionSheetOptions = {
+      header: title,
+      buttons: [{
+        text: yesButtonTitle,
+        role: 'destructive',
+        icon: 'checkmark-outline',
+        handler: yesHandler
+      }, {
+        text: noButtonTitle,
+        role: 'destructive',
+        icon: 'close-outline',
+        handler: noHandler
+      }]
+    };
+
+
+    const actionSheet = await this.actionSheetController.create(actionSheetOptions);
+    await actionSheet.present();
   }
 
 }
