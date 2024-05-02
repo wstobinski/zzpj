@@ -101,4 +101,15 @@ public class TeamController {
             return response2;
         }
     }
+
+    @GetMapping("/{teamId}/get-all-players")
+    public ResponseEntity<?> getAllPlayersForTeam(@PathVariable Long teamId, @RequestHeader(name = "Authorization") String token) {
+        ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
+        ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "captain");
+        if (response.getStatusCode().is2xxSuccessful() || response2.getStatusCode().is2xxSuccessful()) {
+            return ResponseEntity.ok(teamService.getAllPlayers(teamId));
+        } else {
+            return response2;
+        }
+    }
 }

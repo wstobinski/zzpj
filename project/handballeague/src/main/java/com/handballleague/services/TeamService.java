@@ -127,4 +127,10 @@ public class TeamService implements HandBallService<Team>{
 
         return team;
     }
+
+    public List<Player> getAllPlayers(Long teamId) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new ObjectNotFoundInDataBaseException("Team not found"));
+        return team.getPlayers();
+    }
 }

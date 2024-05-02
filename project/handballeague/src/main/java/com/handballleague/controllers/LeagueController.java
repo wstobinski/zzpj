@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -66,11 +67,11 @@ public class LeagueController {
     }
 
     @PostMapping("/{leagueId}/generate-schedule")
-    public ResponseEntity<?> generateScheduleForLeague(@PathVariable Long leagueId, @RequestParam int rounds, @RequestHeader(name = "Authorization") String token) {
+    public ResponseEntity<?> generateScheduleForLeague(@PathVariable Long leagueId, @RequestBody LocalDateTime startDate, @RequestHeader(name = "Authorization") String token) {
         ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
         if (response.getStatusCode().is2xxSuccessful()) {
             League league = leagueService.getById(leagueId);
-            leagueService.generateSchedule(league, rounds);
+            leagueService.generateSchedule(league, startDate);
             return ResponseEntity.ok("Schedule generated successfully");
         } else {
             return response;

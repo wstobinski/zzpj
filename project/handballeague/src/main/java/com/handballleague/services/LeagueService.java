@@ -4,53 +4,109 @@ import com.handballleague.exceptions.EntityAlreadyExistsException;
 import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
 import com.handballleague.model.League;
+import com.handballleague.model.Match;
 import com.handballleague.model.Round;
 import com.handballleague.model.Team;
 import com.handballleague.repositories.LeagueRepository;
+import com.handballleague.repositories.MatchRepository;
 import com.handballleague.repositories.RoundRepository;
 import com.handballleague.repositories.TeamRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.time.temporal.TemporalAdjusters;
+import java.util.*;
 
 @Service
 public class LeagueService implements HandBallService<League>{
     private final LeagueRepository leagueRepository;
     private final TeamRepository teamRepository;
     private final RoundRepository roundRepository;
+    private final MatchRepository matchRepository;
 
     @Autowired
-    public LeagueService(LeagueRepository leagueRepository, TeamRepository teamRepository, RoundRepository roundRepository) {
+    public LeagueService(LeagueRepository leagueRepository, TeamRepository teamRepository, RoundRepository roundRepository, MatchRepository matchRepository) {
         this.leagueRepository = leagueRepository;
         this.teamRepository = teamRepository;
         this.roundRepository = roundRepository;
+        this.matchRepository = matchRepository;
     }
 
 
     @Transactional
-    public void generateSchedule(League league, int numberOfRounds) {
-        if (numberOfRounds <= 0) {
-            throw new InvalidArgumentException("Number of rounds has to be a positive integer");
+    public void generateSchedule(League league, LocalDateTime startDate) {
+        List<Team> teams = new ArrayList<>(league.getTeams());
+        int numTeams = teams.size();
+
+        // If odd number of teams, add a dummy team for bye weeks
+        if (numTeams % 2 != 0) {
+            teams.add(null);
+            numTeams++;
         }
-        if (roundRepository.existsById(String.valueOf(league.getUuid()))) {
-            throw new EntityAlreadyExistsException("Schedule already generated for this league");
-        }
 
-        for (int i = 0; i < numberOfRounds; i++) {
+        LocalDateTime firstSunday = startDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
 
-            Round round = Round.builder()
-                    .number(i + 1)
-                    .contest(league)
-                    .startDate(LocalDateTime.now().plusDays(7L * i))
-                    .build();
-            roundRepository.save(round);
+        for (int round = 0; round < numTeams - 1; round++) {
+            LocalDateTime matchDate = firstSunday.plusWeeks(round).withHour(16).withMinute(0).withSecond(0).withNano(0);
 
+            Round currentRound = new Round();
+            currentRound.setUuid(generateRandomLongUUID());
+            currentRound.setNumber(round + 1);
+            currentRound.setContest(league);
+            currentRound.setStartDate(matchDate);
+            roundRepository.save(currentRound);
+
+            for (int match = 0; match < numTeams / 2; match++) {
+                int homeIndex = match;
+                int awayIndex = (numTeams - 1) - match;
+
+                if (homeIndex == awayIndex || teams.get(homeIndex) == null || teams.get(awayIndex) == null) {
+                    continue;  // Skip if dummy team involved or same team
+                } else {
+                    Team home = teams.get(homeIndex);
+                    Team away = teams.get(awayIndex);
+
+                    Match newMatch = new Match();
+                    newMatch.setUuid(generateRandomLongUUID());
+                    newMatch.setGameDate(matchDate);
+                    newMatch.setHomeTeam(home);
+                    newMatch.setAwayTeam(away);
+                    newMatch.setRound(currentRound);
+                    matchRepository.save(newMatch);
+                }
+            }
+
+            rotateTeams(teams);
         }
     }
+
+
+    //.withHour(16).withMinute(0).withSecond(0).withNano(0);
+
+    // Rotate the list elements except the first one
+    public static void rotateTeams(List<Team> teams) {
+        if (teams.size() < 2) return; // No need to rotate if there isn't enough elements
+
+        // Store the second element
+        Team temp = teams.get(1);
+
+        // Shift elements to the left
+        for (int i = 1; i < teams.size() - 1; i++) {
+            teams.set(i, teams.get(i + 1));
+        }
+        // Move the stored element to the end of the list
+        teams.set(teams.size() - 1, temp);
+    }
+
+
+    public static long generateRandomLongUUID() {
+        UUID uuid = UUID.randomUUID();
+        return uuid.getMostSignificantBits() & Long.MAX_VALUE;
+    }
+
     @Override
     public League create(League league) throws InvalidArgumentException, EntityAlreadyExistsException {
         if(league == null) throw new InvalidArgumentException("Passed parameter is invalid");
