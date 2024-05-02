@@ -45,5 +45,6 @@ export class MainMenuComponent  implements OnInit {
 
   logout() {
     this.authService.logout();
+    this.router.navigateByUrl('/home');
   }
 }

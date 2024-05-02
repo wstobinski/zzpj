@@ -20,7 +20,7 @@ export class ApiService {
   }): Promise<ApiResponse> {
 
     try {
-      await this.addAuthHeader(options);
+      options = await this.addAuthHeader(options);
       return await firstValueFrom(this.http.get<ApiResponse>(`${environment.API_URL}${url}`, options));
     } catch (error) {
       console.error(error);
@@ -33,7 +33,7 @@ export class ApiService {
     params?: HttpParams
   }): Promise<ApiResponse> {
     try {
-      await this.addAuthHeader(options);
+      options = await this.addAuthHeader(options);
       return await firstValueFrom(this.http.post<ApiResponse>(`${environment.API_URL}${url}`, body, options));
     } catch (error) {
       console.error(error);
@@ -47,7 +47,9 @@ export class ApiService {
   }): Promise<ApiResponse> {
 
     try {
-      await this.addAuthHeader(options);
+      console.log('inside PUT', options);
+      options = await this.addAuthHeader(options);
+      console.log('after auth add', options)
       return await firstValueFrom(this.http.put<ApiResponse>(`${environment.API_URL}${url}`, body, options));
     } catch (error) {
       console.error(error);
@@ -61,7 +63,7 @@ export class ApiService {
   }): Promise<ApiResponse> {
 
     try {
-      await this.addAuthHeader(options);
+      options = await this.addAuthHeader(options);
       return await firstValueFrom(this.http.delete<ApiResponse>(`${environment.API_URL}${url}`, options));
     } catch (error) {
       console.error(error);
@@ -76,9 +78,9 @@ export class ApiService {
     const userAuthData: UserAuthData = await firstValueFrom(this.authService.userAuthData);
     if (userAuthData && userAuthData.token) {
       if (!options) {
-        options = {headers: new HttpHeaders().append('token', userAuthData.token)};
+        options = {headers: new HttpHeaders().append('Authorization', userAuthData.token)};
       } else {
-        options.headers = new HttpHeaders().append('token', userAuthData.token);
+        options.headers = new HttpHeaders().append('Authorization', userAuthData.token);
       }
     }
     return options;

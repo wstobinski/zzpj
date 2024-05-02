@@ -40,6 +40,8 @@ export class EditTeamModalComponent  implements OnInit {
       }, () => {
 
         });
+    } else {
+      this.modalController.dismiss(null);
     }
   }
 
@@ -55,7 +57,12 @@ export class EditTeamModalComponent  implements OnInit {
   }
 
   onTeamEdit() {
-
+    this.team = Object.assign(this.team, this.teamFormGroup.value);
+    const oldCaptain = this.teamCaptain;
+    const newCaptain: Player = this.teamFormGroup.controls['captain'].value;
+    newCaptain.captain = true
+    oldCaptain.captain = false;
+    this.modalController.dismiss({team: this.team, newCaptain, oldCaptain}, 'submit');
   }
 
   onShowPlayersToggle($event: ToggleCustomEvent) {

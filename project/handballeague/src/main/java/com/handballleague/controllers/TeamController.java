@@ -98,7 +98,7 @@ public class TeamController {
         ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "captain");
         if (response.getStatusCode().is2xxSuccessful() || response2.getStatusCode().is2xxSuccessful()) {
             Team newTeam = teamService.update(teamId, team);
-            return ResponseEntity.ok(newTeam);
+            return ResponseEntity.ok(Map.of("ok", true, "response", newTeam));
         } else {
             return response2;
         }

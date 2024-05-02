@@ -8,6 +8,8 @@ import {ActionButton} from "../../model/action-button.model";
 import {Utils} from "../../utils/utils";
 import {GenericPage} from "../generic/generic.page";
 import {LoadingService} from "../../services/loading.service";
+import {Player} from "../../model/player.model";
+import {PlayersService} from "../../services/players.service";
 
 @Component({
   selector: 'app-teams',
@@ -18,14 +20,14 @@ export class TeamsPage extends GenericPage implements OnInit {
 
   constructor(private teamsService: TeamsService,
               private modalController: ModalController,
-              private popoverController: PopoverController,
               private utils: Utils,
-              loadingService: LoadingService) {
-    super(loadingService);
+              loadingService: LoadingService,
+              popoverController: PopoverController) {
+    super(loadingService, popoverController);
   }
 
   teams: Team[];
-  private actionButtons: ActionButton[];
+  actionButtons: ActionButton[];
 
   override async ngOnInit() {
     super.ngOnInit();
@@ -46,22 +48,8 @@ export class TeamsPage extends GenericPage implements OnInit {
 
   }
 
-  async openPopover(ev: any, team: Team) {
-    const popover = await this.popoverController.create({
-      component: ActionMenuPopoverComponent,
-      componentProps: {
-        actionButtons: this.actionButtons,
-        actionObject: team
-      },
-      event: ev,
-      translucent: true,
-    });
-    return await popover.present();
-  }
-
 
   async openTeamDetailsModal(team: Team) {
-    console.log("Entering teamDetails", team)
     const modal = await this.modalController.create({
       component: EditTeamModalComponent,
       componentProps: {
@@ -69,8 +57,34 @@ export class TeamsPage extends GenericPage implements OnInit {
         title: `Edytuj zespół ${team.teamName}`
       }
     });
-    modal.onWillDismiss().then(data => {
-      console.log('Did dismiss', data);
+    modal.onWillDismiss().then(async data => {
+      if (data && data.data && data.role === 'submit') {
+        this.teamsService.updateTeam(data.data.team as Team).then(r => {
+          if (r.ok) {
+            if (data.data.oldCaptain.uuid !== data.data.newCaptain.uuid) {
+              this.teamsService.changeCaptains(data.data.newCaptain, data.data.oldCaptain).then(r => {
+                if (r && r.ok) {
+                  this.utils.presentInfoToast("Edycja zespołu zakończona sukcesem");
+                } else {
+                  this.utils.presentAlertToast("Wystąpił błąd podczas edycji zespołu");
+                }
+              }).catch(e => {
+                this.utils.presentAlertToast("Wystąpił błąd podczas edycji zespołu");
+              })
+            }
+            team = r.response;
+          } else {
+            this.utils.presentAlertToast("Wystąpił błąd podczas edycji zespołu");
+          }
+        }).catch(e => {
+          console.log(e);
+          if (e.status === 401) {
+            this.utils.presentAlertToast("Wystąpił błąd podczas edycji zespołu. Twoja sesja wygasła. Zaloguj się ponownie");
+          } else {
+            this.utils.presentAlertToast("Wystąpił błąd podczas edycji zespołu");
+          }
+        });
+      }
     });
     return await modal.present();
   }

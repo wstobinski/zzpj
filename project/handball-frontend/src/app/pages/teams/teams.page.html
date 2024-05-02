@@ -1,4 +1,4 @@
-<app-top-toolbar title="Teams"></app-top-toolbar>
+<app-top-toolbar title="Zespoły"></app-top-toolbar>
 @if (isLoading) {
   <ion-progress-bar type="indeterminate"></ion-progress-bar>
 }
@@ -23,7 +23,7 @@
           <ion-col>{{team.teamName}}</ion-col>
           <ion-col>{{team.players.length}}</ion-col>
           <ion-col>
-            <ion-icon style="cursor: pointer" (click)="openPopover($event, team)" name="ellipsis-vertical-outline"></ion-icon>
+            <ion-icon style="cursor: pointer" (click)="openPopover($event, team, actionButtons)" name="ellipsis-vertical-outline"></ion-icon>
           </ion-col>
         </ion-row>
       }

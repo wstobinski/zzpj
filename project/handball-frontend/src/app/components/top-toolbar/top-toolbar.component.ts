@@ -28,6 +28,7 @@ export class TopToolbarComponent  implements OnInit {
 
   logout() {
     this.authService.logout();
+    this.router.navigateByUrl('/home');
   }
 
   goTo(pageName: string) {

@@ -22,9 +22,11 @@ const routes: Routes = [
     canActivate: [AuthenticatedGuard]
   },
   {
-    path: 'generic',
-    loadChildren: () => import('./pages/generic/generic.module').then( m => m.GenericPageModule)
+    path: 'players',
+    loadChildren: () => import('./pages/players/players.module').then( m => m.PlayersPageModule),
+    canActivate: [AuthenticatedGuard]
   },
+
 
 
 ];

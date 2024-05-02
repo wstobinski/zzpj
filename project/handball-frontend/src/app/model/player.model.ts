@@ -6,5 +6,9 @@ export class Player {
   public pitchNumber: number;
   public suspended: boolean;
   public captain: boolean;
-  public email?: string
+  public email?: string;
+
+  public constructor(init?: Partial<Player>) {
+    Object.assign(this, init);
+  }
 }

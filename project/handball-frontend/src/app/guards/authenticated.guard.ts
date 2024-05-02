@@ -20,7 +20,7 @@ export class AuthenticatedGuard implements CanActivate {
         if (!isAuthenticated) {
           isAuthenticated = await this.authService.manualLoginCheck();
           if (!isAuthenticated) {
-            this.utils.presentAlertToast(`You need to login to access ${route.url} page`);
+            this.utils.presentAlertToast(`Zaloguj się, aby zobaczyć tę stronę`);
           }
         }
         return isAuthenticated;

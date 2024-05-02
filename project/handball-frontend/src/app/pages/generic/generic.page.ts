@@ -1,6 +1,9 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {LoadingService} from "../../services/loading.service";
 import {Subscription} from "rxjs";
+import {ActionMenuPopoverComponent} from "../../components/action-menu-popover/action-menu-popover.component";
+import {PopoverController} from "@ionic/angular";
+import {ActionButton} from "../../model/action-button.model";
 
 @Component({
   selector: 'app-generic',
@@ -9,7 +12,8 @@ import {Subscription} from "rxjs";
 })
 export class GenericPage implements OnInit, OnDestroy {
 
-  constructor(private loadingService: LoadingService) { }
+  constructor(private loadingService: LoadingService,
+              private popoverController: PopoverController) { }
 
   isLoading: boolean = false;
   loadingSub: Subscription;
@@ -23,6 +27,19 @@ export class GenericPage implements OnInit, OnDestroy {
     if (this.loadingSub) {
       this.loadingSub.unsubscribe();
     }
+  }
+
+  async openPopover(ev: any, object: any, actionButtons: ActionButton[]) {
+    const popover = await this.popoverController.create({
+      component: ActionMenuPopoverComponent,
+      componentProps: {
+        actionButtons: actionButtons,
+        actionObject: object
+      },
+      event: ev,
+      translucent: true,
+    });
+    return await popover.present();
   }
 
 }
