@@ -10,6 +10,7 @@ import com.handballleague.repositories.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -56,9 +57,17 @@ public class TeamService implements HandBallService<Team>{
     }
 
     @Override
+    @Transactional
     public boolean delete(Long id) throws InvalidArgumentException, ObjectNotFoundInDataBaseException{
         if(id <= 0) throw new InvalidArgumentException("Passed id is invalid.");
         if(teamRepository.existsById(id)) {
+            Team team = teamRepository.findById(id).orElseThrow(() -> new ObjectNotFoundInDataBaseException("Team with given id was not found in the database."));
+            List<Player> players = playerRepository.findByTeam(team);
+            for (Player player : players) {
+                player.setTeam(null);
+                player.setCaptain(false);
+                playerRepository.save(player);
+            }
             teamRepository.deleteById(id);
         } else {
             throw new ObjectNotFoundInDataBaseException("Team with id: " + id + " not found in the database.");

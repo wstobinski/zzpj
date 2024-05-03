@@ -37,8 +37,9 @@ public class PlayerController {
         ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
         ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "captain");
         if (response.getStatusCode().is2xxSuccessful() || response2.getStatusCode().is2xxSuccessful()) {
-            playerService.create(player);
+            Player newPlayer = playerService.create(player);
             return ResponseEntity.ok().body(Map.of("message", "Player created successfully",
+                    "response", newPlayer,
                     "ok", true));
         } else {
             return response2;
@@ -51,9 +52,7 @@ public class PlayerController {
         ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "captain");
         if (response1.getStatusCode().is2xxSuccessful() || response2.getStatusCode().is2xxSuccessful()) {
             boolean deleted = playerService.delete(id);
-            Map<String, Boolean> response = new HashMap<>();
-            response.put("Deleted state", deleted);
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(Map.of("ok", deleted));
         } else {
             return response2;
         }

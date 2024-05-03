@@ -102,8 +102,9 @@ export class PlayersPage extends GenericPage implements OnInit {
 
     this.utils.presentYesNoActionSheet(`Czy na pewno chcesz usunąć zawodnika ${player.firstName} ${player.lastName}? Ta akcja jest nieodwracalna`, 'Tak, usuwam zawodnika', 'Nie',
       () => {
-        this.playersService.deletePlayer(player.uuid).then(r => {
+        this.playersService.deletePlayer(player.uuid).then(async r => {
           if (r.ok) {
+            this.players = (await this.playersService.getAllPlayers()).response;
             this.utils.presentInfoToast(`Zawodnik został usunięty pomyślnie`);
           } else {
             this.utils.presentAlertToast(`Wystąpił błąd przy usuwaniu zawodnika`);

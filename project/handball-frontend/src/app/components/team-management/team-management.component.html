@@ -1,4 +1,11 @@
 <div style="width: 50%; margin: auto">
+  <ion-text color="secondary">
+    @if (mode === 'EDIT') {
+      <h3>Dane zespołu {{team.teamName}}</h3>
+    } @else {
+      <h3>Wprowadź dane nowego zespołu</h3>
+    }
+  </ion-text>
 <form [formGroup]="teamFormGroup" (keyup)="markUnsavedChanges()" (ngSubmit)="onTeamEdit()">
   <ion-list>
     <ion-item>
@@ -23,6 +30,12 @@
           }
         }
       </ion-select>
+    </ion-item>
+    <ion-item lines="none">
+      <ion-label>
+        Utwórz nowego zawodnika i dodaj do zespołu
+      </ion-label>
+      <ion-button (click)="onCreatePlayer()">Utwórz</ion-button>
     </ion-item>
     <ion-item>
       <ion-select cancel-text="Anuluj" label-placement="floating" label="Kapitan zespołu" formControlName="captain">
@@ -52,6 +65,7 @@
           <ion-text color="secondary">
             <h5>Zawodnik nr {{$index + 1}}</h5>
           </ion-text>
+          <ion-button style="margin-top: 10px;" slot="end" (click)="onPlayerEdit(player)">Edytuj</ion-button>
         </ion-item>
         <ion-item>
           <ion-label position="stacked">Imię i nazwisko</ion-label>

@@ -1,5 +1,6 @@
 package com.handballleague.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -38,7 +39,8 @@ public class Team {
     private String teamName;
 
     @OneToMany(cascade = {CascadeType.MERGE})
-    @JoinColumn(name = "player_id", referencedColumnName = "uuid")
+    @JoinColumn(name = "team_id", referencedColumnName = "uuid")
+    @JsonManagedReference
     private List<Player> players;
 
     public Team(String teamName) {

@@ -1,6 +1,8 @@
 export class User {
   firstName?: string;
   lastName?: string;
-  email: string
+  email: string;
+  role: string;
+  uuid: number;
 
 }

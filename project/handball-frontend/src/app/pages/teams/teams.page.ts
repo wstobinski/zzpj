@@ -37,10 +37,10 @@ export class TeamsPage extends GenericPage implements OnInit {
         buttonName: "Zarządzaj zespołem",
         buttonAction: this.onTeamToEditSelected.bind(this)
       },
-      {
-        buttonName: "Edytuj zespół",
-        buttonAction: this.openTeamDetailsModal.bind(this)
-      },
+      // {
+      //   buttonName: "Edytuj zespół",
+      //   buttonAction: this.openTeamDetailsModal.bind(this)
+      // },
       {
         buttonName: "Usuń zespół",
         buttonAction: this.deleteTeam.bind(this),
@@ -127,7 +127,6 @@ export class TeamsPage extends GenericPage implements OnInit {
           this.utils.presentAlertToast("Wystąpił błąd przy usuwaniu zespołu");
         }
       });
-      this.utils.presentInfoToast(`Zespół ${team.teamName} usunięto pomyślnie`);
       }, () => {
 
       });

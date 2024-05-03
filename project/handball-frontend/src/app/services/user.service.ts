@@ -49,4 +49,9 @@ export class UserService {
       throw error;
     }
   }
+
+  async updateUser(userId: number, user: User): Promise<ApiResponse> {
+    return await this.apiService.put(`/users/${userId}`, user);
+  }
+
 }

@@ -22,6 +22,7 @@ export class EditPlayerModalComponent implements OnInit {
   playerFormGroup: FormGroup;
   ngOnInit() {
 
+    this.player = {...this.player};
     if (this.mode === 'EDIT') {
       this.playerFormGroup = this.formBuilder.group({
         firstName: [this.player.firstName, [Validators.required, Validators.minLength(2)]],
