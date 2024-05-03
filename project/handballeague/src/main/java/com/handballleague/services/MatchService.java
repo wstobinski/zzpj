@@ -1,25 +1,37 @@
 package com.handballleague.services;
 
+import com.handballleague.DTO.MatchScoreDTO;
 import com.handballleague.exceptions.EntityAlreadyExistsException;
 import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
 import com.handballleague.model.League;
 import com.handballleague.model.Match;
+import com.handballleague.model.Score;
+import com.handballleague.model.Team;
 import com.handballleague.repositories.MatchRepository;
 import com.handballleague.repositories.PlayerRepository;
+import com.handballleague.repositories.ScoreRepository;
+import com.handballleague.repositories.TeamRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+import static com.handballleague.util.UUIDGenerator.generateRandomLongUUID;
+
 @Service
 public class MatchService implements HandBallService<Match>{
     private final MatchRepository matchRepository;
+    private final ScoreRepository scoreRepository;
+    private final TeamRepository teamRepository;
 
     @Autowired
-    public MatchService(MatchRepository matchRepository) {
+    public MatchService(MatchRepository matchRepository, ScoreRepository scoreRepository, TeamRepository teamRepository) {
         this.matchRepository = matchRepository;
+        this.scoreRepository = scoreRepository;
+        this.teamRepository = teamRepository;
     }
     @Override
     public Match create(Match entity) throws InvalidArgumentException, EntityAlreadyExistsException {
@@ -98,4 +110,28 @@ public class MatchService implements HandBallService<Match>{
     public boolean checkIfEntityExistsInDb(Long entityID) {
         return matchRepository.findAll().stream().filter(match -> match.getUuid().equals(entityID)).toList().size() == 1;
     }
+
+    public void endMatch(Long matchId, MatchScoreDTO.MatchResultDto matchResult) {
+        Match match = matchRepository.findById(matchId)
+                .orElseThrow(() -> new RuntimeException("Match not found"));
+
+        createScore(match, matchResult.getTeam1Score());
+        createScore(match, matchResult.getTeam2Score());
+
+        match.setFinished(true);
+        matchRepository.save(match);
+    }
+
+    private void createScore(Match match, MatchScoreDTO.TeamScoreDto teamScore) {
+        Team team = teamRepository.findById(teamScore.getTeamId())
+                .orElseThrow(() -> new RuntimeException("Team not found"));
+
+        Score score = new Score(generateRandomLongUUID(),match,team,teamScore.getGoals(), teamScore.getLostGoals(), teamScore.getFouls(),
+                teamScore.getBallPossession(), teamScore.getYellowCards(),teamScore.getRedCards(),teamScore.getTimePenalties());
+
+        System.out.println("Score: " + score);
+
+        scoreRepository.save(score);
+    }
+
 }

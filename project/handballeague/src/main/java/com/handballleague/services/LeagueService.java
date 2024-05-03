@@ -20,6 +20,8 @@ import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
+import static com.handballleague.util.UUIDGenerator.generateRandomLongUUID;
+
 @Service
 public class LeagueService implements HandBallService<League>{
     private final LeagueRepository leagueRepository;
@@ -99,12 +101,6 @@ public class LeagueService implements HandBallService<League>{
         }
         // Move the stored element to the end of the list
         teams.set(teams.size() - 1, temp);
-    }
-
-
-    public static long generateRandomLongUUID() {
-        UUID uuid = UUID.randomUUID();
-        return uuid.getMostSignificantBits() & Long.MAX_VALUE;
     }
 
     @Override
