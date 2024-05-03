@@ -29,7 +29,7 @@ export class PlayersService {
 
   async addPlayer(player: Player): Promise<ApiResponse> {
 
-    return await this.apiService.post(`/players}`, player);
+    return await this.apiService.post('/players', player);
 
   }
 }

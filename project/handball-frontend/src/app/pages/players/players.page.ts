@@ -47,17 +47,18 @@ export class PlayersPage extends GenericPage implements OnInit {
   }
 
 
-  async openPlayerDetailsModal(player: Player) {
+  async openPlayerDetailsModal(player: Player, mode: 'EDIT' | 'ADD' = 'EDIT') {
     console.log("Entering playerDetails", player)
     const modal = await this.modalController.create({
       component: EditPlayerModalComponent,
       componentProps: {
         player,
-        title: `Edytuj zawodnika`
+        title: mode == "EDIT" ? "Edytuj zawodnika" : "Dodaj nowego zawodnika",
+        mode
       }
     });
     modal.onWillDismiss().then(async data => {
-      if (data && data.role === 'submit') {
+      if (data && data.data && data.role === 'EDIT') {
         this.playersService.updatePlayer(data.data as Player).then(r => {
           if (r.ok) {
 
@@ -73,6 +74,23 @@ export class PlayersPage extends GenericPage implements OnInit {
             this.utils.presentAlertToast("Wystąpił błąd podczas edycji zawodnika. Twoja sesja wygasła. Zaloguj się ponownie");
           } else {
             this.utils.presentAlertToast("Wystąpił błąd podczas edycji zawodnika");
+          }
+        });
+      } else if (data && data.data && data.role === 'ADD') {
+        this.playersService.addPlayer(data.data).then(async r => {
+          if (r.ok) {
+            const newPlayers = await this.playersService.getAllPlayers();
+            this.players = newPlayers.response;
+            this.utils.presentInfoToast("Utworzenie zawodnika zakończone sukcesem");
+          } else {
+            this.utils.presentAlertToast("Wystąpił błąd podczas tworzenia zawodnika");
+          }
+        }).catch(e => {
+          console.log(e);
+          if (e.status === 401) {
+            this.utils.presentAlertToast("Wystąpił błąd podczas tworzenia zawodnika. Twoja sesja wygasła. Zaloguj się ponownie");
+          } else {
+            this.utils.presentAlertToast("Wystąpił błąd podczas tworzenia zawodnika");
           }
         });
       }

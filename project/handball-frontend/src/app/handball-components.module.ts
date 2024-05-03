@@ -7,10 +7,13 @@ import {TopToolbarComponent} from "./components/top-toolbar/top-toolbar.componen
 import {EditTeamModalComponent} from "./components/edit-team-modal/edit-team-modal.component";
 import {ActionMenuPopoverComponent} from "./components/action-menu-popover/action-menu-popover.component";
 import {EditPlayerModalComponent} from "./components/edit-player-modal/edit-player-modal.component";
+import {TeamManagementComponent} from "./components/team-management/team-management.component";
 
 @NgModule({
-  declarations: [MainMenuComponent, TopToolbarComponent, EditTeamModalComponent, EditPlayerModalComponent, ActionMenuPopoverComponent],
-  exports: [MainMenuComponent, TopToolbarComponent, EditTeamModalComponent, EditPlayerModalComponent, ActionMenuPopoverComponent],
+  declarations: [MainMenuComponent, TopToolbarComponent, EditTeamModalComponent,
+    EditPlayerModalComponent, ActionMenuPopoverComponent, TeamManagementComponent],
+  exports: [MainMenuComponent, TopToolbarComponent, EditTeamModalComponent,
+    EditPlayerModalComponent, ActionMenuPopoverComponent, TeamManagementComponent],
   imports: [
     CommonModule,
     IonicModule,

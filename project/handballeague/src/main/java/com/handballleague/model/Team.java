@@ -37,7 +37,7 @@ public class Team {
     @Size(min = 3, max = 50, message = "Team name needs to be between [3,50] characters")
     private String teamName;
 
-    @OneToMany(cascade = {CascadeType.ALL})
+    @OneToMany(cascade = {CascadeType.MERGE})
     @JoinColumn(name = "player_id", referencedColumnName = "uuid")
     private List<Player> players;
 
