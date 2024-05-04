@@ -114,7 +114,7 @@ public class MatchService implements HandBallService<Match>{
         createScore(match, matchResult.getTeam1Score());
         createScore(match, matchResult.getTeam2Score());
 
-//        updateTeamContestStats(match, matchResult.getTeam1Score(), matchResult.getTeam2Score());
+        updateTeamContestStats(match, matchResult.getTeam1Score(), matchResult.getTeam2Score());
 
         match.setFinished(true);
         matchRepository.save(match);
@@ -134,41 +134,43 @@ public class MatchService implements HandBallService<Match>{
 
     //TODO: Przy tworzeniu zespołów powinno automatycznie generowac sie TeamContest
 
-//    public void updateTeamContestStats(Match match, MatchScoreDTO.TeamScoreDto team1Score, MatchScoreDTO.TeamScoreDto team2Score) {
-//        Contest contest = match.getRound().getContest();  // Assuming Round has a reference to Contest
-//
-//        // Retrieve Team_Contest records
-//        TeamContest team1Contest = teamContestRepository.findByTeamIdAndLeagueId(team1Score.getTeamId(), contest.getUuid());
-//        TeamContest team2Contest = teamContestRepository.findByTeamIdAndLeagueId(team2Score.getTeamId(), contest.getUuid());
-//
-//        // Update team1 stats
-//        team1Contest.setGamesPlayed(team1Contest.getGamesPlayed() + 1);
-//        team1Contest.setGoalsAcquired(team1Contest.getGoalsAcquired() + team1Score.getGoals());
-//        team1Contest.setGoalsLost(team1Contest.getGoalsLost() + team1Score.getLostGoals());
-//        team1Contest.setPoints(team1Contest.getPoints() + calculatePoints(team1Score, team2Score));
-//
-//        // Update team2 stats
-//        team2Contest.setGamesPlayed(team2Contest.getGamesPlayed() + 1);
-//        team2Contest.setGoalsAcquired(team2Contest.getGoalsAcquired() + team2Score.getGoals());
-//        team2Contest.setGoalsLost(team2Contest.getGoalsLost() + team2Score.getLostGoals());
-//        team2Contest.setPoints(team2Contest.getPoints() + calculatePoints(team2Score, team1Score));
-//
-//        if(team1Score.getGoals() > team2Score.getGoals()) {
-//            team1Contest.setWins(team1Contest.getWins() + 1);
-//            team2Contest.setLosses(team2Contest.getLosses() + 1);
-//        }
-//        else if (team1Score.getGoals() == team2Score.getGoals()) {
-//            team1Contest.setDraws(team1Contest.getDraws() + 1);
-//            team2Contest.setDraws(team2Contest.getDraws() + 1);
-//        } else {
-//            team1Contest.setLosses(team1Contest.getLosses() + 1);
-//            team2Contest.setWins(team2Contest.getWins() + 1);
-//        }
-//
-//        // Save updated records
-//        teamContestRepository.save(team1Contest);
-//        teamContestRepository.save(team2Contest);
-//    }
+    public void updateTeamContestStats(Match match, MatchScoreDTO.TeamScoreDto team1Score, MatchScoreDTO.TeamScoreDto team2Score) {
+        Contest contest = match.getRound().getContest();  // Assuming Round has a reference to Contest
+
+        // Retrieve Team_Contest records
+        TeamContest team1Contest = teamContestRepository.findByTeamAndLeague(match.getHomeTeam(),
+                                                                                match.getRound().getContest());
+        TeamContest team2Contest = teamContestRepository.findByTeamAndLeague(match.getAwayTeam(),
+                                                                                match.getRound().getContest());
+
+        // Update team1 stats
+        team1Contest.setGamesPlayed(team1Contest.getGamesPlayed() + 1);
+        team1Contest.setGoalsAcquired(team1Contest.getGoalsAcquired() + team1Score.getGoals());
+        team1Contest.setGoalsLost(team1Contest.getGoalsLost() + team1Score.getLostGoals());
+        team1Contest.setPoints(team1Contest.getPoints() + calculatePoints(team1Score, team2Score));
+
+        // Update team2 stats
+        team2Contest.setGamesPlayed(team2Contest.getGamesPlayed() + 1);
+        team2Contest.setGoalsAcquired(team2Contest.getGoalsAcquired() + team2Score.getGoals());
+        team2Contest.setGoalsLost(team2Contest.getGoalsLost() + team2Score.getLostGoals());
+        team2Contest.setPoints(team2Contest.getPoints() + calculatePoints(team2Score, team1Score));
+
+        if(team1Score.getGoals() > team2Score.getGoals()) {
+            team1Contest.setWins(team1Contest.getWins() + 1);
+            team2Contest.setLosses(team2Contest.getLosses() + 1);
+        }
+        else if (team1Score.getGoals() == team2Score.getGoals()) {
+            team1Contest.setDraws(team1Contest.getDraws() + 1);
+            team2Contest.setDraws(team2Contest.getDraws() + 1);
+        } else {
+            team1Contest.setLosses(team1Contest.getLosses() + 1);
+            team2Contest.setWins(team2Contest.getWins() + 1);
+        }
+
+        // Save updated records
+        teamContestRepository.save(team1Contest);
+        teamContestRepository.save(team2Contest);
+    }
 
     private int calculatePoints(MatchScoreDTO.TeamScoreDto teamScore, MatchScoreDTO.TeamScoreDto opponentScore) {
         if (teamScore.getGoals() > opponentScore.getGoals()) {

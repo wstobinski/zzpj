@@ -13,6 +13,7 @@ import com.handballleague.repositories.RoundRepository;
 import com.handballleague.repositories.TeamRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -29,12 +30,15 @@ public class LeagueService implements HandBallService<League>{
     private final RoundRepository roundRepository;
     private final MatchRepository matchRepository;
 
+    private final TeamContestService teamContestService;
+
     @Autowired
-    public LeagueService(LeagueRepository leagueRepository, TeamRepository teamRepository, RoundRepository roundRepository, MatchRepository matchRepository) {
+    public LeagueService(LeagueRepository leagueRepository, TeamRepository teamRepository, RoundRepository roundRepository, MatchRepository matchRepository, @Lazy TeamContestService teamContestService) {
         this.leagueRepository = leagueRepository;
         this.teamRepository = teamRepository;
         this.roundRepository = roundRepository;
         this.matchRepository = matchRepository;
+        this.teamContestService = teamContestService;
     }
 
 
@@ -84,9 +88,6 @@ public class LeagueService implements HandBallService<League>{
             rotateTeams(teams);
         }
     }
-
-
-    //.withHour(16).withMinute(0).withSecond(0).withNano(0);
 
     // Rotate the list elements except the first one
     public static void rotateTeams(List<Team> teams) {
@@ -192,6 +193,8 @@ public class LeagueService implements HandBallService<League>{
         league.getTeams().add(team);
 
         leagueRepository.save(league);
+
+        teamContestService.create(leagueId, teamId);
 
         return league;
     }
