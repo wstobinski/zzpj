@@ -31,6 +31,12 @@ const routes: Routes = [
     loadChildren: () => import('./pages/account/account.module').then( m => m.AccountPageModule),
     canActivate: [AuthenticatedGuard]
   },
+  {
+    path: 'leagues',
+    loadChildren: () => import('./pages/leagues/leagues.module').then( m => m.LeaguesPageModule),
+    canActivate: [AuthenticatedGuard]
+  },
+
 
 
 

@@ -14,7 +14,7 @@ import java.util.List;
 @Entity
 @Table(name = "league")
 public class League extends Contest{
-    @OneToMany(cascade = {CascadeType.ALL})
+    @OneToMany(cascade = {CascadeType.MERGE})
     @JoinColumn(name = "league_id", referencedColumnName = "uuid")
     private List<Team> teams;
 

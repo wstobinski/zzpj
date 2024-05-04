@@ -1,0 +1,50 @@
+<app-top-toolbar title="Ligi"></app-top-toolbar>
+@if (isLoading) {
+  <ion-progress-bar type="indeterminate"></ion-progress-bar>
+}
+<ion-content>
+  <div [hidden]="leagueToEdit">
+    <ion-item class="ion-align-self-center" lines="none">
+      <ion-text color="secondary">
+        <h3>Lista rozgrywek ligowych</h3>
+      </ion-text>
+    </ion-item>
+    <div class="ion-text-right">
+      <ion-button (click)="onAddNewLeague()">Stwórz nową ligę</ion-button>
+    </div>
+    <ion-grid>
+      <ion-row>
+        <ion-col>Identyfikator ligi</ion-col>
+        <ion-col>Nazwa ligi</ion-col>
+        <ion-col>Liczba zespołów</ion-col>
+        <ion-col>Data rozpoczęcia</ion-col>
+        <ion-col>Akcje</ion-col>
+      </ion-row>
+      @if (leagues) {
+        @for (league of leagues; track league.uuid) {
+          <ion-row class="data-row">
+            <ion-col>{{league.uuid}}</ion-col>
+            <ion-col>{{league.name}}</ion-col>
+            <ion-col>{{league.teams.length}}</ion-col>
+            <ion-col>{{league.startDate | date: undefined:undefined:'pl-PL'}}</ion-col>
+            <ion-col>
+              <ion-icon style="cursor: pointer" (click)="openPopover($event, league, actionButtons)" name="ellipsis-vertical-outline"></ion-icon>
+            </ion-col>
+          </ion-row>
+        }
+      } @else {
+        <div class="ion-text-center">
+          <ion-spinner></ion-spinner>
+        </div>
+      }
+    </ion-grid>
+  </div>
+  @if (leagueToEdit) {
+    <app-league-management [league]="leagueToEdit"
+                         (cancelLeagueEditedEmitter)="onEditCancelled($event)"
+                         (leagueEditedEmitter)="onTeamEdited($event)"
+                         (hasUnsavedChangesEmitter)="onHasUnsavedChanges($event)">
+
+    </app-league-management>
+  }
+</ion-content>

@@ -80,12 +80,12 @@ export class TeamManagementComponent implements OnInit {
   }
 
   onTeamEdit() {
-
+    const newCaptain: Player = this.teamFormGroup.controls['captain'].value;
+    newCaptain.captain = true;
     this.team = Object.assign(this.team, this.teamFormGroup.value);
+    console.log(this.team)
     if (this.mode === 'EDIT') {
       const oldCaptain = this.teamCaptain;
-      const newCaptain: Player = this.teamFormGroup.controls['captain'].value;
-      newCaptain.captain = true;
       this.teamsService.updateTeam(this.team).then(r => {
         if (r.ok) {
           if (oldCaptain && newCaptain.uuid !== oldCaptain.uuid) {
@@ -125,8 +125,21 @@ export class TeamManagementComponent implements OnInit {
       captain.captain = true;
       this.teamsService.createTeam(this.team).then(r => {
         if (r.ok) {
-          this.utils.presentInfoToast("Tworzenie zespołu zakończone sukcesem");
-          this.teamEditedEmitter.emit(this.team);
+          this.playersService.updatePlayer(captain).then(r => {
+            if (r.ok) {
+              this.utils.presentInfoToast("Tworzenie zespołu zakończone sukcesem");
+              this.teamEditedEmitter.emit(this.team);
+            } else {
+              this.utils.presentAlertToast("Wystąpił błąd podczas tworzenia zespołu");
+            }
+          }).catch(e => {
+            console.log(e);
+            if (e.status === 401) {
+              this.utils.presentAlertToast("Wystąpił błąd podczas tworzenia zespołu. Twoja sesja wygasła. Zaloguj się ponownie");
+            } else {
+              this.utils.presentAlertToast("Wystąpił błąd podczas tworzenia zespołu");
+            }
+          });
         } else {
           this.utils.presentAlertToast("Wystąpił błąd podczas tworzenia zespołu");
         }

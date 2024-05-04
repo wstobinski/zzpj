@@ -149,7 +149,6 @@ export class TeamsPage extends GenericPage implements OnInit {
     if (!this.hasUnsavedChanges) {
       this.hasUnsavedChanges = $event;
     }
-
   }
 
   onAddNewTeam() {
