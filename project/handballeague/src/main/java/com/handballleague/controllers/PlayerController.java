@@ -32,6 +32,14 @@ public class PlayerController {
 
     }
 
+    @GetMapping("/free-agents")
+    public ResponseEntity<?> getFreeAgents() {
+        List<Player> players = playerService.getFreeAgents();
+        return ResponseEntity.ok().body(Map.of("response", players,
+                "ok", true));
+
+    }
+
     @PostMapping()
     public ResponseEntity<?> registerNewPlayer(@Valid @RequestBody Player player, @RequestHeader(name = "Authorization") String token) {
         ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");

@@ -9,6 +9,7 @@ import java.util.List;
 
 @Repository
 public interface PlayerRepository extends JpaRepository<Player, String> {
+
     List<Player> findByTeam(Team team);
 
 }

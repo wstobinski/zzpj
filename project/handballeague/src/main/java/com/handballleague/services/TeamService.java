@@ -3,8 +3,10 @@ package com.handballleague.services;
 import com.handballleague.exceptions.EntityAlreadyExistsException;
 import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
+import com.handballleague.model.League;
 import com.handballleague.model.Player;
 import com.handballleague.model.Team;
+import com.handballleague.repositories.LeagueRepository;
 import com.handballleague.repositories.PlayerRepository;
 import com.handballleague.repositories.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +21,13 @@ import java.util.Optional;
 public class TeamService implements HandBallService<Team>{
     private final TeamRepository teamRepository;
     private final PlayerRepository playerRepository;
+    private final LeagueRepository leagueRepository;
 
     @Autowired
-    public TeamService(TeamRepository teamRepository, PlayerRepository playerRepository) {
+    public TeamService(TeamRepository teamRepository, PlayerRepository playerRepository, LeagueRepository leagueRepository) {
         this.teamRepository = teamRepository;
         this.playerRepository = playerRepository;
+        this.leagueRepository = leagueRepository;
     }
 
     @Override
@@ -143,5 +147,15 @@ public class TeamService implements HandBallService<Team>{
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new ObjectNotFoundInDataBaseException("Team not found"));
         return team.getPlayers();
+    }
+
+    public List<Team> getFreeAgents() {
+        List<Team> teams = teamRepository.findAll();
+        for(League l : leagueRepository.findAll()) {
+            for(Team t : l.getTeams()) {
+                teams.remove(t);
+            }
+        }
+        return teams;
     }
 }
