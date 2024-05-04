@@ -38,7 +38,7 @@ public class Team {
     private String teamName;
 
     @OneToMany(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "player_id", referencedColumnName = "uuid")
+    @JoinColumn(name = "team_id", referencedColumnName = "uuid")
     private List<Player> players;
 
     public Team(String teamName) {

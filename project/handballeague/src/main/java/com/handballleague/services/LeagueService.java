@@ -13,12 +13,15 @@ import com.handballleague.repositories.RoundRepository;
 import com.handballleague.repositories.TeamRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
+
+import static com.handballleague.util.UUIDGenerator.generateRandomLongUUID;
 
 @Service
 public class LeagueService implements HandBallService<League>{
@@ -27,12 +30,15 @@ public class LeagueService implements HandBallService<League>{
     private final RoundRepository roundRepository;
     private final MatchRepository matchRepository;
 
+    private final TeamContestService teamContestService;
+
     @Autowired
-    public LeagueService(LeagueRepository leagueRepository, TeamRepository teamRepository, RoundRepository roundRepository, MatchRepository matchRepository) {
+    public LeagueService(LeagueRepository leagueRepository, TeamRepository teamRepository, RoundRepository roundRepository, MatchRepository matchRepository, @Lazy TeamContestService teamContestService) {
         this.leagueRepository = leagueRepository;
         this.teamRepository = teamRepository;
         this.roundRepository = roundRepository;
         this.matchRepository = matchRepository;
+        this.teamContestService = teamContestService;
     }
 
 
@@ -83,9 +89,6 @@ public class LeagueService implements HandBallService<League>{
         }
     }
 
-
-    //.withHour(16).withMinute(0).withSecond(0).withNano(0);
-
     // Rotate the list elements except the first one
     public static void rotateTeams(List<Team> teams) {
         if (teams.size() < 2) return; // No need to rotate if there isn't enough elements
@@ -99,12 +102,6 @@ public class LeagueService implements HandBallService<League>{
         }
         // Move the stored element to the end of the list
         teams.set(teams.size() - 1, temp);
-    }
-
-
-    public static long generateRandomLongUUID() {
-        UUID uuid = UUID.randomUUID();
-        return uuid.getMostSignificantBits() & Long.MAX_VALUE;
     }
 
     @Override
@@ -196,6 +193,8 @@ public class LeagueService implements HandBallService<League>{
         league.getTeams().add(team);
 
         leagueRepository.save(league);
+
+        teamContestService.create(leagueId, teamId);
 
         return league;
     }

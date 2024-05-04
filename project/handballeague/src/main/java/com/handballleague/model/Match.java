@@ -31,6 +31,9 @@ public class Match {
 
     //TODO: Add referee
 
+    @Column
+    private boolean isFinished = false;
+
 
     public Match(Long uuid,LocalDateTime gameDate, Team homeTeam, Team awayTeam) {
         this.uuid =uuid;
