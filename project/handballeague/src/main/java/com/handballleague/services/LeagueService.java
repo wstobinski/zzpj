@@ -43,7 +43,8 @@ public class LeagueService implements HandBallService<League>{
 
 
     @Transactional
-    public void generateSchedule(League league, LocalDateTime startDate) {
+    public void generateSchedule(League league, LocalDateTime startDate) throws EntityAlreadyExistsException{
+        if(league.isScheduleGenerated()) throw new EntityAlreadyExistsException("This league already has a schedule generated.");
         List<Team> teams = new ArrayList<>(league.getTeams());
         int numTeams = teams.size();
 
@@ -87,6 +88,7 @@ public class LeagueService implements HandBallService<League>{
 
             rotateTeams(teams);
         }
+        league.setScheduleGenerated(true);
     }
 
     // Rotate the list elements except the first one
