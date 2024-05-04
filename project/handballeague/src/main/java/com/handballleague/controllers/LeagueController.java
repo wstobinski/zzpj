@@ -124,4 +124,15 @@ public class LeagueController {
             return response2;
         }
     }
+
+    @GetMapping("/{leagueId}/matches")
+    public ResponseEntity<?> getMatchesForLeague(@PathVariable Long leagueId, @RequestHeader(name = "Authorization") String token) {
+        ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
+        ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "arbiter");
+        if (response.getStatusCode().is2xxSuccessful() || response2.getStatusCode().is2xxSuccessful()) {
+            return ResponseEntity.ok(Map.of("ok", true, "response", leagueService.getAllMatchesInLeague(leagueId)));
+        } else {
+            return response2;
+        }
+    }
 }

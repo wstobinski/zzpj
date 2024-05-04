@@ -215,4 +215,14 @@ public class LeagueService implements HandBallService<League>{
         return league;
     }
 
+    public List<Match> getAllMatchesInLeague(Long leagueId) {
+        List<Match> leagueMatches = new ArrayList<>();
+
+        for(Match m : matchRepository.findAll())
+            if(m.getRound().getContest().equals(getById(leagueId)))
+                leagueMatches.add(m);
+
+        return leagueMatches;
+    }
+
 }
