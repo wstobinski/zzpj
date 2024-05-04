@@ -1,6 +1,6 @@
 import {Injectable} from "@angular/core";
 import { Storage } from '@ionic/storage';
-import {FormGroup} from "@angular/forms";
+import {AbstractControl, FormGroup, ValidationErrors, ValidatorFn} from "@angular/forms";
 import {ActionSheetController, ToastController} from "@ionic/angular";
 
 @Injectable({
@@ -35,7 +35,7 @@ export class Utils {
   }
 
   formHasError(form: FormGroup, fieldName: string, errorType: string) {
-    return form.get(fieldName)?.hasError(errorType) && form.get(fieldName)?.touched;
+    return form?.get(fieldName)?.hasError(errorType) && form?.get(fieldName)?.touched;
   }
 
   async presentAlertToast(message: string, duration: number = 4000) {
@@ -91,5 +91,16 @@ export class Utils {
     const actionSheet = await this.actionSheetController.create(actionSheetOptions);
     await actionSheet.present();
   }
+
+  passwordMismatchValidator: ValidatorFn = (
+    control: AbstractControl,
+  ): ValidationErrors | null => {
+    const password = control.get('password');
+    const passwordConfirm = control.get('passwordConfirm');
+
+    return password && passwordConfirm && password.value !== passwordConfirm.value
+      ? { passwordMismatch: true }
+      : null;
+  };
 
 }

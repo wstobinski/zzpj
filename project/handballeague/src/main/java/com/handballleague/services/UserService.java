@@ -40,7 +40,7 @@ public class UserService implements HandBallService<User> {
     }
 
     public String logInUser(User entity) {
-        User u = userRepository.findByEmail(entity.getEmail());
+        User u = userRepository.findByEmail(entity.getEmail()).orElseThrow(() -> new ObjectNotFoundInDataBaseException("User with given email does not exist in database"));
         if (u == null) {
             throw new ObjectNotFoundInDataBaseException("User does not exist.");
         }
@@ -90,6 +90,17 @@ public class UserService implements HandBallService<User> {
             throw new InvalidArgumentException("Passed id is invalid.");
 
         Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isEmpty())
+            throw new ObjectNotFoundInDataBaseException("Object with given id was not found in database.");
+
+        return optionalUser.get();
+    }
+
+    public User getByEmail(String email) {
+        if (email == null || email.isEmpty())
+            throw new InvalidArgumentException("Passed email is invalid.");
+
+        Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty())
             throw new ObjectNotFoundInDataBaseException("Object with given id was not found in database.");
 

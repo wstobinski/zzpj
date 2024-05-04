@@ -26,6 +26,18 @@ const routes: Routes = [
     loadChildren: () => import('./pages/players/players.module').then( m => m.PlayersPageModule),
     canActivate: [AuthenticatedGuard]
   },
+  {
+    path: 'account',
+    loadChildren: () => import('./pages/account/account.module').then( m => m.AccountPageModule),
+    canActivate: [AuthenticatedGuard]
+  },
+  {
+    path: 'leagues',
+    loadChildren: () => import('./pages/leagues/leagues.module').then( m => m.LeaguesPageModule),
+    canActivate: [AuthenticatedGuard]
+  },
+
+
 
 
 
@@ -33,7 +45,7 @@ const routes: Routes = [
 
 @NgModule({
   imports: [
-    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules, initialNavigation: 'enabledNonBlocking' })
+    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules})
   ],
   exports: [RouterModule]
 })

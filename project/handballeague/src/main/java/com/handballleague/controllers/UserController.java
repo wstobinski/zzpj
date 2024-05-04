@@ -38,8 +38,9 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> logInUser(@RequestBody User entity) {
 
+        User userToLogin = userService.getByEmail(entity.getEmail());
         String token = userService.logInUser(entity);
-        return ResponseEntity.ok().body(Map.of("response", Map.of("token", token, "user", entity),
+        return ResponseEntity.ok().body(Map.of("response", Map.of("token", token, "user", userToLogin),
                 "ok", true));
 
     }
@@ -49,17 +50,17 @@ public class UserController {
         ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
         if (response.getStatusCode().is2xxSuccessful()) {
             User newUser = userService.update(userId, user);
-            return ResponseEntity.ok(newUser);
+            return ResponseEntity.ok(Map.of("ok", true, "response", newUser));
         } else {
             ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "captain");
             if (response2.getStatusCode().is2xxSuccessful()){
                 User newUser = userService.update(userId, user);
-                return ResponseEntity.ok(newUser);
+                return ResponseEntity.ok(Map.of("ok", true, "response", newUser));
             } else {
                 ResponseEntity<?> response3 = jwtService.handleAuthorization(token, "arbiter");
                 if (response3.getStatusCode().is2xxSuccessful()) {
                     User newUser = userService.update(userId, user);
-                    return ResponseEntity.ok(newUser);
+                    return ResponseEntity.ok(Map.of("ok", true, "response", newUser));
                 } else {
                     return response3;
                 }

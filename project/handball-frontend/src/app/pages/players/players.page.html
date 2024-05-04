@@ -9,12 +9,15 @@
       <h3>Lista zawodników</h3>
     </ion-text>
   </ion-item>
+  <div class="ion-text-right">
+    <ion-button (click)="openPlayerDetailsModal(null, 'ADD')">Dodaj nowego zawodnika</ion-button>
+  </div>
   <ion-grid>
     <ion-row>
       <ion-col>Identyfikator zawodnika</ion-col>
       <ion-col>Imię i nazwisko</ion-col>
       <ion-col>Numer na boisku</ion-col>
-      <ion-col></ion-col>
+      <ion-col>Akcje</ion-col>
     </ion-row>
     @if (players) {
       @for (player of players; track player.uuid) {

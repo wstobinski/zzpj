@@ -16,6 +16,7 @@ export class GenericPage implements OnInit, OnDestroy {
               private popoverController: PopoverController) { }
 
   isLoading: boolean = false;
+  hasUnsavedChanges: boolean = false;
   loadingSub: Subscription;
   ngOnInit() {
     this.loadingSub = this.loadingService.isLoading.subscribe(isLoading => {

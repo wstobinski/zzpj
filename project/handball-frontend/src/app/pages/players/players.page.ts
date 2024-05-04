@@ -47,17 +47,18 @@ export class PlayersPage extends GenericPage implements OnInit {
   }
 
 
-  async openPlayerDetailsModal(player: Player) {
+  async openPlayerDetailsModal(player: Player, mode: 'EDIT' | 'ADD' = 'EDIT') {
     console.log("Entering playerDetails", player)
     const modal = await this.modalController.create({
       component: EditPlayerModalComponent,
       componentProps: {
         player,
-        title: `Edytuj zawodnika`
+        title: mode == "EDIT" ? "Edytuj zawodnika" : "Dodaj nowego zawodnika",
+        mode
       }
     });
     modal.onWillDismiss().then(async data => {
-      if (data && data.role === 'submit') {
+      if (data && data.data && data.role === 'EDIT') {
         this.playersService.updatePlayer(data.data as Player).then(r => {
           if (r.ok) {
 
@@ -75,6 +76,23 @@ export class PlayersPage extends GenericPage implements OnInit {
             this.utils.presentAlertToast("Wystąpił błąd podczas edycji zawodnika");
           }
         });
+      } else if (data && data.data && data.role === 'ADD') {
+        this.playersService.addPlayer(data.data).then(async r => {
+          if (r.ok) {
+            const newPlayers = await this.playersService.getAllPlayers();
+            this.players = newPlayers.response;
+            this.utils.presentInfoToast("Utworzenie zawodnika zakończone sukcesem");
+          } else {
+            this.utils.presentAlertToast("Wystąpił błąd podczas tworzenia zawodnika");
+          }
+        }).catch(e => {
+          console.log(e);
+          if (e.status === 401) {
+            this.utils.presentAlertToast("Wystąpił błąd podczas tworzenia zawodnika. Twoja sesja wygasła. Zaloguj się ponownie");
+          } else {
+            this.utils.presentAlertToast("Wystąpił błąd podczas tworzenia zawodnika");
+          }
+        });
       }
     });
     return await modal.present();
@@ -84,8 +102,9 @@ export class PlayersPage extends GenericPage implements OnInit {
 
     this.utils.presentYesNoActionSheet(`Czy na pewno chcesz usunąć zawodnika ${player.firstName} ${player.lastName}? Ta akcja jest nieodwracalna`, 'Tak, usuwam zawodnika', 'Nie',
       () => {
-        this.playersService.deletePlayer(player.uuid).then(r => {
+        this.playersService.deletePlayer(player.uuid).then(async r => {
           if (r.ok) {
+            this.players = (await this.playersService.getAllPlayers()).response;
             this.utils.presentInfoToast(`Zawodnik został usunięty pomyślnie`);
           } else {
             this.utils.presentAlertToast(`Wystąpił błąd przy usuwaniu zawodnika`);

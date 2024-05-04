@@ -17,7 +17,6 @@ export class MainMenuComponent  implements OnInit {
   constructor(private router: Router,
               private menu: MenuController,
               private userService: UserService,
-              private utils: Utils,
               private authService: AuthService) { }
 
   user: User;
@@ -33,14 +32,6 @@ export class MainMenuComponent  implements OnInit {
   goTo(pageName: string) {
     this.router.navigateByUrl(pageName);
     this.menu.close();
-  }
-
-  getLoginPageName() {
-    return this.user ? "Konto" : "Zaloguj się";
-  }
-
-  getLoginPageIcon() {
-    return this.user ? "key-outline" : "log-in-outline";
   }
 
   logout() {

@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {ActionButton} from "../../model/action-button.model";
+import {PopoverController} from "@ionic/angular";
 
 @Component({
   selector: 'app-action-menu-popover',
@@ -11,12 +12,15 @@ export class ActionMenuPopoverComponent  implements OnInit {
   @Input() actionButtons : ActionButton[];
   @Input() actionObject: any;
 
-  constructor() { }
+  constructor(private popoverController: PopoverController) { }
 
   ngOnInit() {}
 
-  onOptionClick($index: number) {
-    console.log(this.actionButtons)
-    this.actionButtons[$index].buttonAction(this.actionObject);
+  async onOptionClick(index: number) {
+    const buttonAction = this.actionButtons[index].buttonAction;
+    if (buttonAction) {
+      await buttonAction(this.actionObject);
+    }
+    await this.popoverController.dismiss();
   }
 }

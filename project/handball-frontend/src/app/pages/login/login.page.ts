@@ -39,8 +39,8 @@ export class LoginPage implements OnInit {
       this.activationForm = this.formBuilder.group({
         code: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]],
         password: ['', [Validators.required, Validators.minLength(8)]],
-        passwordConfirm: ['', [Validators.required, Validators.minLength(8)]]
-      }, {validators: this.passwordMismatchValidator});
+        passwordConfirm: ['', [Validators.required]]
+      }, {validators: this.utils.passwordMismatchValidator});
     }
   }
 
@@ -79,15 +79,6 @@ export class LoginPage implements OnInit {
     return formGroup.hasError(errorType) && formGroup.touched;
   }
 
-  passwordMismatchValidator: ValidatorFn = (
-    control: AbstractControl,
-  ): ValidationErrors | null => {
-    const password = control.get('password');
-    const passwordConfirm = control.get('passwordConfirm');
 
-    return password && passwordConfirm && password.value !== passwordConfirm.value
-      ? { passwordMismatch: true }
-      : null;
-  };
 
 }

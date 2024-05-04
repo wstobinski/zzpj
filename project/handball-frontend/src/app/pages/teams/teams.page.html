@@ -3,21 +3,21 @@
   <ion-progress-bar type="indeterminate"></ion-progress-bar>
 }
 <ion-content>
-
+  <div [hidden]="teamToEdit">
       <ion-item class="ion-align-self-center" lines="none">
         <ion-text color="secondary">
           <h3>Lista zespołów</h3>
         </ion-text>
       </ion-item>
   <div class="ion-text-right">
-    <ion-button (click)="openTeamDetailsModal(null)">Dodaj nowy zespół</ion-button>
+    <ion-button (click)="onAddNewTeam()">Dodaj nowy zespół</ion-button>
   </div>
   <ion-grid>
     <ion-row>
       <ion-col>Identyfikator zespołu</ion-col>
       <ion-col>Nazwa zespołu</ion-col>
       <ion-col>Liczba zawodników</ion-col>
-      <ion-col></ion-col>
+      <ion-col>Akcje</ion-col>
     </ion-row>
   @if (teams) {
       @for (team of teams; track team.uuid) {
@@ -36,4 +36,13 @@
     </div>
   }
   </ion-grid>
+  </div>
+  @if (teamToEdit) {
+    <app-team-management [team]="teamToEdit"
+                         (cancelTeamEditedEmitter)="onEditCancelled($event)"
+                         (teamEditedEmitter)="onTeamEdited($event)"
+                         (hasUnsavedChangesEmitter)="onHasUnsavedChanges($event)">
+
+    </app-team-management>
+  }
 </ion-content>

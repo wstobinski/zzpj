@@ -19,10 +19,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Sort;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -160,12 +157,17 @@ public class TeamServiceTests {
         // given
         long id = 10;
         given(teamRepository.existsById(id)).willReturn(true);
+        given(teamRepository.findById(id)).willReturn(Optional.of(new Team()));
+        given(playerRepository.findByTeam(any(Team.class))).willReturn(Collections.singletonList(new Player()));
 
         // when
         underTestService.delete(id);
 
         // then
         verify(teamRepository).deleteById(id);
+        verify(teamRepository).findById(id);
+        verify(playerRepository).findByTeam(any(Team.class));
+        verify(playerRepository, times(1)).save(any(Player.class));
     }
 
     @Test

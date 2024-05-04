@@ -3,13 +3,10 @@ import {TeamsService} from "../../services/teams.service";
 import {Team} from "../../model/team.model";
 import {ModalController, PopoverController} from "@ionic/angular";
 import {EditTeamModalComponent} from "../../components/edit-team-modal/edit-team-modal.component";
-import {ActionMenuPopoverComponent} from "../../components/action-menu-popover/action-menu-popover.component";
 import {ActionButton} from "../../model/action-button.model";
 import {Utils} from "../../utils/utils";
 import {GenericPage} from "../generic/generic.page";
 import {LoadingService} from "../../services/loading.service";
-import {Player} from "../../model/player.model";
-import {PlayersService} from "../../services/players.service";
 
 @Component({
   selector: 'app-teams',
@@ -27,6 +24,7 @@ export class TeamsPage extends GenericPage implements OnInit {
   }
 
   teams: Team[];
+  teamToEdit: Team;
   actionButtons: ActionButton[];
 
   override async ngOnInit() {
@@ -36,9 +34,13 @@ export class TeamsPage extends GenericPage implements OnInit {
     this.teams = teamsResponse.response;
     this.actionButtons = [
       {
-        buttonName: "Edytuj zespół",
-        buttonAction: this.openTeamDetailsModal.bind(this)
+        buttonName: "Zarządzaj zespołem",
+        buttonAction: this.onTeamToEditSelected.bind(this)
       },
+      // {
+      //   buttonName: "Edytuj zespół",
+      //   buttonAction: this.openTeamDetailsModal.bind(this)
+      // },
       {
         buttonName: "Usuń zespół",
         buttonAction: this.deleteTeam.bind(this),
@@ -101,7 +103,7 @@ export class TeamsPage extends GenericPage implements OnInit {
           } else {
             this.utils.presentAlertToast("Wystąpił błąd podczas tworzenia zespołu");
           }
-        })
+        });
       }
     });
     return await modal.present();
@@ -125,10 +127,31 @@ export class TeamsPage extends GenericPage implements OnInit {
           this.utils.presentAlertToast("Wystąpił błąd przy usuwaniu zespołu");
         }
       });
-      this.utils.presentInfoToast(`Zespół ${team.teamName} usunięto pomyślnie`);
       }, () => {
 
       });
 
+  }
+  onTeamToEditSelected(team: Team) {
+    this.teamToEdit = team;
+  }
+
+  onEditCancelled($event: boolean) {
+    this.teamToEdit = null;
+  }
+
+  async onTeamEdited($event: Team) {
+    this.teamToEdit = null;
+    this.teams = (await this.teamsService.getAllTeams()).response
+  }
+
+  onHasUnsavedChanges($event: boolean) {
+    if (!this.hasUnsavedChanges) {
+      this.hasUnsavedChanges = $event;
+    }
+  }
+
+  onAddNewTeam() {
+    this.teamToEdit = new Team();
   }
 }

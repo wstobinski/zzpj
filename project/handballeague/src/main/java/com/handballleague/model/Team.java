@@ -1,5 +1,6 @@
 package com.handballleague.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -37,8 +38,9 @@ public class Team {
     @Size(min = 3, max = 50, message = "Team name needs to be between [3,50] characters")
     private String teamName;
 
-    @OneToMany(cascade = {CascadeType.ALL})
+    @OneToMany(cascade = {CascadeType.MERGE})
     @JoinColumn(name = "team_id", referencedColumnName = "uuid")
+    @JsonManagedReference
     private List<Player> players;
 
     public Team(String teamName) {
