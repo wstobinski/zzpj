@@ -3,21 +3,26 @@ package com.handballleague.services;
 import com.handballleague.exceptions.EntityAlreadyExistsException;
 import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
+import com.handballleague.model.Match;
 import com.handballleague.model.Player;
 import com.handballleague.model.Referee;
+import com.handballleague.repositories.MatchRepository;
 import com.handballleague.repositories.RefereeRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class RefereeService implements HandBallService<Referee>{
     private final RefereeRepository refereeRepository;
+    private final MatchRepository matchRepository;
 
-    public RefereeService(RefereeRepository refereeRepository) {
+    public RefereeService(RefereeRepository refereeRepository, MatchRepository matchRepository) {
         this.refereeRepository = refereeRepository;
+        this.matchRepository = matchRepository;
     }
 
     @Override
