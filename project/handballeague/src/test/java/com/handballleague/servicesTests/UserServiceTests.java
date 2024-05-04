@@ -3,6 +3,7 @@ package com.handballleague.servicesTests;
 import com.handballleague.exceptions.EntityAlreadyExistsException;
 import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
+import com.handballleague.model.Team;
 import com.handballleague.model.User;
 import com.handballleague.repositories.UserRepository;
 import com.handballleague.services.JWTService;
@@ -131,12 +132,11 @@ public class UserServiceTests {
         // Given
         String email = "nonexisting@example.com";
         User nonExistingUser = new User(email, "password", "user");
-        when(userRepository.findByEmail(email)).thenReturn(null);
-
-        // When & Then
         assertThatThrownBy(() -> userService.logInUser(nonExistingUser))
                 .isInstanceOf(ObjectNotFoundInDataBaseException.class)
-                .hasMessageContaining("User does not exist.");
+                .hasMessageContaining("User with given email does not exist in database");
+
+
     }
 
     @Test
