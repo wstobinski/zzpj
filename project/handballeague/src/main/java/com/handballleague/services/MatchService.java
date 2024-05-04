@@ -4,14 +4,8 @@ import com.handballleague.DTO.MatchScoreDTO;
 import com.handballleague.exceptions.EntityAlreadyExistsException;
 import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
-import com.handballleague.model.League;
-import com.handballleague.model.Match;
-import com.handballleague.model.Score;
-import com.handballleague.model.Team;
-import com.handballleague.repositories.MatchRepository;
-import com.handballleague.repositories.PlayerRepository;
-import com.handballleague.repositories.ScoreRepository;
-import com.handballleague.repositories.TeamRepository;
+import com.handballleague.model.*;
+import com.handballleague.repositories.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,12 +20,14 @@ public class MatchService implements HandBallService<Match>{
     private final MatchRepository matchRepository;
     private final ScoreRepository scoreRepository;
     private final TeamRepository teamRepository;
+    private final TeamContestRepository teamContestRepository;
 
     @Autowired
-    public MatchService(MatchRepository matchRepository, ScoreRepository scoreRepository, TeamRepository teamRepository) {
+    public MatchService(MatchRepository matchRepository, ScoreRepository scoreRepository, TeamRepository teamRepository, TeamContestRepository teamContestRepository) {
         this.matchRepository = matchRepository;
         this.scoreRepository = scoreRepository;
         this.teamRepository = teamRepository;
+        this.teamContestRepository = teamContestRepository;
     }
     @Override
     public Match create(Match entity) throws InvalidArgumentException, EntityAlreadyExistsException {
@@ -118,6 +114,8 @@ public class MatchService implements HandBallService<Match>{
         createScore(match, matchResult.getTeam1Score());
         createScore(match, matchResult.getTeam2Score());
 
+//        updateTeamContestStats(match, matchResult.getTeam1Score(), matchResult.getTeam2Score());
+
         match.setFinished(true);
         matchRepository.save(match);
     }
@@ -132,6 +130,54 @@ public class MatchService implements HandBallService<Match>{
         System.out.println("Score: " + score);
 
         scoreRepository.save(score);
+    }
+
+    //TODO: Przy tworzeniu zespołów powinno automatycznie generowac sie TeamContest
+
+//    public void updateTeamContestStats(Match match, MatchScoreDTO.TeamScoreDto team1Score, MatchScoreDTO.TeamScoreDto team2Score) {
+//        Contest contest = match.getRound().getContest();  // Assuming Round has a reference to Contest
+//
+//        // Retrieve Team_Contest records
+//        TeamContest team1Contest = teamContestRepository.findByTeamIdAndLeagueId(team1Score.getTeamId(), contest.getUuid());
+//        TeamContest team2Contest = teamContestRepository.findByTeamIdAndLeagueId(team2Score.getTeamId(), contest.getUuid());
+//
+//        // Update team1 stats
+//        team1Contest.setGamesPlayed(team1Contest.getGamesPlayed() + 1);
+//        team1Contest.setGoalsAcquired(team1Contest.getGoalsAcquired() + team1Score.getGoals());
+//        team1Contest.setGoalsLost(team1Contest.getGoalsLost() + team1Score.getLostGoals());
+//        team1Contest.setPoints(team1Contest.getPoints() + calculatePoints(team1Score, team2Score));
+//
+//        // Update team2 stats
+//        team2Contest.setGamesPlayed(team2Contest.getGamesPlayed() + 1);
+//        team2Contest.setGoalsAcquired(team2Contest.getGoalsAcquired() + team2Score.getGoals());
+//        team2Contest.setGoalsLost(team2Contest.getGoalsLost() + team2Score.getLostGoals());
+//        team2Contest.setPoints(team2Contest.getPoints() + calculatePoints(team2Score, team1Score));
+//
+//        if(team1Score.getGoals() > team2Score.getGoals()) {
+//            team1Contest.setWins(team1Contest.getWins() + 1);
+//            team2Contest.setLosses(team2Contest.getLosses() + 1);
+//        }
+//        else if (team1Score.getGoals() == team2Score.getGoals()) {
+//            team1Contest.setDraws(team1Contest.getDraws() + 1);
+//            team2Contest.setDraws(team2Contest.getDraws() + 1);
+//        } else {
+//            team1Contest.setLosses(team1Contest.getLosses() + 1);
+//            team2Contest.setWins(team2Contest.getWins() + 1);
+//        }
+//
+//        // Save updated records
+//        teamContestRepository.save(team1Contest);
+//        teamContestRepository.save(team2Contest);
+//    }
+
+    private int calculatePoints(MatchScoreDTO.TeamScoreDto teamScore, MatchScoreDTO.TeamScoreDto opponentScore) {
+        if (teamScore.getGoals() > opponentScore.getGoals()) {
+            return 3;
+        } else if (teamScore.getGoals() == opponentScore.getGoals()) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 
 }

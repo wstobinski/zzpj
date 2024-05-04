@@ -25,8 +25,15 @@ public class TeamController {
 
     @GetMapping
     public ResponseEntity<?> getTeams() {
-
         List<Team> teams = teamService.getAll();
+        return ResponseEntity.ok().body(Map.of("response", teams,
+                "ok", true));
+
+    }
+
+    @GetMapping("/free-agents")
+    public ResponseEntity<?> getFreeAgents() {
+        List<Team> teams = teamService.getFreeAgents();
         return ResponseEntity.ok().body(Map.of("response", teams,
                 "ok", true));
 

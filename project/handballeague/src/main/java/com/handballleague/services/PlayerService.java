@@ -4,12 +4,17 @@ import com.handballleague.exceptions.EntityAlreadyExistsException;
 import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
 import com.handballleague.model.Player;
+import com.handballleague.model.Team;
 import com.handballleague.repositories.PlayerRepository;
+import com.handballleague.repositories.TeamRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,9 +22,12 @@ import java.util.Optional;
 public class PlayerService implements HandBallService<Player>{
     private final PlayerRepository playerRepository;
 
+    private final TeamRepository teamRepository;
+
     @Autowired
-    public PlayerService(PlayerRepository playerRepository) {
+    public PlayerService(PlayerRepository playerRepository, TeamRepository teamRepository) {
         this.playerRepository = playerRepository;
+        this.teamRepository = teamRepository;
     }
 
     @Override
@@ -104,5 +112,15 @@ public class PlayerService implements HandBallService<Player>{
     public boolean checkIfEntityExistsInDb(Long entityID) {
         return playerRepository.findAll().stream().filter(player -> player.getUuid().equals(entityID)).toList().size() == 1;
 
+    }
+
+    public List<Player> getFreeAgents() {
+        List<Player> players= playerRepository.findAll();
+        for(Team t : teamRepository.findAll()) {
+            for(Player p : t.getPlayers()) {
+                players.remove(p);
+            }
+        }
+        return players;
     }
 }

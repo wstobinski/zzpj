@@ -5,6 +5,7 @@ import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
 import com.handballleague.model.Player;
 import com.handballleague.repositories.PlayerRepository;
+import com.handballleague.repositories.TeamRepository;
 import com.handballleague.services.PlayerService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,14 +33,17 @@ import static org.mockito.Mockito.*;
 public class PlayerServiceTests {
     @Mock
     private PlayerRepository playerRepository;
+    @Mock
+    private TeamRepository teamRepository;
 
     private AutoCloseable autoCloseable;
     private PlayerService underTestService;
 
+
     @BeforeEach
     void setUp() {
         autoCloseable = MockitoAnnotations.openMocks(this);
-        underTestService = new PlayerService(playerRepository);
+        underTestService = new PlayerService(playerRepository, teamRepository);
     }
 
     @AfterEach
