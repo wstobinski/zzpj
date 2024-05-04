@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {ApiService} from "./api.service";
 import {ApiResponse} from "../model/ApiResponse";
 import {League} from "../model/league.model";
+import {GenerateScheduleDto} from "../model/DTO/generate-schedule.dto";
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,7 @@ export class LeagueService {
   }
 
   async createLeague(league: League): Promise<ApiResponse> {
-    return await this.apiService.post('/leagues', league);
+    return await this.apiService.post<ApiResponse>('/leagues', league);
   }
 
   async updateLeague(league: League): Promise<ApiResponse> {
@@ -26,5 +27,9 @@ export class LeagueService {
 
   async deleteLeague(uuid: number) {
     return await this.apiService.delete<ApiResponse>(`/leagues/${uuid}`);
+  }
+
+  async generateSchedule(leagueUuid: number, dto: GenerateScheduleDto): Promise<ApiResponse> {
+    return await this.apiService.post<ApiResponse>(`/leagues/${leagueUuid}/generate-schedule`, dto);
   }
 }

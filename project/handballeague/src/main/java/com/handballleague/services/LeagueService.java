@@ -1,5 +1,6 @@
 package com.handballleague.services;
 
+import com.handballleague.DTO.GenerateScheduleDTO;
 import com.handballleague.exceptions.EntityAlreadyExistsException;
 import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
@@ -43,7 +44,7 @@ public class LeagueService implements HandBallService<League>{
 
 
     @Transactional
-    public void generateSchedule(League league, LocalDateTime startDate) {
+    public void generateSchedule(League league, GenerateScheduleDTO generateScheduleDTO) {
         List<Team> teams = new ArrayList<>(league.getTeams());
         int numTeams = teams.size();
 
@@ -52,11 +53,13 @@ public class LeagueService implements HandBallService<League>{
             teams.add(null);
             numTeams++;
         }
-
-        LocalDateTime firstSunday = startDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+        String[] defaultHourSplit = generateScheduleDTO.getDefaultHour().split(":");
+        int defaultHour = Integer.parseInt(defaultHourSplit[0]);
+        int defaultMinute = Integer.parseInt(defaultHourSplit[1]);
+        LocalDateTime firstRoundStartDate = generateScheduleDTO.getStartDate().with(TemporalAdjusters.nextOrSame(generateScheduleDTO.getDefaultDay()));
 
         for (int round = 0; round < numTeams - 1; round++) {
-            LocalDateTime matchDate = firstSunday.plusWeeks(round).withHour(16).withMinute(0).withSecond(0).withNano(0);
+            LocalDateTime matchDate = firstRoundStartDate.plusWeeks(round).withHour(defaultHour).withMinute(defaultMinute).withSecond(0).withNano(0);
 
             Round currentRound = new Round();
             currentRound.setUuid(generateRandomLongUUID());
@@ -133,8 +136,7 @@ public class LeagueService implements HandBallService<League>{
             throw new InvalidArgumentException("Passed id is invalid.");
         if (newLeague == null)
             throw new InvalidArgumentException("New league is null.");
-        if (newLeague.getName().isEmpty() || newLeague.getStartDate() == null ||
-        newLeague.getFinishedDate() == null || newLeague.getLastModifiedDate() == null)
+        if (newLeague.getName().isEmpty() || newLeague.getStartDate() == null)
             throw new InvalidArgumentException("Passed invalid arguments.");
 
         League leagueToChange = leagueRepository.findById(id)
@@ -144,6 +146,7 @@ public class LeagueService implements HandBallService<League>{
         leagueToChange.setStartDate(newLeague.getStartDate());
         leagueToChange.setLastModifiedDate(newLeague.getLastModifiedDate());
         leagueToChange.setFinishedDate(newLeague.getFinishedDate());
+        leagueToChange.setTeams(newLeague.getTeams());
 
         return leagueRepository.save(leagueToChange);
     }

@@ -39,15 +39,9 @@ export class UserService {
     this.utils.setStorageObject('user', user);
   }
 
-  async login(loginData: { email: string, password: string }) {
-    try {
-      const response = await this.apiService.post("/users/login", loginData);
-      console.log(response);
-      return response;
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
+  async login(loginData: { email: string, password: string }): Promise<ApiResponse> {
+      return await this.apiService.post("/users/login", loginData);
+
   }
 
   async updateUser(userId: number, user: User): Promise<ApiResponse> {
