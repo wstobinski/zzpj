@@ -4,14 +4,8 @@ import com.handballleague.DTO.GenerateScheduleDTO;
 import com.handballleague.exceptions.EntityAlreadyExistsException;
 import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
-import com.handballleague.model.League;
-import com.handballleague.model.Match;
-import com.handballleague.model.Round;
-import com.handballleague.model.Team;
-import com.handballleague.repositories.LeagueRepository;
-import com.handballleague.repositories.MatchRepository;
-import com.handballleague.repositories.RoundRepository;
-import com.handballleague.repositories.TeamRepository;
+import com.handballleague.model.*;
+import com.handballleague.repositories.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -30,21 +24,24 @@ public class LeagueService implements HandBallService<League>{
     private final TeamRepository teamRepository;
     private final RoundRepository roundRepository;
     private final MatchRepository matchRepository;
-
+    private final RefereeRepository refereeRepository;
     private final TeamContestService teamContestService;
 
     @Autowired
-    public LeagueService(LeagueRepository leagueRepository, TeamRepository teamRepository, RoundRepository roundRepository, MatchRepository matchRepository, @Lazy TeamContestService teamContestService) {
+    public LeagueService(LeagueRepository leagueRepository, TeamRepository teamRepository, RoundRepository roundRepository, MatchRepository matchRepository, RefereeRepository refereeRepository, @Lazy TeamContestService teamContestService) {
         this.leagueRepository = leagueRepository;
         this.teamRepository = teamRepository;
         this.roundRepository = roundRepository;
         this.matchRepository = matchRepository;
+        this.refereeRepository = refereeRepository;
         this.teamContestService = teamContestService;
     }
 
 
     @Transactional
-    public void generateSchedule(League league, GenerateScheduleDTO generateScheduleDTO) {
+
+    public void generateSchedule(League league, GenerateScheduleDTO generateScheduleDTO) throws EntityAlreadyExistsException{
+        if(league.isScheduleGenerated()) throw new EntityAlreadyExistsException("This league already has a schedule generated.");
         List<Team> teams = new ArrayList<>(league.getTeams());
         int numTeams = teams.size();
 
@@ -84,12 +81,14 @@ public class LeagueService implements HandBallService<League>{
                     newMatch.setHomeTeam(home);
                     newMatch.setAwayTeam(away);
                     newMatch.setRound(currentRound);
+                    newMatch.setReferee(drawReferee(match));
                     matchRepository.save(newMatch);
                 }
             }
 
             rotateTeams(teams);
         }
+        league.setScheduleGenerated(true);
     }
 
     // Rotate the list elements except the first one
@@ -105,6 +104,11 @@ public class LeagueService implements HandBallService<League>{
         }
         // Move the stored element to the end of the list
         teams.set(teams.size() - 1, temp);
+    }
+
+    public Referee drawReferee(int matchNumber) {
+        List<Referee> referees = refereeRepository.findAll();
+        return referees.get(matchNumber % referees.size());
     }
 
     @Override
@@ -214,6 +218,16 @@ public class LeagueService implements HandBallService<League>{
         leagueRepository.save(league);
 
         return league;
+    }
+
+    public List<Match> getAllMatchesInLeague(Long leagueId) {
+        List<Match> leagueMatches = new ArrayList<>();
+
+        for(Match m : matchRepository.findAll())
+            if(m.getRound().getContest().equals(getById(leagueId)))
+                leagueMatches.add(m);
+
+        return leagueMatches;
     }
 
 }

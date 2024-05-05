@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public interface PlayerRepository extends JpaRepository<Player, String> {
-
+    //TODO: ZAMIENIC STRING NA LONG I ZMIENIC CALY PLAYER SERVICE
     List<Player> findByTeam(Team team);
 
 }
