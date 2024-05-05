@@ -16,6 +16,9 @@ export class LeagueService {
     return await this.apiService.get<ApiResponse>("/leagues");
 
   }
+  async getLeagueById(leagueId: string): Promise<ApiResponse> {
+    return await this.apiService.get<ApiResponse>(`/leagues/${leagueId}`);
+  }
 
   async createLeague(league: League): Promise<ApiResponse> {
     return await this.apiService.post<ApiResponse>('/leagues', league);
@@ -32,4 +35,14 @@ export class LeagueService {
   async generateSchedule(leagueUuid: number, dto: GenerateScheduleDto): Promise<ApiResponse> {
     return await this.apiService.post<ApiResponse>(`/leagues/${leagueUuid}/generate-schedule`, dto);
   }
+
+  async getRounds(leagueUuid: number): Promise<ApiResponse> {
+    return await this.apiService.get<ApiResponse>(`/leagues/${leagueUuid}/rounds`);
+  }
+
+  async getMatches(leagueUuid: number): Promise<ApiResponse> {
+    return await this.apiService.get<ApiResponse>(`/leagues/${leagueUuid}/matches`);
+  }
+
+
 }

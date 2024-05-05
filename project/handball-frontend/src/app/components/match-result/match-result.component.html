@@ -1,0 +1,84 @@
+<form [formGroup]="scoreFormGroup" (keyup)="markUnsavedChanges()" (ngSubmit)="submitForm()">
+  <!-- First Form -->
+  <ion-item class="ion-align-self-center" lines="none">
+    <ion-text color="secondary">
+      <h3>Uzupełnij wyniki meczu</h3>
+    </ion-text>
+  </ion-item>
+  <div style="width: 50%; margin: auto">
+  <div formGroupName="homeScore">
+    <ion-text color="primary">
+      <h4>Wynik drużyny {{match.homeTeam.teamName}}</h4>
+    </ion-text>
+    <ion-item>
+      <ion-label position="floating">Liczba bramek</ion-label>
+      <ion-input formControlName="goals"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Liczba fauli</ion-label>
+      <ion-input formControlName="fouls"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Posiadanie piłki (%)</ion-label>
+      <ion-input formControlName="ballPossession"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Żółte kartki</ion-label>
+      <ion-input formControlName="yellowCards"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Czerwone kartki</ion-label>
+      <ion-input formControlName="redCards"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Kary czasowe</ion-label>
+      <ion-input formControlName="timePenalties"></ion-input>
+    </ion-item>
+  </div>
+
+  <!-- Second Form -->
+  <div formGroupName="awayScore">
+    <ion-text color="primary">
+      <h4>Wynik drużyny {{match.awayTeam.teamName}}</h4>
+    </ion-text>
+    <ion-item>
+      <ion-label position="floating">Liczba bramek</ion-label>
+      <ion-input formControlName="goals"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Liczba fauli</ion-label>
+      <ion-input formControlName="fouls"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Posiadanie piłki (%)</ion-label>
+      <ion-input formControlName="ballPossession"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Żółte kartki</ion-label>
+      <ion-input formControlName="yellowCards"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Czerwone kartki</ion-label>
+      <ion-input formControlName="redCards"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Kary czasowe</ion-label>
+      <ion-input formControlName="timePenalties"></ion-input>
+    </ion-item>
+  </div>
+
+  <ion-row class="ion-padding">
+    <ion-col size-lg="3" offset-lg="3">
+      <ion-button type="submit" color="primary" expand="block" [disabled]="!scoreFormGroup.valid">
+        <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
+        Zapisz
+      </ion-button>
+    </ion-col>
+    <ion-col size-lg="3">
+      <ion-button color="medium" expand="block" fill="outline" (click)="onCancel()">
+        Anuluj
+      </ion-button>
+    </ion-col>
+  </ion-row>
+  </div>
+</form>

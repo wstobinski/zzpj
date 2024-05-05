@@ -22,29 +22,25 @@
         <ion-icon name="server-outline" slot="start"></ion-icon>
         <ion-label>Zarządzanie ligami</ion-label>
       </ion-item>
-      <ion-accordion-group>
-        <ion-accordion value="first">
-          <ion-item slot="header" color="light">
-            <ion-icon name="basketball-outline" slot="start"></ion-icon>
-            <ion-label>Aktywne ligi</ion-label>
-          </ion-item>
-          <div class="ion-padding" slot="content">
-            <ion-item>
-              <ion-label>
-                Spring League
-              </ion-label>
+      @if (leagues) {
+        <ion-accordion-group>
+          <ion-accordion value="first">
+            <ion-item slot="header" color="light">
+              <ion-icon name="basketball-outline" slot="start"></ion-icon>
+              <ion-label>Aktywne ligi</ion-label>
             </ion-item>
-            <ion-item>
-              <ion-label>
-                Winter League
-              </ion-label>
-            </ion-item>
-          </div>
-        </ion-accordion>
-      </ion-accordion-group>
-
-
-
+            <div class="ion-padding" slot="content">
+              @for (league of leagues; track $index) {
+                <ion-item (click)="goToLeaguePanel(league)">
+                  <ion-label>
+                    {{league.name}}
+                  </ion-label>
+                </ion-item>
+              }
+            </div>
+          </ion-accordion>
+        </ion-accordion-group>
+      }
       @if (user) {
         <ion-item (click)="goTo('account')">
           <ion-icon name="key-outline" slot="start"></ion-icon>

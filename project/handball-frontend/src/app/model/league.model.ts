@@ -5,4 +5,6 @@ export class League {
   public name: string;
   public teams: Team[];
   public startDate: Date;
+  public finishedDate: Date;
+  public scheduleGenerated: boolean;
 }

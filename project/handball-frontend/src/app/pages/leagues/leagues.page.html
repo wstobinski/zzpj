@@ -18,6 +18,7 @@
         <ion-col>Nazwa ligi</ion-col>
         <ion-col>Liczba zespołów</ion-col>
         <ion-col>Data rozpoczęcia</ion-col>
+        <ion-col>Wygenerowany harmonogram</ion-col>
         <ion-col>Akcje</ion-col>
       </ion-row>
       @if (leagues) {
@@ -27,6 +28,11 @@
             <ion-col>{{league.name}}</ion-col>
             <ion-col>{{league.teams.length}}</ion-col>
             <ion-col>{{league.startDate | date: undefined:undefined:'pl-PL'}}</ion-col>
+            <ion-col>
+              @if (league.scheduleGenerated) {
+                <ion-icon style="font-size: 20px" name="checkmark-circle-outline"></ion-icon>
+              }
+            </ion-col>
             <ion-col>
               <ion-icon style="cursor: pointer" (click)="openPopover($event, league, actionButtons)" name="ellipsis-vertical-outline"></ion-icon>
             </ion-col>

@@ -38,9 +38,10 @@ public class LeagueController {
     }
 
     @GetMapping("/{leagueId}/rounds")
-    public ResponseEntity<?> getLeagueRounds(@PathVariable Long leagueId) {
-        List<Round> rounds = roundService.getByLeagueId(leagueId);
-        return ResponseEntity.ok(rounds);
+    public ResponseEntity<?> getLeagueRounds(@PathVariable Long leagueId, @RequestHeader(name = "Authorization") String token) {
+
+        return ResponseEntity.ok(Map.of("ok", true, "response", roundService.getByLeagueId(leagueId)));
+
     }
 
     @PostMapping
@@ -110,7 +111,7 @@ public class LeagueController {
     public ResponseEntity<?> getLeagueById(@PathVariable Long leagueId) {
 
         League league = leagueService.getById(leagueId);
-        return ResponseEntity.ok(league);
+        return ResponseEntity.ok(Map.of("ok", true, "response", league));
 
     }
 

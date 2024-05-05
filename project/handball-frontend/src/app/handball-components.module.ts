@@ -10,14 +10,18 @@ import {EditPlayerModalComponent} from "./components/edit-player-modal/edit-play
 import {TeamManagementComponent} from "./components/team-management/team-management.component";
 import {LeagueManagementComponent} from "./components/league-management/league-management.component";
 import {GenerateScheduleModalComponent} from "./components/generate-schedule-modal/generate-schedule-modal.component";
+import {NotFoundComponent} from "./components/not-found/not-found.component";
+import {MatchResultComponent} from "./components/match-result/match-result.component";
 
 @NgModule({
   declarations: [MainMenuComponent, TopToolbarComponent, EditTeamModalComponent,
     EditPlayerModalComponent, ActionMenuPopoverComponent, TeamManagementComponent,
-    LeagueManagementComponent, GenerateScheduleModalComponent],
+    LeagueManagementComponent, GenerateScheduleModalComponent, NotFoundComponent,
+    MatchResultComponent],
   exports: [MainMenuComponent, TopToolbarComponent, EditTeamModalComponent,
     EditPlayerModalComponent, ActionMenuPopoverComponent, TeamManagementComponent,
-    LeagueManagementComponent, GenerateScheduleModalComponent],
+    LeagueManagementComponent, GenerateScheduleModalComponent, NotFoundComponent,
+    MatchResultComponent],
   imports: [
     CommonModule,
     IonicModule,

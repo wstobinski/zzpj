@@ -1,5 +1,6 @@
 package com.handballleague.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,6 +17,7 @@ public class Match {
 
     @ManyToOne
     @JoinColumn(name = "round_id")
+    @JsonBackReference
     private Round round;
 
     @Column

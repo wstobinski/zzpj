@@ -1,6 +1,7 @@
 import {NgModule} from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import {AuthenticatedGuard} from "./guards/authenticated.guard";
+import {NotFoundComponent} from "./components/not-found/not-found.component";
 
 const routes: Routes = [
   {
@@ -36,6 +37,16 @@ const routes: Routes = [
     loadChildren: () => import('./pages/leagues/leagues.module').then( m => m.LeaguesPageModule),
     canActivate: [AuthenticatedGuard]
   },
+  {
+    path: 'league-panel/:leagueId',
+    loadChildren: () => import('./pages/league-panel/league-panel.module').then( m => m.LeaguePanelPageModule),
+    canActivate: [AuthenticatedGuard]
+  },
+  { path: '404',
+    component: NotFoundComponent },
+  { path: '**',
+    redirectTo: '/404' }
+
 
 
 

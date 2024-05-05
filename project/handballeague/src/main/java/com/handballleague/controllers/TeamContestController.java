@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "api/v1/team-contests")
@@ -73,6 +74,12 @@ public class TeamContestController {
         } else {
             return response;
         }
+    }
+
+    @GetMapping("/for-league/{leagueId}")
+    public ResponseEntity<?> getTeamContestsForLeague(@PathVariable Long leagueId) {
+        List<TeamContest> teamContests = teamContestService.findTeamContestsInCertainLeague(leagueId);
+        return ResponseEntity.ok(Map.of("ok", true, "response", teamContests));
     }
 
 }
