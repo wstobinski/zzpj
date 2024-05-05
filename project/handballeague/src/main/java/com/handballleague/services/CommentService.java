@@ -2,6 +2,7 @@ package com.handballleague.services;
 
 import com.handballleague.exceptions.EntityAlreadyExistsException;
 import com.handballleague.exceptions.InvalidArgumentException;
+import com.handballleague.exceptions.InvalidCommentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
 import com.handballleague.model.Comment;
 import com.handballleague.repositories.CommentRepository;
@@ -30,8 +31,24 @@ public class CommentService implements HandBallService<Comment> {
                 entity.getReferee()== null ||
                 entity.getMatch() == null) throw new InvalidArgumentException("Comment content cannot be empty and author must be specified.");
 
+        if(!isCommentValid(entity)) throw new InvalidCommentException("Comment can not be created.");
+
         commentRepository.save(entity);
         return entity;
+    }
+
+    private boolean isCommentValid(Comment comment) throws InvalidCommentException {
+        if(!comment.getMatch().isFinished())
+            throw new InvalidCommentException("This match was not yet finished. Finish this match to unlock adding comments.");
+        if(comment.getMatch().getReferee() != comment.getReferee())
+            throw new InvalidCommentException("Referee wan not conducting this match.");
+        if(!comment.getMatch().getHomeTeam().getPlayers().contains(comment.getAuthor()) &&
+                !comment.getMatch().getAwayTeam().getPlayers().contains(comment.getAuthor()))
+            throw new InvalidCommentException("Author is not a player for any of teams playing in this match.");
+        if(!comment.getAuthor().isCaptain())
+            throw new InvalidCommentException("Author is not a captain of any team playing in this match.");
+
+        return true;
     }
 
     @Override
