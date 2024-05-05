@@ -112,15 +112,17 @@ public class LeagueService implements HandBallService<League>{
     }
 
     @Override
+    @Transactional
     public League create(League league) throws InvalidArgumentException, EntityAlreadyExistsException {
         if(league == null) throw new InvalidArgumentException("Passed parameter is invalid");
         if(checkIfEntityExistsInDb(league)) throw new EntityAlreadyExistsException("League with given data already exists in the database");
         if(league.getName().isEmpty() ||
             league.getStartDate() == null) throw new InvalidArgumentException("At least one of league parameters is invalid.");
-
-        leagueRepository.save(league);
-
-        return league;
+        League createdLeague = leagueRepository.save(league);
+        for (Team team: createdLeague.getTeams()) {
+            teamContestService.create(createdLeague.getUuid(), team.getUuid());
+        }
+        return createdLeague;
     }
 
     @Override
