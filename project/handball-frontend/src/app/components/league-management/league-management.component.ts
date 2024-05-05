@@ -47,7 +47,7 @@ export class LeagueManagementComponent  implements OnInit {
       });
     }
     // todo getFreeTeams(). concat freeTeams with current league teams
-    this.teamsService.getAllTeams().then(r => {
+    this.teamsService.getFreeAgents().then(r => {
       if (r.ok) {
         this.availableTeams = r.response;
       } else {
@@ -80,6 +80,10 @@ export class LeagueManagementComponent  implements OnInit {
   }
   onLeagueEdit() {
 
+    const startDateString = this.leagueFormGroup.get('startDate').value as string;
+    const midnightDate = startDateString.split('T')[0].concat("T00:00:00");
+    this.leagueFormGroup.get('startDate').setValue(midnightDate);
+    console.log(this.leagueFormGroup);
     this.league = Object.assign(this.league, this.leagueFormGroup.value);
     if (this.mode === 'EDIT') {
       this.leagueService.updateLeague(this.league).then(r => {

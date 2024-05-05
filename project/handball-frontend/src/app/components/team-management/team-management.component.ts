@@ -51,7 +51,7 @@ export class TeamManagementComponent implements OnInit {
       });
     }
     // todo getFreeAgents(). concat freeAgents with current team players
-    this.playersService.getAllPlayers().then(r => {
+    this.playersService.getFreeAgents().then(r => {
       if (r.ok) {
         this.availablePlayers = r.response;
       } else {

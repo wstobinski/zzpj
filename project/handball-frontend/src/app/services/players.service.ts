@@ -18,6 +18,12 @@ export class PlayersService {
 
   }
 
+  async getFreeAgents(): Promise<ApiResponse> {
+
+    return await this.apiService.get<ApiResponse>("/players/free-agents", {});
+
+  }
+
   async deletePlayer(playerId: number): Promise<ApiResponse> {
     return await this.apiService.delete(`/players/${playerId}`);
   }

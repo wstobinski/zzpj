@@ -28,7 +28,7 @@ export class ApiService {
     }
   }
 
-  async post(url: string, body: any | null, options?: {
+  async post<ApiResponse>(url: string, body: any | null, options?: {
     headers?: HttpHeaders;
     params?: HttpParams
   }): Promise<ApiResponse> {

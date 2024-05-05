@@ -1,5 +1,6 @@
 package com.handballleague.controllers;
 
+import com.handballleague.DTO.GenerateScheduleDTO;
 import com.handballleague.model.League;
 import com.handballleague.model.Round;
 import com.handballleague.services.JWTService;
@@ -68,12 +69,12 @@ public class LeagueController {
     }
 
     @PostMapping("/{leagueId}/generate-schedule")
-    public ResponseEntity<?> generateScheduleForLeague(@PathVariable Long leagueId, @RequestBody LocalDateTime startDate, @RequestHeader(name = "Authorization") String token) {
+    public ResponseEntity<?> generateScheduleForLeague(@PathVariable Long leagueId, @RequestBody GenerateScheduleDTO generateScheduleDTO, @RequestHeader(name = "Authorization") String token) {
         ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
         if (response.getStatusCode().is2xxSuccessful()) {
             League league = leagueService.getById(leagueId);
-            leagueService.generateSchedule(league, startDate);
-            return ResponseEntity.ok("Schedule generated successfully");
+            leagueService.generateSchedule(league, generateScheduleDTO);
+            return ResponseEntity.ok(Map.of("ok", true, "message", "Schedule generated successfully"));
         } else {
             return response;
         }

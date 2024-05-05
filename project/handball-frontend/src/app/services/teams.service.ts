@@ -20,6 +20,12 @@ export class TeamsService {
 
   }
 
+  async getFreeAgents(): Promise<ApiResponse> {
+
+    return await this.apiService.get<ApiResponse>("/teams/free-agents", {});
+
+  }
+
   async createTeam(team: Team): Promise<ApiResponse> {
     return await this.apiService.post("/teams", team);
   }

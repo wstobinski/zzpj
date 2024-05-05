@@ -9,14 +9,15 @@ import {ActionMenuPopoverComponent} from "./components/action-menu-popover/actio
 import {EditPlayerModalComponent} from "./components/edit-player-modal/edit-player-modal.component";
 import {TeamManagementComponent} from "./components/team-management/team-management.component";
 import {LeagueManagementComponent} from "./components/league-management/league-management.component";
+import {GenerateScheduleModalComponent} from "./components/generate-schedule-modal/generate-schedule-modal.component";
 
 @NgModule({
   declarations: [MainMenuComponent, TopToolbarComponent, EditTeamModalComponent,
     EditPlayerModalComponent, ActionMenuPopoverComponent, TeamManagementComponent,
-    LeagueManagementComponent],
+    LeagueManagementComponent, GenerateScheduleModalComponent],
   exports: [MainMenuComponent, TopToolbarComponent, EditTeamModalComponent,
     EditPlayerModalComponent, ActionMenuPopoverComponent, TeamManagementComponent,
-    LeagueManagementComponent],
+    LeagueManagementComponent, GenerateScheduleModalComponent],
   imports: [
     CommonModule,
     IonicModule,

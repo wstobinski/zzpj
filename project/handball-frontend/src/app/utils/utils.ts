@@ -103,4 +103,16 @@ export class Utils {
       : null;
   };
 
+  hourValidator: ValidatorFn = (
+    control: AbstractControl,
+  ): ValidationErrors | null => {
+    const hourRegex = new RegExp('^([01][0-9]|2[0-3]):[0-5][0-9]$');
+    const hour = control.value;
+    const passwordConfirm = control.get('passwordConfirm');
+
+    return hour && hourRegex.test(hour)
+      ? null
+      : {hour: true};
+  };
+
 }

@@ -1,11 +1,15 @@
 import {Component, OnInit} from '@angular/core';
 import {GenericPage} from "../generic/generic.page";
 import {LoadingService} from "../../services/loading.service";
-import {PopoverController} from "@ionic/angular";
+import {ModalController, PopoverController} from "@ionic/angular";
 import {ActionButton} from "../../model/action-button.model";
 import {League} from "../../model/league.model";
 import {LeagueService} from "../../services/league.service";
 import {Utils} from "../../utils/utils";
+import {EditPlayerModalComponent} from "../../components/edit-player-modal/edit-player-modal.component";
+import {
+  GenerateScheduleModalComponent
+} from "../../components/generate-schedule-modal/generate-schedule-modal.component";
 
 @Component({
   selector: 'app-leagues',
@@ -20,7 +24,8 @@ export class LeaguesPage extends GenericPage implements OnInit {
   constructor(loadingService: LoadingService,
               popoverController: PopoverController,
               private leaguesService: LeagueService,
-              private utils: Utils) {
+              private utils: Utils,
+              private modalController: ModalController) {
     super(loadingService, popoverController);
   }
 
@@ -33,6 +38,10 @@ export class LeaguesPage extends GenericPage implements OnInit {
         buttonAction: this.onLeagueToEditSelected.bind(this)
       },
       {
+        buttonName: "Wygeneruj harmonogram",
+        buttonAction: this.onLeagueGenerateSchedule.bind(this)
+      },
+      {
         buttonName: "Usuń ligę",
         buttonAction: this.deleteLeague.bind(this),
         actionColor: 'danger'
@@ -40,6 +49,36 @@ export class LeaguesPage extends GenericPage implements OnInit {
     ]
   }
 
+  async onLeagueGenerateSchedule(league: League) {
+    const modal = await this.modalController.create({
+      component: GenerateScheduleModalComponent,
+      componentProps: {
+        title: "Generuj harmonogram ligi",
+        league
+      }
+    });
+    modal.onWillDismiss().then(async data => {
+      if (data && data.data && data.role === 'submit') {
+        this.leaguesService.generateSchedule(league.uuid, data.data).then(async r => {
+          if (r.ok) {
+            this.utils.presentInfoToast("Generowanie harmonogramu przebiegło pomyślnie");
+          } else {
+            this.utils.presentAlertToast("Wystąpił błąd podczas generowania harmonogramu");
+          }
+        }).catch(e => {
+          console.log(e);
+          if (e.status === 401) {
+            this.utils.presentAlertToast("Wystąpił błąd podczas generowania harmonogramu. Twoja sesja wygasła. Zaloguj się ponownie");
+          } else {
+            this.utils.presentAlertToast("Wystąpił błąd podczas generowania harmonogramu");
+          }
+        });
+      }
+    });
+    return await modal.present();
+
+
+  }
 
   onLeagueToEditSelected(league: League) {
     this.leagueToEdit = league;
