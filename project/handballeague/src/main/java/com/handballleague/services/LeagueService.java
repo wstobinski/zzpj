@@ -102,9 +102,9 @@ public class LeagueService implements HandBallService<League>{
         teams.set(teams.size() - 1, temp);
     }
 
-    public Referee drawReferee(int roundNumber) {
+    public Referee drawReferee(int matchNumber) {
         List<Referee> referees = refereeRepository.findAll();
-        return referees.get(roundNumber % referees.size());
+        return referees.get(matchNumber % referees.size());
     }
 
     @Override
