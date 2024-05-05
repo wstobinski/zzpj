@@ -31,7 +31,10 @@ public class Comment {
     private Player author;
 
     @Column(nullable = false)
-    private LocalDateTime createdDate;
+    private LocalDateTime createdDate = LocalDateTime.now();
+
+    @Column
+    private boolean isEdited = false;
 
     public Comment(String content, Match match, Referee referee, Player author) {
         this.content = content;
