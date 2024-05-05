@@ -1,9 +1,7 @@
 package com.handballleague.controllers;
 
-import com.handballleague.model.Player;
 import com.handballleague.model.Referee;
 import com.handballleague.services.JWTService;
-import com.handballleague.services.PlayerService;
 import com.handballleague.services.RefereeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +45,7 @@ public class RefereeController {
         ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "captain");
         if (response.getStatusCode().is2xxSuccessful() || response2.getStatusCode().is2xxSuccessful()) {
             Referee newReferee = refereeService.create(referee);
-            return ResponseEntity.ok().body(Map.of("message", "Player created successfully",
+            return ResponseEntity.ok().body(Map.of("message", "Referee created successfully",
                     "response", newReferee,
                     "ok", true));
         } else {
@@ -56,7 +54,7 @@ public class RefereeController {
     }
 
     @DeleteMapping(path = "/{refereeId}")
-    public ResponseEntity<?> deletePlayer(@PathVariable("refereeId") Long id, @RequestHeader(name = "Authorization") String token) {
+    public ResponseEntity<?> deleteReferee(@PathVariable("refereeId") Long id, @RequestHeader(name = "Authorization") String token) {
         ResponseEntity<?> response1 = jwtService.handleAuthorization(token, "admin");
         ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "captain");
         if (response1.getStatusCode().is2xxSuccessful() || response2.getStatusCode().is2xxSuccessful()) {

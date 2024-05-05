@@ -3,8 +3,6 @@ package com.handballleague.services;
 import com.handballleague.exceptions.EntityAlreadyExistsException;
 import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
-import com.handballleague.model.Match;
-import com.handballleague.model.Player;
 import com.handballleague.model.Referee;
 import com.handballleague.repositories.MatchRepository;
 import com.handballleague.repositories.RefereeRepository;
@@ -31,7 +29,7 @@ public class RefereeService implements HandBallService<Referee>{
         if(checkIfEntityExistsInDb(entity)) throw new EntityAlreadyExistsException("Referee with given data already exists in the database");
         if(entity.getFirstName().isEmpty() ||
                 entity.getLastName().isEmpty() ||
-                entity.getPhoneNumber().isEmpty()) throw new InvalidArgumentException("At least one of players parameters is invalid.");
+                entity.getPhoneNumber().isEmpty()) throw new InvalidArgumentException("At least one of referee parameters is invalid.");
         refereeRepository.save(entity);
 
         return entity;
@@ -53,10 +51,10 @@ public class RefereeService implements HandBallService<Referee>{
         if (id <= 0)
             throw new InvalidArgumentException("Passed id is invalid.");
         if (entity == null)
-            throw new InvalidArgumentException("New player is null.");
+            throw new InvalidArgumentException("New refere is null.");
         if(entity.getFirstName().isEmpty() ||
                 entity.getLastName().isEmpty() ||
-                entity.getPhoneNumber().isEmpty()) throw new InvalidArgumentException("At least one of players parameters is invalid.");
+                entity.getPhoneNumber().isEmpty()) throw new InvalidArgumentException("At least one of referees parameters is invalid.");
 
         Referee refereeToChange = refereeRepository.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundInDataBaseException("Referee with given id was not found in the database."));
