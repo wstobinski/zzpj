@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -180,6 +181,14 @@ public class MatchService implements HandBallService<Match>{
         } else {
             return 0;
         }
+    }
+
+    public List<Match> getFinishedMatches(){
+        List<Match> finishedMatches = new ArrayList<>();
+        for(Match m : getAll()) {
+            if(m.isFinished()) finishedMatches.add(m);
+        }
+        return finishedMatches;
     }
 
 }

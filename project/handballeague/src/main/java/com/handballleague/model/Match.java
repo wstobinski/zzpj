@@ -29,7 +29,9 @@ public class Match {
     @JoinColumn(name = "away_team_id", referencedColumnName = "uuid")
     private Team awayTeam;
 
-    //TODO: Add referee
+    @ManyToOne
+    @JoinColumn(name = "referee_id", referencedColumnName = "uuid")
+    private Referee referee;
 
     @Column
     private boolean isFinished = false;

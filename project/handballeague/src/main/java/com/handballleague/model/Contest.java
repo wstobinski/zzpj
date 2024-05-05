@@ -24,6 +24,8 @@ public abstract class Contest {
     private LocalDateTime lastModifiedDate;
     @Column(nullable = true)
     private LocalDateTime finishedDate;
+    @Column(nullable = false)
+    private boolean isScheduleGenerated = false;
 
     public Contest(String name, LocalDateTime startDate) {
         this.name = name;
