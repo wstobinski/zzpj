@@ -39,7 +39,7 @@ public class EmailService {
 
     public Message sendEmail(String email) {
         if (email == null) throw new InvalidArgumentException("Passed email is invalid.");
-        Optional<User> optionalUser = Optional.ofNullable(userRepository.findByEmail(email));
+        Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty())
             throw new ObjectNotFoundInDataBaseException("User with given email was not found in database.");
         String host = "poczta.interia.pl";
@@ -69,7 +69,7 @@ public class EmailService {
 
             Transport.send(message);
 
-            User user= userRepository.findByEmail(email);
+            User user= userRepository.findByEmail(email).orElseThrow(() -> new ObjectNotFoundInDataBaseException("User with given email was not found in database."));
             System.out.println(code);
             user.setCode(code);
             userRepository.save(user);

@@ -17,6 +17,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.BeforeEach;
+
+import java.util.Optional;
+
 @ExtendWith(MockitoExtension.class)
 class EmailServiceTest {
     @Mock
@@ -52,7 +55,7 @@ class EmailServiceTest {
     void sendEmail_UserNotFound_ThrowsException() {
         // Given
         String email = "nonexistent@example.com";
-        when(userRepository.findByEmail(email)).thenReturn(null);
+        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
 
         // When & Then
         assertThatThrownBy(() -> emailService.sendEmail(email))
