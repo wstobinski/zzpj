@@ -22,9 +22,6 @@ public class UserService implements HandBallService<User> {
     private final UserRepository userRepository;
     private final JWTService jwtService;
 
-    @Value("${mail.password}")
-    private String password;
-
     @Autowired
     public UserService(UserRepository userRepository, JWTService jwtService) {
         this.userRepository = userRepository;
@@ -42,6 +39,7 @@ public class UserService implements HandBallService<User> {
         if (entity.getEmail().isEmpty() ||
                 entity.getRole().isEmpty())
             throw new InvalidArgumentException("At least one of user parameters is invalid.");
+        entity.setPassword(BCrypt.hashpw(entity.getPassword(), BCrypt.gensalt()));
         return userRepository.save(entity);
     }
 
