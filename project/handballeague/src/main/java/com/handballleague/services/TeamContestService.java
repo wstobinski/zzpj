@@ -117,8 +117,8 @@ public class TeamContestService implements HandBallService<TeamContest>{
 
 
     public boolean checkIfEntityExistsInDb(Long teamID, Long leagueID) {
-        return teamContestRepository.findAll().stream().filter(teamContest -> teamContest.getTeam().getUuid().equals(teamID)
-                && teamContest.getLeague().getUuid().equals(leagueID)).toList().size() > 0;
+        return !teamContestRepository.findAll().stream().filter(teamContest -> teamContest.getTeam().getUuid().equals(teamID)
+                && teamContest.getLeague().getUuid().equals(leagueID)).toList().isEmpty();
 
     }
 
@@ -128,6 +128,5 @@ public class TeamContestService implements HandBallService<TeamContest>{
 
     public List<TeamContest> findTeamContestsForTeam(Long teamId) {
         return teamContestRepository.findAll().stream().filter(teamContest -> teamContest.getTeam().getUuid().equals(teamId)).toList();
-
     }
 }

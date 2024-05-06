@@ -60,10 +60,10 @@ public class JWTService {
     }
 
     public ResponseEntity<?> handleAuthorization(String token, String roleToCheck) {
-        if  (token == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("JWT token missing");
-        if (isTokenExpired(token)) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired JWT token");
-        if (!roleToCheck.equals(extractRole(token))) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Insufficient role");
-        return ResponseEntity.ok("Token and role are valid");
+        if  (token == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("ok", false, "message", "JWT token missing"));
+        if (isTokenExpired(token)) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("ok", false, "message", "JWT token expired"));
+        if (!roleToCheck.equals(extractRole(token))) return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("ok", false, "message", "Insufficient role"));
+        return ResponseEntity.ok(Map.of("ok", true, "message", "Token and role are valid"));
     }
 
 }

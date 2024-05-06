@@ -3,6 +3,7 @@ package com.handballleague.servicesTests;
 import com.handballleague.exceptions.EntityAlreadyExistsException;
 import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
+import com.handballleague.model.Team;
 import com.handballleague.model.User;
 import com.handballleague.repositories.UserRepository;
 import com.handballleague.services.JWTService;
@@ -18,6 +19,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -114,7 +117,7 @@ public class UserServiceTests {
         String hashedPassword = BCrypt.hashpw(existingUser.getPassword(), BCrypt.gensalt());
         existingUserWithHash.setPassword(hashedPassword);
 
-        when(userRepository.findByEmail(existingUser.getEmail())).thenReturn(existingUserWithHash);
+        when(userRepository.findByEmail(existingUser.getEmail())).thenReturn(Optional.of(existingUserWithHash));
         when(jwtService.generateToken(existingUser)).thenReturn("generatedToken");
 
         // When
@@ -130,12 +133,11 @@ public class UserServiceTests {
         // Given
         String email = "nonexisting@example.com";
         User nonExistingUser = new User(email, "password", "user");
-        when(userRepository.findByEmail(email)).thenReturn(null);
-
-        // When & Then
         assertThatThrownBy(() -> userService.logInUser(nonExistingUser))
                 .isInstanceOf(ObjectNotFoundInDataBaseException.class)
-                .hasMessageContaining("User does not exist.");
+                .hasMessageContaining("User with given email does not exist in database");
+
+
     }
 
     @Test
@@ -146,7 +148,7 @@ public class UserServiceTests {
         String wrongPassword = "wrongpassword";
         String hashedPassword = BCrypt.hashpw(correctPassword, BCrypt.gensalt());
         User existingUser = new User(email, hashedPassword, "user");
-        when(userRepository.findByEmail(email)).thenReturn(existingUser);
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(existingUser));
 
         // When & Then
         assertThatThrownBy(() -> userService.logInUser(new User(email, wrongPassword, "user")))

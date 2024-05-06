@@ -5,6 +5,7 @@ import {UserService} from "../../services/user.service";
 import {Subscription} from "rxjs";
 import {User} from "../../model/user.model";
 import {Utils} from "../../utils/utils";
+import {AuthService} from "../../services/auth.service";
 
 @Component({
   selector: 'app-main-menu',
@@ -16,7 +17,7 @@ export class MainMenuComponent  implements OnInit {
   constructor(private router: Router,
               private menu: MenuController,
               private userService: UserService,
-              private utils: Utils) { }
+              private authService: AuthService) { }
 
   user: User;
   userSub: Subscription;
@@ -33,17 +34,8 @@ export class MainMenuComponent  implements OnInit {
     this.menu.close();
   }
 
-  getLoginPageName() {
-    return this.user ? "Account" : "Login";
-  }
-
-  getLoginPageIcon() {
-    return this.user ? "key-outline" : "log-in-outline";
-  }
-
   logout() {
-    this.utils.removeStorageObject('user').then(() => {
-      window.location.reload();
-    });
+    this.authService.logout();
+    this.router.navigateByUrl('/home');
   }
 }

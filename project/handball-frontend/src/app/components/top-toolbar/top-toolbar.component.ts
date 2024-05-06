@@ -4,6 +4,7 @@ import {UserService} from "../../services/user.service";
 import {Subscription} from "rxjs";
 import {Utils} from "../../utils/utils";
 import {Router} from "@angular/router";
+import {AuthService} from "../../services/auth.service";
 
 @Component({
   selector: 'app-top-toolbar',
@@ -15,7 +16,8 @@ export class TopToolbarComponent  implements OnInit {
   user: User;
   userSub: Subscription;
   constructor(private userService: UserService,
-              private router: Router) { }
+              private router: Router,
+              private authService: AuthService) { }
 
   ngOnInit() {
 
@@ -25,7 +27,8 @@ export class TopToolbarComponent  implements OnInit {
   }
 
   logout() {
-
+    this.authService.logout();
+    this.router.navigateByUrl('/home');
   }
 
   goTo(pageName: string) {

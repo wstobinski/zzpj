@@ -1,7 +1,6 @@
 package com.handballleague.controllers;
 
 import com.handballleague.model.Player;
-import com.handballleague.model.TeamContest;
 import com.handballleague.services.JWTService;
 import com.handballleague.services.PlayerService;
 import jakarta.validation.Valid;
@@ -25,10 +24,19 @@ public class PlayerController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getTeams() {
+    public ResponseEntity<?> getPlayers() {
 
         List<Player> players = playerService.getAll();
-        return ResponseEntity.ok(players);
+        return ResponseEntity.ok().body(Map.of("response", players,
+                "ok", true));
+
+    }
+
+    @GetMapping("/free-agents")
+    public ResponseEntity<?> getFreeAgents() {
+        List<Player> players = playerService.getFreeAgents();
+        return ResponseEntity.ok().body(Map.of("response", players,
+                "ok", true));
 
     }
 
@@ -37,8 +45,10 @@ public class PlayerController {
         ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
         ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "captain");
         if (response.getStatusCode().is2xxSuccessful() || response2.getStatusCode().is2xxSuccessful()) {
-            playerService.create(player);
-            return ResponseEntity.ok("Player created successfully");
+            Player newPlayer = playerService.create(player);
+            return ResponseEntity.ok().body(Map.of("message", "Player created successfully",
+                    "response", newPlayer,
+                    "ok", true));
         } else {
             return response2;
         }
@@ -50,9 +60,7 @@ public class PlayerController {
         ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "captain");
         if (response1.getStatusCode().is2xxSuccessful() || response2.getStatusCode().is2xxSuccessful()) {
             boolean deleted = playerService.delete(id);
-            Map<String, Boolean> response = new HashMap<>();
-            response.put("Deleted state", deleted);
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(Map.of("ok", deleted));
         } else {
             return response2;
         }
@@ -72,7 +80,7 @@ public class PlayerController {
         ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "captain");
         if (response.getStatusCode().is2xxSuccessful() || response2.getStatusCode().is2xxSuccessful()) {
             Player newPlayer = playerService.update(playerId, player);
-            return ResponseEntity.ok(newPlayer);
+            return ResponseEntity.ok(Map.of("ok", true, "response", newPlayer));
         } else {
             return response2;
         }

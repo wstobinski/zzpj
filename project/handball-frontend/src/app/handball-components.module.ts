@@ -4,10 +4,20 @@ import {IonicModule} from "@ionic/angular";
 import {CommonModule} from "@angular/common";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {TopToolbarComponent} from "./components/top-toolbar/top-toolbar.component";
+import {EditTeamModalComponent} from "./components/edit-team-modal/edit-team-modal.component";
+import {ActionMenuPopoverComponent} from "./components/action-menu-popover/action-menu-popover.component";
+import {EditPlayerModalComponent} from "./components/edit-player-modal/edit-player-modal.component";
+import {TeamManagementComponent} from "./components/team-management/team-management.component";
+import {LeagueManagementComponent} from "./components/league-management/league-management.component";
+import {GenerateScheduleModalComponent} from "./components/generate-schedule-modal/generate-schedule-modal.component";
 
 @NgModule({
-  declarations: [MainMenuComponent, TopToolbarComponent],
-  exports: [MainMenuComponent, TopToolbarComponent],
+  declarations: [MainMenuComponent, TopToolbarComponent, EditTeamModalComponent,
+    EditPlayerModalComponent, ActionMenuPopoverComponent, TeamManagementComponent,
+    LeagueManagementComponent, GenerateScheduleModalComponent],
+  exports: [MainMenuComponent, TopToolbarComponent, EditTeamModalComponent,
+    EditPlayerModalComponent, ActionMenuPopoverComponent, TeamManagementComponent,
+    LeagueManagementComponent, GenerateScheduleModalComponent],
   imports: [
     CommonModule,
     IonicModule,

@@ -3,6 +3,7 @@ import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, 
 import {Utils} from "../../utils/utils";
 import {AuthService} from "../../services/auth.service";
 import {UserService} from "../../services/user.service";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
   selector: 'app-login',
@@ -18,7 +19,10 @@ export class LoginPage implements OnInit {
 
   constructor(private formBuilder: FormBuilder,
               private utils: Utils,
-              private userService: UserService) { }
+              private userService: UserService,
+              private authService: AuthService,
+              private route: ActivatedRoute,
+              private router: Router) { }
 
   ngOnInit() {
 
@@ -33,17 +37,24 @@ export class LoginPage implements OnInit {
     this.loginFormPresented = !this.loginFormPresented;
     if (this.activationForm == null) {
       this.activationForm = this.formBuilder.group({
-        code: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(8)]],
+        code: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]],
         password: ['', [Validators.required, Validators.minLength(8)]],
-        passwordConfirm: ['', [Validators.required, Validators.minLength(8)]]
-      }, {validators: this.passwordMismatchValidator});
+        passwordConfirm: ['', [Validators.required]]
+      }, {validators: this.utils.passwordMismatchValidator});
     }
   }
 
   onLogin() {
     const requestObj = this.loginForm.getRawValue();
     console.log(requestObj);
-    this.userService.login(requestObj).then(r => console.log(r));
+    this.userService.login(requestObj).then(r => {
+      console.log(r);
+      this.authService.setUserAuthData(r.response.token);
+      this.userService.setUser(r.response.user);
+      console.log(this.route);
+      const redirectURL = this.route.snapshot.params['returnUrl'] || '/home';
+      this.router.navigateByUrl(redirectURL);
+    });
 
 
   }
@@ -52,11 +63,11 @@ export class LoginPage implements OnInit {
   }
 
   getCardTitle() {
-    return this.loginFormPresented ? "Login to Handball League" : "Activate your Handball League Account"
+    return this.loginFormPresented ? "Zaloguj się do Handball League" : "Aktywuj swoje konto Handball League"
   }
 
   getCardSubtitle() {
-    return this.loginFormPresented ? "Got activation code? Activate your account here!" : "Already have an account? Login here!"
+    return this.loginFormPresented ? "Masz kod aktywacyjny? Aktywuj konto tutaj!" : "Masz już konto? Zaloguj się tutaj!"
   }
 
 
@@ -68,15 +79,6 @@ export class LoginPage implements OnInit {
     return formGroup.hasError(errorType) && formGroup.touched;
   }
 
-  passwordMismatchValidator: ValidatorFn = (
-    control: AbstractControl,
-  ): ValidationErrors | null => {
-    const password = control.get('password');
-    const passwordConfirm = control.get('passwordConfirm');
 
-    return password && passwordConfirm && password.value !== passwordConfirm.value
-      ? { passwordMismatch: true }
-      : null;
-  };
 
 }

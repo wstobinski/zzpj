@@ -1,0 +1,91 @@
+<div style="width: 50%; margin: auto">
+  <ion-text color="secondary">
+    @if (mode === 'EDIT') {
+      <h3>Dane ligi {{ league.name }}</h3>
+    } @else {
+      <h3>Wprowadź dane nowej ligi</h3>
+    }
+  </ion-text>
+  <form [formGroup]="leagueFormGroup" (keyup)="markUnsavedChanges()" (ngSubmit)="onLeagueEdit()">
+    <ion-list>
+      <ion-item>
+        <ion-label position="floating">Nazwa ligi</ion-label>
+        <ion-input formControlName="name"></ion-input>
+      </ion-item>
+      @if (formHasError('name', 'required')) {
+        <ion-item lines="none">
+          <ion-label class="error-label">
+            Nazwa ligi jest wymagana
+          </ion-label>
+        </ion-item>
+      }
+      <ion-item>
+        <ion-select [multiple]="true" cancel-text="Anuluj" label-placement="floating" label="Zespoły"
+                    formControlName="teams">
+          @for (team of league.teams; track $index) {
+            <ion-select-option [value]="team">{{ team.teamName }}</ion-select-option>
+          }
+          @for (team of availableTeams; track $index) {
+            <ion-select-option [value]="team">{{ team.teamName }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+      <ion-text color="primary">
+        <h3 style="margin-left: 16px">Data rozpoczęcia</h3>
+      </ion-text>
+      <ion-text color="secondary">
+        @if (!leagueFormGroup.controls['startDate'].value) {
+          <h5 style="margin-left: 16px">Wybierz datę rozpoczęcia rozgrywek ligowych</h5>
+        } @else {
+          <h5 style="margin-left: 16px">Wybrana data
+            rozpoczęcia: {{ leagueFormGroup.controls['startDate'].value | date: 'YYYY-MM-dd' }}</h5>
+        }
+      </ion-text>
+      <ion-item>
+        <ion-datetime presentation="date" [firstDayOfWeek]="1" formControlName="startDate" locale="pl-PL"></ion-datetime>
+      </ion-item>
+    </ion-list>
+
+    <ion-item>
+      <ion-toggle (ionChange)="onToggleChange($event)">Podgląd wybranych zespołów</ion-toggle>
+    </ion-item>
+
+    @if (teamsDetailsToggle) {
+      @if (leagueFormGroup.controls['teams'].value && leagueFormGroup.controls['teams'].value.length > 0) {
+        <ion-list>
+          @for (team of leagueFormGroup.controls['teams'].value; track $index) {
+            <ion-item lines="none">
+              <ion-text color="secondary">
+                <h5>Zespół nr {{ $index + 1 }}</h5>
+              </ion-text>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Nazwa zespołu</ion-label>
+              <ion-input [value]="team.teamName" readonly="true"></ion-input>
+            </ion-item>
+          }
+        </ion-list>
+      } @else {
+        <ion-item lines="none">
+          <ion-text color="primary">
+            <h3>Liga nie posiada jeszcze przypisanych zespołów</h3>
+          </ion-text>
+        </ion-item>
+      }
+    }
+
+    <ion-row class="ion-padding">
+      <ion-col size-lg="3" offset-lg="3">
+        <ion-button type="submit" color="primary" expand="block" [disabled]="!leagueFormGroup.valid">
+          <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
+          Zapisz
+        </ion-button>
+      </ion-col>
+      <ion-col size-lg="3">
+        <ion-button color="medium" expand="block" fill="outline" (click)="onCancel()">
+          Anuluj
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </form>
+</div>

@@ -1,0 +1,39 @@
+<app-top-toolbar title="Zawodnicy"></app-top-toolbar>
+@if (isLoading) {
+  <ion-progress-bar type="indeterminate"></ion-progress-bar>
+}
+<ion-content>
+
+  <ion-item class="ion-align-self-center" lines="none">
+    <ion-text color="secondary">
+      <h3>Lista zawodników</h3>
+    </ion-text>
+  </ion-item>
+  <div class="ion-text-right">
+    <ion-button (click)="openPlayerDetailsModal(null, 'ADD')">Dodaj nowego zawodnika</ion-button>
+  </div>
+  <ion-grid>
+    <ion-row>
+      <ion-col>Identyfikator zawodnika</ion-col>
+      <ion-col>Imię i nazwisko</ion-col>
+      <ion-col>Numer na boisku</ion-col>
+      <ion-col>Akcje</ion-col>
+    </ion-row>
+    @if (players) {
+      @for (player of players; track player.uuid) {
+        <ion-row class="data-row">
+          <ion-col>{{player.uuid}}</ion-col>
+          <ion-col>{{player.firstName}} {{player.lastName}}</ion-col>
+          <ion-col>{{player.pitchNumber}}</ion-col>
+          <ion-col>
+            <ion-icon style="cursor: pointer" (click)="openPopover($event, player, actionButtons)" name="ellipsis-vertical-outline"></ion-icon>
+          </ion-col>
+        </ion-row>
+      }
+    } @else {
+      <div class="ion-text-center">
+        <ion-spinner></ion-spinner>
+      </div>
+    }
+  </ion-grid>
+</ion-content>
