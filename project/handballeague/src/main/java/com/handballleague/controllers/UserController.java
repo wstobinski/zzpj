@@ -38,12 +38,6 @@ public class UserController {
         }
     }
 
-    @PostMapping("/test")
-    public ResponseEntity<?> test(@RequestBody User entity) {
-        emailService.sendEmail(entity.getEmail());
-        return ResponseEntity.ok("Email sent");
-    }
-
     @PostMapping("/activate")
     public ResponseEntity<?> activateUser(Map<String, Object> requestBody) {
         int code = (int) requestBody.get("code");
