@@ -1,5 +1,6 @@
-import { NgModule } from '@angular/core';
+import {NgModule} from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import {AuthenticatedGuard} from "./guards/authenticated.guard";
 
 const routes: Routes = [
   {
@@ -15,11 +16,36 @@ const routes: Routes = [
     path: 'login',
     loadChildren: () => import('./pages/login/login.module').then( m => m.LoginPageModule)
   },
+  {
+    path: 'teams',
+    loadChildren: () => import('./pages/teams/teams.module').then( m => m.TeamsPageModule),
+    canActivate: [AuthenticatedGuard]
+  },
+  {
+    path: 'players',
+    loadChildren: () => import('./pages/players/players.module').then( m => m.PlayersPageModule),
+    canActivate: [AuthenticatedGuard]
+  },
+  {
+    path: 'account',
+    loadChildren: () => import('./pages/account/account.module').then( m => m.AccountPageModule),
+    canActivate: [AuthenticatedGuard]
+  },
+  {
+    path: 'leagues',
+    loadChildren: () => import('./pages/leagues/leagues.module').then( m => m.LeaguesPageModule),
+    canActivate: [AuthenticatedGuard]
+  },
+
+
+
+
+
 ];
 
 @NgModule({
   imports: [
-    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })
+    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules})
   ],
   exports: [RouterModule]
 })

@@ -1,0 +1,68 @@
+<app-top-toolbar title="Twoje konto"></app-top-toolbar>
+@if (isLoading) {
+  <ion-progress-bar type="indeterminate"></ion-progress-bar>
+}
+<ion-content>
+  <div style="width: 50%; margin: auto">
+    <ion-text color="secondary">
+      <h3>Dane konta</h3>
+    </ion-text>
+    <form [formGroup]="accountFormGroup" (keyup)="markUnsavedChanges()" (ngSubmit)="onAccountEdit()">
+      <ion-list>
+        <ion-item>
+          <ion-label position="floating">Email</ion-label>
+          <ion-input formControlName="email"></ion-input>
+        </ion-item>
+        @if (formControlHasError('email', 'required')) {
+          <ion-item lines="none">
+            <ion-label class="error-label">
+              Adres email jest wymagany
+            </ion-label>
+          </ion-item>
+        }
+        <ion-item>
+          <ion-label position="floating">Rola systemowa</ion-label>
+          <ion-input [readonly]="true" formControlName="role"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Hasło</ion-label>
+          <ion-input [type]="pwdType" formControlName="password"></ion-input>
+          <ion-icon style="margin-top: 20px" [name]="showPwdIcon" slot="end" (click)="onChangePwdType()"></ion-icon>
+        </ion-item>
+        @if (formControlHasError('password', 'required')) {
+          <ion-item lines="none">
+            <ion-label class="error-label">
+              Hasło jest wymagane
+            </ion-label>
+
+          </ion-item>
+        } @else if (formControlHasError('password', 'minlength')) {
+          <ion-item lines="none">
+            <ion-label class="error-label">
+              Hasło musi mieć minimum 8 znaków
+            </ion-label>
+          </ion-item>
+        }
+        <ion-item>
+          <ion-label position="floating">Powtórz hasło</ion-label>
+          <ion-input [type]="pwdType" formControlName="passwordConfirm"></ion-input>
+          <ion-icon style="margin-top: 20px" [name]="showPwdIcon" slot="end" (click)="onChangePwdType()"></ion-icon>
+        </ion-item>
+        @if (formHasError('passwordMismatch') && accountFormGroup.get('passwordConfirm').touched) {
+          <ion-item lines="none">
+            <ion-label class="error-label">
+              Hasła nie pasują do siebie
+            </ion-label>
+          </ion-item>
+        }
+      </ion-list>
+
+      <ion-row class="ion-padding">
+        <ion-button type="submit" color="primary" expand="block" [disabled]="!accountFormGroup.valid || isLoading">
+          <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
+          Zapisz zmiany
+        </ion-button>
+      </ion-row>
+    </form>
+  </div>
+</ion-content>

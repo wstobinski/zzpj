@@ -7,7 +7,13 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import {HandballComponentsModule} from "./handball-components.module";
 import {IonicStorageModule} from "@ionic/storage-angular";
-import {HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
+import {LoadingInterceptorService} from "./services/loading-interceptor.service";
+import {registerLocaleData} from "@angular/common";
+import localePl from '@angular/common/locales/pl';
+
+
+registerLocaleData(localePl);
 
 @NgModule({
   declarations: [AppComponent],
@@ -19,7 +25,13 @@ import {HttpClientModule} from "@angular/common/http";
     IonicStorageModule.forRoot({
       name: '__handball_league'
     }),],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
+  providers: [
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy},
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: LoadingInterceptorService,
+      multi: true
+    }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

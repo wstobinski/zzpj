@@ -5,6 +5,8 @@ import jakarta.validation.constraints.Positive;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,7 +18,6 @@ import java.time.LocalDateTime;
 public class Round {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long uuid;
 
     @Column
@@ -34,5 +35,15 @@ public class Round {
         this.number = number;
         this.startDate = startDate;
         this.contest = contest;
+    }
+
+    @Override
+    public String toString() {
+        return "Round{" +
+                "uuid=" + uuid +
+                ", number=" + number +
+                ", startDate=" + startDate +
+                ", contest=" + contest +
+                '}';
     }
 }

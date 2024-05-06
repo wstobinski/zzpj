@@ -5,6 +5,7 @@ import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
 import com.handballleague.model.Player;
 import com.handballleague.repositories.PlayerRepository;
+import com.handballleague.repositories.TeamRepository;
 import com.handballleague.services.PlayerService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.ArrayList;
@@ -31,14 +33,17 @@ import static org.mockito.Mockito.*;
 public class PlayerServiceTests {
     @Mock
     private PlayerRepository playerRepository;
+    @Mock
+    private TeamRepository teamRepository;
 
     private AutoCloseable autoCloseable;
     private PlayerService underTestService;
 
+
     @BeforeEach
     void setUp() {
         autoCloseable = MockitoAnnotations.openMocks(this);
-        underTestService = new PlayerService(playerRepository);
+        underTestService = new PlayerService(playerRepository, teamRepository);
     }
 
     @AfterEach
@@ -513,8 +518,8 @@ public class PlayerServiceTests {
                         false,
                         false)
         );
-
-        when(playerRepository.findAll()).thenReturn(players);
+        Sort sortByPlayerId = Sort.by(Sort.Direction.ASC, "uuid");
+        when(playerRepository.findAll(sortByPlayerId)).thenReturn(players);
 
         // When
         List<Player> retrievedPlayers = underTestService.getAll();

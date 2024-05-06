@@ -1,0 +1,48 @@
+<app-top-toolbar title="Zespoły"></app-top-toolbar>
+@if (isLoading) {
+  <ion-progress-bar type="indeterminate"></ion-progress-bar>
+}
+<ion-content>
+  <div [hidden]="teamToEdit">
+      <ion-item class="ion-align-self-center" lines="none">
+        <ion-text color="secondary">
+          <h3>Lista zespołów</h3>
+        </ion-text>
+      </ion-item>
+  <div class="ion-text-right">
+    <ion-button (click)="onAddNewTeam()">Dodaj nowy zespół</ion-button>
+  </div>
+  <ion-grid>
+    <ion-row>
+      <ion-col>Identyfikator zespołu</ion-col>
+      <ion-col>Nazwa zespołu</ion-col>
+      <ion-col>Liczba zawodników</ion-col>
+      <ion-col>Akcje</ion-col>
+    </ion-row>
+  @if (teams) {
+      @for (team of teams; track team.uuid) {
+        <ion-row class="data-row">
+          <ion-col>{{team.uuid}}</ion-col>
+          <ion-col>{{team.teamName}}</ion-col>
+          <ion-col>{{team.players.length}}</ion-col>
+          <ion-col>
+            <ion-icon style="cursor: pointer" (click)="openPopover($event, team, actionButtons)" name="ellipsis-vertical-outline"></ion-icon>
+          </ion-col>
+        </ion-row>
+      }
+  } @else {
+    <div class="ion-text-center">
+      <ion-spinner></ion-spinner>
+    </div>
+  }
+  </ion-grid>
+  </div>
+  @if (teamToEdit) {
+    <app-team-management [team]="teamToEdit"
+                         (cancelTeamEditedEmitter)="onEditCancelled($event)"
+                         (teamEditedEmitter)="onTeamEdited($event)"
+                         (hasUnsavedChangesEmitter)="onHasUnsavedChanges($event)">
+
+    </app-team-management>
+  }
+</ion-content>

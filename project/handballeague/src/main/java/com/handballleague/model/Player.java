@@ -1,5 +1,6 @@
 package com.handballleague.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
@@ -44,8 +45,7 @@ public class Player {
     @Size(min = 2, max = 50, message = "Last name needs to be between [2,50] characters")
     private String lastName;
     @Column(
-            name = "phone_number",
-            nullable = false
+            name = "phone_number"
     )
     private String phoneNumber;
     @Column(
@@ -67,6 +67,10 @@ public class Player {
     )
     private boolean isSuspended = false;
 
+    @ManyToOne
+    @JoinColumn(name = "team_id")
+    @JsonBackReference
+    private Team team;
 
     public Player(String firstName, String lastName, String phoneNumber, int pitchNumber, boolean isCaptain, boolean isSuspended) {
         this.firstName = firstName;

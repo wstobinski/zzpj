@@ -1,0 +1,9 @@
+<ion-content>
+  <ion-list>
+    @for (actionButton of actionButtons; track $index) {
+      <ion-item [color]="actionButton.actionColor" button (click)="onOptionClick($index)">
+        {{actionButton.buttonName}}
+      </ion-item>
+    }
+  </ion-list>
+</ion-content>

@@ -12,20 +12,54 @@
       </ion-item>
       <ion-item (click)="goTo('teams')">
         <ion-icon name="people-outline" slot="start"></ion-icon>
-        <ion-label>Teams</ion-label>
+        <ion-label>Zespoły</ion-label>
+      </ion-item>
+      <ion-item (click)="goTo('players')">
+        <ion-icon name="person-outline" slot="start"></ion-icon>
+        <ion-label>Zawodnicy</ion-label>
       </ion-item>
       <ion-item (click)="goTo('leagues')">
-        <ion-icon name="basketball-outline" slot="start"></ion-icon>
-        <ion-label>Leagues</ion-label>
+        <ion-icon name="server-outline" slot="start"></ion-icon>
+        <ion-label>Zarządzanie ligami</ion-label>
       </ion-item>
-      <ion-item (click)="goTo('login')">
-        <ion-icon [name]="getLoginPageIcon()" slot="start"></ion-icon>
-        <ion-label>{{getLoginPageName()}}</ion-label>
-      </ion-item>
-      <ion-item (click)="logout()">
-        <ion-icon name="log-out-outline" slot="start"></ion-icon>
-        <ion-label>Logout</ion-label>
-      </ion-item>
+      <ion-accordion-group>
+        <ion-accordion value="first">
+          <ion-item slot="header" color="light">
+            <ion-icon name="basketball-outline" slot="start"></ion-icon>
+            <ion-label>Aktywne ligi</ion-label>
+          </ion-item>
+          <div class="ion-padding" slot="content">
+            <ion-item>
+              <ion-label>
+                Spring League
+              </ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label>
+                Winter League
+              </ion-label>
+            </ion-item>
+          </div>
+        </ion-accordion>
+      </ion-accordion-group>
+
+
+
+      @if (user) {
+        <ion-item (click)="goTo('account')">
+          <ion-icon name="key-outline" slot="start"></ion-icon>
+          <ion-label>Konto</ion-label>
+        </ion-item>
+        <ion-item (click)="logout()">
+          <ion-icon name="log-out-outline" slot="start"></ion-icon>
+          <ion-label>Wyloguj się</ion-label>
+        </ion-item>
+      } @else {
+        <ion-item (click)="goTo('login')">
+          <ion-icon name="log-in-outline" slot="start"></ion-icon>
+          <ion-label>Zaloguj się</ion-label>
+        </ion-item>
+      }
     </ion-list>
   </ion-content>
 </ion-menu>

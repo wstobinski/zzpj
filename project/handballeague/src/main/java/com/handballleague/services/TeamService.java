@@ -3,12 +3,16 @@ package com.handballleague.services;
 import com.handballleague.exceptions.EntityAlreadyExistsException;
 import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
+import com.handballleague.model.League;
 import com.handballleague.model.Player;
 import com.handballleague.model.Team;
+import com.handballleague.repositories.LeagueRepository;
 import com.handballleague.repositories.PlayerRepository;
 import com.handballleague.repositories.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,16 +21,19 @@ import java.util.Optional;
 public class TeamService implements HandBallService<Team>{
     private final TeamRepository teamRepository;
     private final PlayerRepository playerRepository;
+    private final LeagueRepository leagueRepository;
 
     @Autowired
-    public TeamService(TeamRepository teamRepository, PlayerRepository playerRepository) {
+    public TeamService(TeamRepository teamRepository, PlayerRepository playerRepository, LeagueRepository leagueRepository) {
         this.teamRepository = teamRepository;
         this.playerRepository = playerRepository;
+        this.leagueRepository = leagueRepository;
     }
 
     @Override
     public List<Team> getAll() {
-        return teamRepository.findAll();
+        Sort sortByTeamId = Sort.by(Sort.Direction.ASC, "uuid");
+        return teamRepository.findAll(sortByTeamId);
     }
 
 
@@ -54,9 +61,17 @@ public class TeamService implements HandBallService<Team>{
     }
 
     @Override
+    @Transactional
     public boolean delete(Long id) throws InvalidArgumentException, ObjectNotFoundInDataBaseException{
         if(id <= 0) throw new InvalidArgumentException("Passed id is invalid.");
         if(teamRepository.existsById(id)) {
+            Team team = teamRepository.findById(id).orElseThrow(() -> new ObjectNotFoundInDataBaseException("Team with given id was not found in the database."));
+            List<Player> players = playerRepository.findByTeam(team);
+            for (Player player : players) {
+                player.setTeam(null);
+                player.setCaptain(false);
+                playerRepository.save(player);
+            }
             teamRepository.deleteById(id);
         } else {
             throw new ObjectNotFoundInDataBaseException("Team with id: " + id + " not found in the database.");
@@ -126,5 +141,21 @@ public class TeamService implements HandBallService<Team>{
         teamRepository.save(team);
 
         return team;
+    }
+
+    public List<Player> getAllPlayers(Long teamId) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new ObjectNotFoundInDataBaseException("Team not found"));
+        return team.getPlayers();
+    }
+
+    public List<Team> getFreeAgents() {
+        List<Team> teams = teamRepository.findAll();
+        for(League l : leagueRepository.findAll()) {
+            for(Team t : l.getTeams()) {
+                teams.remove(t);
+            }
+        }
+        return teams;
     }
 }

@@ -5,6 +5,7 @@ import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
 import com.handballleague.model.Player;
 import com.handballleague.model.Team;
+import com.handballleague.repositories.LeagueRepository;
 import com.handballleague.repositories.PlayerRepository;
 import com.handballleague.repositories.TeamRepository;
 import com.handballleague.services.TeamService;
@@ -16,11 +17,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -34,6 +33,8 @@ public class TeamServiceTests {
     private TeamRepository teamRepository;
     @Mock
     private PlayerRepository playerRepository;
+    @Mock
+    private LeagueRepository leagueRepository;
 
     private AutoCloseable autoCloseable;
     private TeamService underTestService;
@@ -41,7 +42,7 @@ public class TeamServiceTests {
     @BeforeEach
     void setUp() {
         autoCloseable = MockitoAnnotations.openMocks(this);
-        underTestService = new TeamService(teamRepository, playerRepository);
+        underTestService = new TeamService(teamRepository, playerRepository, leagueRepository);
     }
 
     @AfterEach
@@ -156,12 +157,17 @@ public class TeamServiceTests {
         // given
         long id = 10;
         given(teamRepository.existsById(id)).willReturn(true);
+        given(teamRepository.findById(id)).willReturn(Optional.of(new Team()));
+        given(playerRepository.findByTeam(any(Team.class))).willReturn(Collections.singletonList(new Player()));
 
         // when
         underTestService.delete(id);
 
         // then
         verify(teamRepository).deleteById(id);
+        verify(teamRepository).findById(id);
+        verify(playerRepository).findByTeam(any(Team.class));
+        verify(playerRepository, times(1)).save(any(Player.class));
     }
 
     @Test
@@ -471,8 +477,8 @@ public class TeamServiceTests {
 
         // Given
         List<Team> teams = Arrays.asList(t1, t2);
-
-        when(teamRepository.findAll()).thenReturn(teams);
+        Sort sortByTeamId = Sort.by(Sort.Direction.ASC, "uuid");
+        when(teamRepository.findAll(sortByTeamId)).thenReturn(teams);
 
         // When
         List<Team> retrievedTeams = underTestService.getAll();

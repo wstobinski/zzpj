@@ -1,5 +1,6 @@
 package com.handballleague.controllers;
 
+import com.handballleague.DTO.GenerateScheduleDTO;
 import com.handballleague.model.League;
 import com.handballleague.model.Round;
 import com.handballleague.services.JWTService;
@@ -10,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "api/v1/leagues")
@@ -30,7 +33,7 @@ public class LeagueController {
     public ResponseEntity<?> getLeagues() {
 
         List<League> leagues = leagueService.getAll();
-        return ResponseEntity.ok(leagues);
+        return ResponseEntity.ok(Map.of("ok", true, "response", leagues));
 
     }
 
@@ -45,7 +48,7 @@ public class LeagueController {
         ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
         if (response.getStatusCode().is2xxSuccessful()) {
             leagueService.create(league);
-            return ResponseEntity.ok("League created successfully");
+            return ResponseEntity.ok(Map.of("ok", true, "message", "League successfully registered"));
         } else {
             return response;
         }
@@ -66,12 +69,12 @@ public class LeagueController {
     }
 
     @PostMapping("/{leagueId}/generate-schedule")
-    public ResponseEntity<?> generateScheduleForLeague(@PathVariable Long leagueId, @RequestParam int rounds, @RequestHeader(name = "Authorization") String token) {
+    public ResponseEntity<?> generateScheduleForLeague(@PathVariable Long leagueId, @RequestBody GenerateScheduleDTO generateScheduleDTO, @RequestHeader(name = "Authorization") String token) {
         ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
         if (response.getStatusCode().is2xxSuccessful()) {
             League league = leagueService.getById(leagueId);
-            leagueService.generateSchedule(league, rounds);
-            return ResponseEntity.ok("Schedule generated successfully");
+            leagueService.generateSchedule(league, generateScheduleDTO);
+            return ResponseEntity.ok(Map.of("ok", true, "message", "Schedule generated successfully"));
         } else {
             return response;
         }
@@ -93,18 +96,18 @@ public class LeagueController {
     }
 
     @DeleteMapping("/{leagueId}")
-    public ResponseEntity<?> deleteTeam(@PathVariable("leagueId") Long id, @RequestHeader(name = "Authorization") String token) {
+    public ResponseEntity<?> deleteLeague(@PathVariable("leagueId") Long id, @RequestHeader(name = "Authorization") String token) {
         ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
         if (response.getStatusCode().is2xxSuccessful()) {
             leagueService.delete(id);
-            return ResponseEntity.ok("League deleted successfully");
+            return ResponseEntity.ok(Map.of("ok", true, "message", "League successfully deleted"));
         } else {
             return response;
         }
     }
 
     @GetMapping("/{leagueId}")
-    public ResponseEntity<?> getTeamById(@PathVariable Long leagueId) {
+    public ResponseEntity<?> getLeagueById(@PathVariable Long leagueId) {
 
         League league = leagueService.getById(leagueId);
         return ResponseEntity.ok(league);
@@ -112,12 +115,23 @@ public class LeagueController {
     }
 
     @PutMapping("/{leagueId}")
-    public ResponseEntity<?> updateTeam(@PathVariable Long leagueId, @Valid @RequestBody League league, @RequestHeader(name = "Authorization") String token) {
+    public ResponseEntity<?> updateLeague(@PathVariable Long leagueId, @Valid @RequestBody League league, @RequestHeader(name = "Authorization") String token) {
         ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
         ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "arbiter");
         if (response.getStatusCode().is2xxSuccessful() || response2.getStatusCode().is2xxSuccessful()) {
             League newLeague = leagueService.update(leagueId, league);
-            return ResponseEntity.ok(newLeague);
+            return ResponseEntity.ok(Map.of("ok", true, "response", newLeague));
+        } else {
+            return response2;
+        }
+    }
+
+    @GetMapping("/{leagueId}/matches")
+    public ResponseEntity<?> getMatchesForLeague(@PathVariable Long leagueId, @RequestHeader(name = "Authorization") String token) {
+        ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
+        ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "arbiter");
+        if (response.getStatusCode().is2xxSuccessful() || response2.getStatusCode().is2xxSuccessful()) {
+            return ResponseEntity.ok(Map.of("ok", true, "response", leagueService.getAllMatchesInLeague(leagueId)));
         } else {
             return response2;
         }

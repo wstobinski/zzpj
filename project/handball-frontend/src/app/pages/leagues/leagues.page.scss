@@ -1,0 +1,12 @@
+ion-col {
+  text-align: center;
+}
+
+.data-row:nth-child(even) {
+  //background: #333333;
+  background: #7768ae;
+}
+.data-row:nth-child(odd) {
+  background: #255F9F;
+  //background: #1E1E1E;
+}
