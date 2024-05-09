@@ -5,12 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.handballleague.model.Team;
 import com.handballleague.repositories.TeamRepository;
 import jakarta.annotation.PostConstruct;
-import okhttp3.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 @Component
 public class TeamsInitializer {
@@ -43,25 +45,18 @@ public class TeamsInitializer {
 
     @PostConstruct
     public void fetchAndFillData() {
-        OkHttpClient client = new OkHttpClient();
+        HttpClient client = HttpClient.newHttpClient();
 
-        HttpUrl url = new HttpUrl.Builder()
-                .scheme("https")
-                .host("v1.handball.api-sports.io")
-                .addPathSegment("teams")
-                .addQueryParameter("league", "78") // Polish SuperLiga
-                .addQueryParameter("season", "2023")
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://v1.handball.api-sports.io/teams?league=78&season=2023"))
+                .header("x-apisports-key", apiKey)
                 .build();
 
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("x-apisports-key", apiKey)
-                .build();
-
-        try (Response response = client.newCall(request).execute()) {
-            String responseBody = response.body().string();
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            String responseBody = response.body();
             addTeamsToDatabase(responseBody);
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
