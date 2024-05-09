@@ -14,9 +14,7 @@ import java.io.IOException;
 
 @Component
 public class TeamsInitializer {
-
-    @Value("${api.key}")
-    private String apiKey;
+    String apiKey = "5cd3647c52894e848f3ca0cfa92c186b";
 
     @Autowired
     private TeamRepository teamRepository;
@@ -34,8 +32,6 @@ public class TeamsInitializer {
 
                 if (!teamRepository.existsById(teamId) && teamRepository.findByTeamName(teamName) == null) {
                     Team team = new Team(teamName);
-//                    team.setUuid(teamId);
-//                    team.setTeamName(teamName);
 
                     teamRepository.save(team);
                 }
