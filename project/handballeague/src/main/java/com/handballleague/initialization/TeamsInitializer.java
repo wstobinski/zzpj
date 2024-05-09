@@ -29,12 +29,16 @@ public class TeamsInitializer {
             JsonNode teamsNode = rootNode.get("response");
 
             for (JsonNode teamNode : teamsNode) {
-                Team team = new Team();
-                team.setUuid(teamNode.get("id").asLong());
-                team.setTeamName(teamNode.get("name").asText());
+                Long teamId = teamNode.get("id").asLong();
+                String teamName = teamNode.get("name").asText();
 
+                if (!teamRepository.existsById(teamId) && teamRepository.findByTeamName(teamName) == null) {
+                    Team team = new Team();
+                    team.setUuid(teamId);
+                    team.setTeamName(teamName);
 
-                teamRepository.save(team);
+                    teamRepository.save(team);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -42,14 +46,13 @@ public class TeamsInitializer {
     }
     @PostConstruct
     public void fetchAndFillData() {
-        apiKey = "5cd3647c52894e848f3ca0cfa92c186b";
         OkHttpClient client = new OkHttpClient();
 
         HttpUrl url = new HttpUrl.Builder()
                 .scheme("https")
                 .host("v1.handball.api-sports.io")
                 .addPathSegment("teams")
-                .addQueryParameter("league", "78")
+                .addQueryParameter("league", "78") // Polish SuperLiga
                 .addQueryParameter("season", "2023")
                 .build();
 
@@ -60,7 +63,6 @@ public class TeamsInitializer {
 
         try (Response response = client.newCall(request).execute()) {
             String responseBody = response.body().string();
-            System.out.println(responseBody);
             addTeamsToDatabase(responseBody);
         } catch (IOException e) {
             e.printStackTrace();
