@@ -33,9 +33,9 @@ public class TeamsInitializer {
                 String teamName = teamNode.get("name").asText();
 
                 if (!teamRepository.existsById(teamId) && teamRepository.findByTeamName(teamName) == null) {
-                    Team team = new Team();
-                    team.setUuid(teamId);
-                    team.setTeamName(teamName);
+                    Team team = new Team(teamName);
+//                    team.setUuid(teamId);
+//                    team.setTeamName(teamName);
 
                     teamRepository.save(team);
                 }
@@ -44,6 +44,7 @@ public class TeamsInitializer {
             e.printStackTrace();
         }
     }
+
     @PostConstruct
     public void fetchAndFillData() {
         OkHttpClient client = new OkHttpClient();
@@ -67,10 +68,5 @@ public class TeamsInitializer {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public static void main(String[] args) {
-        TeamsInitializer initializer = new TeamsInitializer();
-        initializer.fetchAndFillData();
     }
 }
