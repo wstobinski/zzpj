@@ -1,20 +1,32 @@
 package com.handballleague.initialization;
 
-import okhttp3.Headers;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import jakarta.annotation.PostConstruct;
+import okhttp3.*;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 
 public class TeamsInitializer {
 
-    public static void main(String[] args) {
+    @Value("${api.key}")
+    private String apiKey;
+
+    @PostConstruct
+    public void fetchAndFillData() {
+
         OkHttpClient client = new OkHttpClient();
 
+        HttpUrl url = new HttpUrl.Builder()
+                .scheme("https")
+                .host("v1.handball.api-sports.io")
+                .addPathSegment("teams")
+                .addQueryParameter("league", "78")
+                .addQueryParameter("season", "2023")
+                .build();
+
         Request request = new Request.Builder()
-                .url("https://v1.handball.api-sports.io/teams")
-                .addHeader("x-apisports-key", )
+                .url(url)
+                .addHeader("x-apisports-key", apiKey)
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
@@ -24,5 +36,8 @@ public class TeamsInitializer {
         }
     }
 
-
+    public static void main(String[] args) {
+        TeamsInitializer initializer = new TeamsInitializer();
+        initializer.fetchAndFillData();
+    }
 }
