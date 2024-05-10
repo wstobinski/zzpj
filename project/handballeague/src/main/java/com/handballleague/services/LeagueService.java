@@ -128,6 +128,9 @@ public class LeagueService implements HandBallService<League>{
         if(checkIfEntityExistsInDb(league)) throw new EntityAlreadyExistsException("League with given data already exists in the database");
         if(league.getName().isEmpty() ||
             league.getStartDate() == null) throw new InvalidArgumentException("At least one of league parameters is invalid.");
+        if(league.getTeams().size() > 12 || league.getTeams().size() < 3)
+            throw new InvalidArgumentException("League needs to have at least 3 teams, and no more than 12 teams.");
+
         League createdLeague = leagueRepository.save(league);
         for (Team team: createdLeague.getTeams()) {
             teamContestService.create(createdLeague.getUuid(), team.getUuid());
