@@ -6,6 +6,7 @@ import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
 import com.handballleague.model.*;
 import com.handballleague.repositories.*;
+import com.handballleague.util.DateManager;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -39,7 +40,6 @@ public class LeagueService implements HandBallService<League>{
 
 
     @Transactional
-
     public void generateSchedule(League league, GenerateScheduleDTO generateScheduleDTO) throws EntityAlreadyExistsException{
         if(league.isScheduleGenerated()) throw new EntityAlreadyExistsException("This league already has a schedule generated.");
         List<Team> teams = new ArrayList<>(league.getTeams());
@@ -53,10 +53,24 @@ public class LeagueService implements HandBallService<League>{
         String[] defaultHourSplit = generateScheduleDTO.getDefaultHour().split(":");
         int defaultHour = Integer.parseInt(defaultHourSplit[0]);
         int defaultMinute = Integer.parseInt(defaultHourSplit[1]);
-        LocalDateTime firstRoundStartDate = generateScheduleDTO.getStartDate().with(TemporalAdjusters.nextOrSame(generateScheduleDTO.getDefaultDay()));
+        LocalDateTime firstRoundStartDate = generateScheduleDTO
+                .getStartDate()
+                .with(TemporalAdjusters.nextOrSame(generateScheduleDTO.getDefaultDay()));
 
         for (int round = 0; round < numTeams - 1; round++) {
-            LocalDateTime matchDate = firstRoundStartDate.plusWeeks(round).withHour(defaultHour).withMinute(defaultMinute).withSecond(0).withNano(0);
+            LocalDateTime matchDate = firstRoundStartDate
+                    .plusWeeks(round)
+                    .withHour(defaultHour)
+                    .withMinute(defaultMinute)
+                    .withSecond(0)
+                    .withNano(0);
+
+            while(!DateManager.isDateValid(matchDate))  matchDate = firstRoundStartDate
+                    .plusWeeks(1)
+                    .withHour(defaultHour)
+                    .withMinute(defaultMinute)
+                    .withSecond(0)
+                    .withNano(0);
 
             Round currentRound = new Round();
             currentRound.setUuid(generateRandomLongUUID());
@@ -91,22 +105,18 @@ public class LeagueService implements HandBallService<League>{
         league.setScheduleGenerated(true);
     }
 
-    // Rotate the list elements except the first one
-    public static void rotateTeams(List<Team> teams) {
-        if (teams.size() < 2) return; // No need to rotate if there isn't enough elements
+    private static void rotateTeams(List<Team> teams) {
+        if (teams.size() < 2) return;
 
-        // Store the second element
         Team temp = teams.get(1);
 
-        // Shift elements to the left
         for (int i = 1; i < teams.size() - 1; i++) {
             teams.set(i, teams.get(i + 1));
         }
-        // Move the stored element to the end of the list
         teams.set(teams.size() - 1, temp);
     }
 
-    public Referee drawReferee(int matchNumber) {
+    private Referee drawReferee(int matchNumber) {
         List<Referee> referees = refereeRepository.findAll();
         return referees.get(matchNumber % referees.size());
     }
