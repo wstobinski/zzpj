@@ -126,17 +126,17 @@ public class TeamController {
         }
     }
 
-//    @PostMapping("/generate-teams") // TODO improve this method, add error handling
-//    public ResponseEntity<?> generateTeams(@Valid @RequestBody Map<String, String> body, @RequestHeader(name = "Authorization") String token) {
-//        ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
-//        if (response.getStatusCode().is2xxSuccessful()) {
-//            String leagueId = body.get("leagueId");
-//            String season = body.get("season");
-//            teamsInitializer.fetchAndFillData(leagueId, season);
-//            return ResponseEntity.ok(Map.of("ok", true, "message", "Teams generated successfully"));
-//        } else {
-//            return response;
-//        }
-//    }
+    @PostMapping("/generate-teams") // TODO improve this method, add error handling
+    public ResponseEntity<?> generateTeams(@Valid @RequestBody Map<String, String> body, @RequestHeader(name = "Authorization") String token) {
+        ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
+        if (response.getStatusCode().is2xxSuccessful()) {
+            String leagueId = body.get("leagueId");
+            String season = body.get("season");
+            teamsInitializer.fetchAndFillData(leagueId, season);
+            return ResponseEntity.ok(Map.of("ok", true, "message", "Teams generated successfully"));
+        } else {
+            return response;
+        }
+    }
 }
 
