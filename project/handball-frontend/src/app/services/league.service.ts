@@ -32,6 +32,11 @@ export class LeagueService {
     return await this.apiService.delete<ApiResponse>(`/leagues/${uuid}`);
   }
 
+  async finishLeague(uuid: number) {
+    return await this.apiService.patch<ApiResponse>(`/leagues/finish/${uuid}`, null);
+  }
+
+
   async generateSchedule(leagueUuid: number, dto: GenerateScheduleDto): Promise<ApiResponse> {
     return await this.apiService.post<ApiResponse>(`/leagues/${leagueUuid}/generate-schedule`, dto);
   }
@@ -43,6 +48,7 @@ export class LeagueService {
   async getMatches(leagueUuid: number): Promise<ApiResponse> {
     return await this.apiService.get<ApiResponse>(`/leagues/${leagueUuid}/matches`);
   }
+
 
 
 }

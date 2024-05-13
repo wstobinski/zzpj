@@ -3,8 +3,8 @@ package com.handballleague.util;
 import java.util.UUID;
 
 public class UUIDGenerator {
-    public static long generateRandomLongUUID() {
+    public static long generateRandomIntegerUUID() {
         UUID uuid = UUID.randomUUID();
-        return uuid.getMostSignificantBits() & Long.MAX_VALUE;
+        return uuid.getMostSignificantBits() & Integer.MAX_VALUE;
     }
 }

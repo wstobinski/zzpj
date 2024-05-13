@@ -38,11 +38,19 @@ export class LeaguesPage extends GenericPage implements OnInit {
     this.actionButtons = [
       {
         buttonName: "Przejdź do panelu ligi",
-        buttonAction: this.onLeaguePanelOpened.bind(this)
+        buttonAction: this.onLeaguePanelOpened.bind(this),
+        displayCondition: this.canDisplayPanel.bind(this)
       },
       {
         buttonName: "Zarządzaj ligą",
-        buttonAction: this.onLeagueToEditSelected.bind(this)
+        buttonAction: this.onLeagueToEditSelected.bind(this),
+        displayCondition: this.canGenerateSchedule.bind(this)
+      },
+      {
+        buttonName: "Zakończ rozgrywki ligowe",
+        buttonAction: this.markLeagueAsFinished.bind(this),
+        actionColor: 'danger',
+        displayCondition: this.canFinishLeague.bind(this)
       },
       {
         buttonName: "Wygeneruj harmonogram",
@@ -117,6 +125,28 @@ export class LeaguesPage extends GenericPage implements OnInit {
       });
   }
 
+  markLeagueAsFinished(league: League) {
+    this.utils.presentYesNoActionSheet(`Czy na pewno chcesz zakończyć ligę ${league.name}? Ta akcja jest nieodwracalna`, 'Tak, kończymy rozgrywki', 'Nie',
+      () => {
+        this.leaguesService.finishLeague(league.uuid).then(r => {
+          if (r.ok) {
+            // todo fetch new league data (when backend ready)
+            this.utils.presentInfoToast(`Liga ${league.name} zakończona pomyślnie`);
+          } else {
+            this.utils.presentAlertToast(`Wystąpił błąd przy kończeniu rozgrywek ligowych`);
+          }
+        }).catch(error => {
+          if (error.status === 401) {
+            this.utils.presentAlertToast("Wystąpił błąd przy usuwaniu ligi. Twoja sesja wygasła. Zaloguj się ponownie");
+          } else {
+            this.utils.presentAlertToast("Wystąpił błąd przy usuwaniu ligi");
+          }
+        });
+      }, () => {
+
+      });
+  }
+
   onAddNewLeague() {
     this.leagueToEdit = new League()
   }
@@ -145,7 +175,15 @@ export class LeaguesPage extends GenericPage implements OnInit {
     return !league.scheduleGenerated
   }
 
+  canDisplayPanel(league: League) {
+    return league.scheduleGenerated;
+  }
+
+  canFinishLeague(league: League) {
+    return league.scheduleGenerated && !league.finishedDate;
+  }
+
   canDeleteLeague(league: League) {
-    return this.canGenerateSchedule(league);
+    return this.canGenerateSchedule(league) || league.finishedDate;
   }
 }

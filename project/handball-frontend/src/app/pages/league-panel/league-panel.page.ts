@@ -13,6 +13,10 @@ import {TeamContest} from "../../model/team-contest";
 import {TeamContestService} from "../../services/team-contest.service";
 import {EditPlayerModalComponent} from "../../components/edit-player-modal/edit-player-modal.component";
 import {Player} from "../../model/player.model";
+import {EditTeamModalComponent} from "../../components/edit-team-modal/edit-team-modal.component";
+import {Team} from "../../model/team.model";
+import {MatchEditModalComponent} from "../../components/match-edit-modal/match-edit-modal.component";
+import {MatchService} from "../../services/match.service";
 
 @Component({
   selector: 'app-league-panel',
@@ -28,6 +32,7 @@ export class LeaguePanelPage extends GenericPage implements OnInit {
 
   constructor(private route: ActivatedRoute,
               private leagueService: LeagueService,
+              private matchService: MatchService,
               private utils: Utils,
               private authService: AuthService,
               private teamContestsService: TeamContestService,
@@ -107,13 +112,49 @@ export class LeaguePanelPage extends GenericPage implements OnInit {
     this.matchToFinish = null;
   }
 
-  onMatchFinished($event: Match) {
+  async onMatchFinished($event: Match) {
     this.matchToFinish = null;
+    this.teamContests = (await (this.teamContestsService.getForLeague(this.league.uuid))).response
   }
 
   onHasUnsavedChanges($event: boolean) {
     if (!this.hasUnsavedChanges) {
       this.hasUnsavedChanges = $event;
     }
+  }
+
+  async onMatchEdit(match: Match) {
+
+    const modal = await this.modalController.create({
+      component: MatchEditModalComponent,
+      componentProps: {
+        match: match,
+        title: `Edytuj mecz`
+      }
+    });
+    const matchCopy = {...match};
+    modal.onWillDismiss().then(async data => {
+      if (data && data.data && data.role === 'submit') {
+        console.log(data.data);
+        this.matchService.updateMatch(data.data as Match).then(r => {
+          if (r.ok) {
+            this.utils.presentInfoToast("Edycja meczu zakończona sukcesem!");
+          } else {
+            this.utils.presentAlertToast("Wystąpił błąd podczas edycji meczu");
+            match = matchCopy;
+          }
+        }).catch(e => {
+          if (e.status === 401) {
+            this.utils.presentAlertToast("Wystąpił błąd podczas edycji meczu. Twoja sesja wygasła, zaloguj się ponownie");
+          } else {
+            this.utils.presentAlertToast("Wystąpił błąd podczas edycji meczu");
+          }
+          match = matchCopy;
+        });
+      }
+    });
+    return await modal.present();
+
+
   }
 }

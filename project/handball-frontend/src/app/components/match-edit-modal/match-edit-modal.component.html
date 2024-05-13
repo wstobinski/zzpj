@@ -1,0 +1,61 @@
+<ion-content>
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="end">
+        <ion-icon size="large" (click)="onClose()" name="close-outline"></ion-icon>
+      </ion-buttons>
+      <ion-title>{{ title }}</ion-title>
+
+    </ion-toolbar>
+  </ion-header>
+  <form [formGroup]="matchFormGroup" (keyup)="markUnsavedChanges()" (ngSubmit)="onMatchEdit()">
+    <ion-list>
+      <ion-item lines="none">
+        <ion-text color="primary">
+          <h2>{{match.homeTeam.teamName}} - {{match.awayTeam.teamName}}</h2>
+        </ion-text>
+      </ion-item>
+      <ion-item>
+        <ion-select cancel-text="Anuluj" label-placement="floating" label="Sędzia" formControlName="referee">
+          @for (referee of referees; track $index) {
+            <ion-select-option [value]="referee">{{referee.firstName}} {{referee.lastName}}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+      <ion-item lines="none">
+        <ion-text >
+          <h5>Data
+            rozpoczęcia meczu: <ion-text color="secondary">
+              {{ matchFormGroup?.controls['gameDate'].value | date: 'YYYY-MM-dd HH:mm' }}
+            </ion-text></h5>
+        </ion-text>
+
+      </ion-item>
+      <ion-item>
+        <ion-datetime [firstDayOfWeek]="1" formControlName="gameDate" locale="pl-PL"></ion-datetime>
+      </ion-item>
+      @if (formHasError('referee', 'required')) {
+        <ion-item lines="none">
+          <ion-label class="error-label">
+            Sędzia jest wymagany
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+    <ion-row class="ion-padding">
+      <ion-col size-lg="3" offset-lg="3">
+        <ion-button type="submit" color="primary" expand="block" [disabled]="!matchFormGroup?.valid">
+          <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
+          Edytuj
+        </ion-button>
+      </ion-col>
+      <ion-col size-lg="3">
+        <ion-button color="medium" expand="block" fill="outline" (click)="onClose()">
+          Anuluj
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </form>
+
+
+</ion-content>

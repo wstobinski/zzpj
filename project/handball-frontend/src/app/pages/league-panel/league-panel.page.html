@@ -45,15 +45,15 @@
                       <p>{{match.gameDate | date: "d MMM y, H:mm" : undefined : 'pl-PL'}}</p>
                       <p>Sędzia: {{match.referee.firstName}} {{match.referee.lastName}}</p>
                       @if (match.finished) {
-                        <p>Mecz zakończony</p>
+                        <ion-text color="primary"><p>Mecz zakończony</p></ion-text>
                       }
 
                     </ion-card-content>
                     @if (!match.finished) {
-                      <ion-button fill="clear">Edytuj</ion-button>
+                      <ion-button fill="clear" (click)="onMatchEdit(match)">Edytuj</ion-button>
                       <ion-button fill="clear" (click)="onMatchFinishEntered(match)">Uzupełnij wynik</ion-button>
                     } @else {
-                      <ion-button fill="clear">Zobacz wynik</ion-button>
+<!--                      <ion-button fill="clear">Zobacz wynik</ion-button>-->
                     }
                   </ion-card>
                 </ion-item>
@@ -74,7 +74,7 @@
           <h3>Tabela ligowa</h3>
         </ion-text>
         @if (teamContests) {
-          <ion-grid style="width: 75%; margin: auto">
+          <ion-grid class="table_component">
             <ion-row class="header-row">
               <ion-col>Pozycja</ion-col>
               <ion-col>Zespół</ion-col>

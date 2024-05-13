@@ -6,7 +6,6 @@ import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
 import com.handballleague.model.*;
 import com.handballleague.repositories.*;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.handballleague.util.UUIDGenerator.generateRandomLongUUID;
+import static com.handballleague.util.UUIDGenerator.generateRandomIntegerUUID;
 
 @Service
 public class MatchService implements HandBallService<Match>{
@@ -111,12 +110,10 @@ public class MatchService implements HandBallService<Match>{
     public void endMatch(Long matchId, MatchScoreDTO.MatchResultDto matchResult) {
         Match match = matchRepository.findById(matchId)
                 .orElseThrow(() -> new RuntimeException("Match not found"));
-
         createScore(match, matchResult.getTeam1Score());
         createScore(match, matchResult.getTeam2Score());
 
         updateTeamContestStats(match, matchResult.getTeam1Score(), matchResult.getTeam2Score());
-
         match.setFinished(true);
         matchRepository.save(match);
     }
@@ -125,7 +122,7 @@ public class MatchService implements HandBallService<Match>{
         Team team = teamRepository.findById(teamScore.getTeamId())
                 .orElseThrow(() -> new RuntimeException("Team not found"));
 
-        Score score = new Score(generateRandomLongUUID(),match,team,teamScore.getGoals(), teamScore.getLostGoals(), teamScore.getFouls(),
+        Score score = new Score(generateRandomIntegerUUID(),match,team,teamScore.getGoals(), teamScore.getLostGoals(), teamScore.getFouls(),
                 teamScore.getBallPossession(), teamScore.getYellowCards(),teamScore.getRedCards(),teamScore.getTimePenalties());
 
         System.out.println("Score: " + score);
@@ -137,7 +134,7 @@ public class MatchService implements HandBallService<Match>{
 
     public void updateTeamContestStats(Match match, MatchScoreDTO.TeamScoreDto team1Score, MatchScoreDTO.TeamScoreDto team2Score) {
         Contest contest = match.getRound().getContest();  // Assuming Round has a reference to Contest
-
+        System.out.println("TEAM CONTEST");
         // Retrieve Team_Contest records
         TeamContest team1Contest = teamContestRepository.findByTeamAndLeague(match.getHomeTeam(),
                                                                                 match.getRound().getContest());

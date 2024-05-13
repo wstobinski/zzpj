@@ -4,14 +4,15 @@ import {PlayersService} from "./players.service";
 import {ApiResponse} from "../model/ApiResponse";
 import {Team} from "../model/team.model";
 import {Player} from "../model/player.model";
+import {Match} from "../model/match.model";
+import {MatchScoreDto} from "../model/DTO/match-score.dto";
 
 @Injectable({
   providedIn: 'root'
 })
 export class MatchService {
 
-  constructor(private apiService: ApiService,
-              private playersService: PlayersService) { }
+  constructor(private apiService: ApiService) { }
 
 
   async getAllMatches(): Promise<ApiResponse> {
@@ -20,31 +21,13 @@ export class MatchService {
 
   }
 
-  async getFreeAgents(): Promise<ApiResponse> {
-
-    return await this.apiService.get<ApiResponse>("/teams/free-agents", {});
-
+  async updateMatch(match: Match): Promise<ApiResponse> {
+    return await this.apiService.put<ApiResponse>(`/matches/${match.uuid}`, match);
   }
 
-  async createTeam(team: Team): Promise<ApiResponse> {
-    return await this.apiService.post("/teams", team);
+  async completeMatch(match: Match, matchScoreDto: MatchScoreDto): Promise<ApiResponse> {
+    return await this.apiService.post<ApiResponse>(`/matches/${match.uuid}/finish-match`, matchScoreDto);
   }
 
-  async updateTeam(team: Team): Promise<ApiResponse> {
-    return await this.apiService.put<ApiResponse>(`/teams/${team.uuid}`, team);
-  }
 
-  async deleteTeam(teamId: number): Promise<ApiResponse> {
-    return await this.apiService.delete<ApiResponse>(`/teams/${teamId}`);
-  }
-
-  async changeCaptains(newCaptain: Player, oldCaptain: Player): Promise<ApiResponse> {
-    return this.playersService.updatePlayer(newCaptain).then(async (r) => {
-      if (r.ok) {
-        return await this.playersService.updatePlayer(oldCaptain);
-      }
-      return null;
-    });
-
-  }
 }

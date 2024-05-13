@@ -22,7 +22,7 @@
         <ion-icon name="server-outline" slot="start"></ion-icon>
         <ion-label>Zarządzanie ligami</ion-label>
       </ion-item>
-      @if (leagues) {
+      @if (leagues && leagues.length > 0) {
         <ion-accordion-group>
           <ion-accordion value="first">
             <ion-item slot="header" color="light">

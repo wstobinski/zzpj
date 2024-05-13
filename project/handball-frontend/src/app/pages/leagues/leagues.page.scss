@@ -1,6 +1,4 @@
-ion-col {
-  text-align: center;
-}
+
 
 .data-row:nth-child(even) {
   //background: #333333;
@@ -9,4 +7,22 @@ ion-col {
 .data-row:nth-child(odd) {
   background: #255F9F;
   //background: #1E1E1E;
+}
+
+.no-data {
+  color: #7768ae;
+}
+ion-col {
+  text-align: center;
+  border: 1px solid #494949;
+  padding: 5px;
+  color: #e0e0e0;
+}
+
+.table_component{
+  width: 60vw;
+}
+
+.header-row {
+  background: #2d2429;
 }

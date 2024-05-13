@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.Cascade;
 
 import java.time.LocalDateTime;
 
@@ -31,7 +32,7 @@ public class Match {
     @JoinColumn(name = "away_team_id", referencedColumnName = "uuid")
     private Team awayTeam;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "referee_id", referencedColumnName = "uuid")
     private Referee referee;
 

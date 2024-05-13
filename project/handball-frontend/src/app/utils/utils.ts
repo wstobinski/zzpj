@@ -108,11 +108,26 @@ export class Utils {
   ): ValidationErrors | null => {
     const hourRegex = new RegExp('^([01][0-9]|2[0-3]):[0-5][0-9]$');
     const hour = control.value;
-    const passwordConfirm = control.get('passwordConfirm');
+
 
     return hour && hourRegex.test(hour)
       ? null
       : {hour: true};
+  };
+
+  oneToHundredValidator: ValidatorFn = (
+    control: AbstractControl,
+  ): ValidationErrors | null => {
+    const oneToHundredRegex: RegExp = new RegExp('^([1-9][0-9]?|100)$');
+    const value = control.value;
+
+    if (!value || value.length === 0) {
+      return null;
+    }
+
+    return value && oneToHundredRegex.test(value)
+      ? null
+      : {oneToHundred: true};
   };
 
 }
