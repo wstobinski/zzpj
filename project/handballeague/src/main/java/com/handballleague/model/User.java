@@ -29,10 +29,14 @@ public class User {
     private Long uuid;
     @Column(nullable = false)
     private String email;
-    @Column(nullable = false)
+    @Column()
     private String password;
     @Column(nullable = false)
     private String role;
+    @Column(columnDefinition = "int default 0")
+    private Integer code;
+    @Column(columnDefinition = "boolean default false")
+    private boolean active;
 
     public User(String email, String password, String role) {
         this.email = email;

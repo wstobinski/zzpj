@@ -1,6 +1,7 @@
 package com.handballleague.controllers;
 
 import com.handballleague.model.User;
+import com.handballleague.services.EmailService;
 import com.handballleague.services.JWTService;
 import com.handballleague.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +16,13 @@ import java.util.Map;
 public class UserController {
     private final UserService userService;
     private final JWTService jwtService;
+    private final EmailService emailService;
 
     @Autowired
-    public UserController(UserService userService, JWTService jwtService) {
+    public UserController(UserService userService, JWTService jwtService, EmailService emailService) {
         this.userService = userService;
         this.jwtService = jwtService;
+        this.emailService = emailService;
     }
 
     @PostMapping("/register")
@@ -28,11 +31,19 @@ public class UserController {
         ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
         if (response.getStatusCode().is2xxSuccessful()) {
             userService.create(entity);
+            emailService.sendEmail(entity.getEmail());
             return ResponseEntity.ok("User created successfully");
         } else {
             return response;
         }
+    }
 
+    @PostMapping("/activate")
+    public ResponseEntity<?> activateUser(Map<String, Object> requestBody) {
+        int code = (int) requestBody.get("code");
+        String password = (String) requestBody.get("password");
+        emailService.activateAcc(code, password);
+        return ResponseEntity.ok("User account successfully activated!");
     }
 
     @PostMapping("/login")
@@ -53,7 +64,7 @@ public class UserController {
             return ResponseEntity.ok(Map.of("ok", true, "response", newUser));
         } else {
             ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "captain");
-            if (response2.getStatusCode().is2xxSuccessful()){
+            if (response2.getStatusCode().is2xxSuccessful()) {
                 User newUser = userService.update(userId, user);
                 return ResponseEntity.ok(Map.of("ok", true, "response", newUser));
             } else {
