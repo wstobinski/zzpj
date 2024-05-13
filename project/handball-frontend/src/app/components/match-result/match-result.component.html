@@ -1,0 +1,181 @@
+<form [formGroup]="scoreFormGroup" (keyup)="markUnsavedChanges()" (ngSubmit)="submitForm()">
+  <!-- First Form -->
+  <ion-item class="ion-align-self-center" lines="none">
+    <ion-text color="secondary">
+      <h3>Uzupełnij wyniki meczu</h3>
+    </ion-text>
+  </ion-item>
+  <div style="width: 50%; margin: auto">
+  <div formGroupName="homeScore">
+    <ion-text color="primary">
+      <h4>Wynik drużyny {{match.homeTeam.teamName}}</h4>
+    </ion-text>
+    <ion-item>
+      <ion-label position="floating">Liczba bramek</ion-label>
+      <ion-input formControlName="goals"></ion-input>
+    </ion-item>
+    @if (formHasError('homeScore','goals', 'required')) {
+      <ion-item lines="none">
+        <ion-label class="error-label">
+          Liczba bramek jest wymagana
+        </ion-label>
+      </ion-item>
+    } @else if (formHasError('homeScore','goals', 'oneToHundred')) {
+    <ion-item lines="none">
+      <ion-label class="error-label">
+        Liczba bramek musi być liczbą całkowitą
+      </ion-label>
+    </ion-item>
+  }
+    <ion-item>
+      <ion-label position="floating">Liczba fauli</ion-label>
+      <ion-input formControlName="fouls"></ion-input>
+    </ion-item>
+    @if (formHasError('homeScore','fouls', 'oneToHundred')) {
+    <ion-item lines="none">
+      <ion-label class="error-label">
+        Liczba fauli musi być liczbą całkowitą
+      </ion-label>
+    </ion-item>
+    }
+    <ion-item>
+      <ion-label position="floating">Posiadanie piłki (%)</ion-label>
+      <ion-input (ionChange)="onBallPossessionChanged('homeScore')" formControlName="ballPossession"></ion-input>
+    </ion-item>
+    @if (formHasError('homeScore','ballPossession', 'oneToHundred')) {
+      <ion-item lines="none">
+        <ion-label class="error-label">
+          Procent posiadania piłki musi być liczbą całkowitą
+        </ion-label>
+      </ion-item>
+    }
+    <ion-item>
+      <ion-label position="floating">Żółte kartki</ion-label>
+      <ion-input formControlName="yellowCards"></ion-input>
+    </ion-item>
+    @if (formHasError('homeScore','yellowCards', 'oneToHundred')) {
+      <ion-item lines="none">
+        <ion-label class="error-label">
+          Liczba żółtych kartek musi być liczbą całkowitą
+        </ion-label>
+      </ion-item>
+    }
+    <ion-item>
+      <ion-label position="floating">Czerwone kartki</ion-label>
+      <ion-input formControlName="redCards"></ion-input>
+    </ion-item>
+    @if (formHasError('homeScore','redCards', 'oneToHundred')) {
+      <ion-item lines="none">
+        <ion-label class="error-label">
+          Liczba czerwonych kartek musi być liczbą całkowitą
+        </ion-label>
+      </ion-item>
+    }
+    <ion-item>
+      <ion-label position="floating">Kary czasowe</ion-label>
+      <ion-input formControlName="timePenalties"></ion-input>
+    </ion-item>
+    @if (formHasError( 'homeScore','timePenalties', 'oneToHundred')) {
+      <ion-item lines="none">
+        <ion-label class="error-label">
+          Liczba kar czasowych musi być liczbą całkowitą
+        </ion-label>
+      </ion-item>
+    }
+  </div>
+
+  <!-- Second Form -->
+  <div formGroupName="awayScore">
+    <ion-text color="primary">
+      <h4>Wynik drużyny {{match.awayTeam.teamName}}</h4>
+    </ion-text>
+    <ion-item>
+      <ion-label position="floating">Liczba bramek</ion-label>
+      <ion-input formControlName="goals"></ion-input>
+    </ion-item>
+    @if (formHasError( 'awayScore','goals', 'required')) {
+      <ion-item lines="none">
+        <ion-label class="error-label">
+          Liczba bramek jest wymagana
+        </ion-label>
+      </ion-item>
+    } @else if (formHasError( 'awayScore','goals', 'oneToHundred')) {
+      <ion-item lines="none">
+        <ion-label class="error-label">
+          Liczba bramek musi być liczbą całkowitą
+        </ion-label>
+      </ion-item>
+    }
+    <ion-item>
+      <ion-label position="floating">Liczba fauli</ion-label>
+      <ion-input formControlName="fouls"></ion-input>
+    </ion-item>
+    @if (formHasError( 'awayScore','fouls', 'oneToHundred')) {
+      <ion-item lines="none">
+        <ion-label class="error-label">
+          Liczba fauli musi być liczbą całkowitą
+        </ion-label>
+      </ion-item>
+    }
+    <ion-item>
+      <ion-label position="floating">Posiadanie piłki (%)</ion-label>
+      <ion-input (ionChange)="onBallPossessionChanged('awayScore')" formControlName="ballPossession"></ion-input>
+    </ion-item>
+    @if (formHasError( 'awayScore','ballPossession', 'oneToHundred')) {
+      <ion-item lines="none">
+        <ion-label class="error-label">
+          Procent posiadania piłki musi być liczbą całkowitą
+        </ion-label>
+      </ion-item>
+    }
+    <ion-item>
+      <ion-label position="floating">Żółte kartki</ion-label>
+      <ion-input formControlName="yellowCards"></ion-input>
+    </ion-item>
+    @if (formHasError( 'awayScore','yellowCards', 'oneToHundred')) {
+      <ion-item lines="none">
+        <ion-label class="error-label">
+          Liczba żółtych kartek musi być liczbą całkowitą
+        </ion-label>
+      </ion-item>
+    }
+    <ion-item>
+      <ion-label position="floating">Czerwone kartki</ion-label>
+      <ion-input formControlName="redCards"></ion-input>
+    </ion-item>
+
+    @if (formHasError('awayScore','redCards', 'oneToHundred')) {
+      <ion-item lines="none">
+        <ion-label class="error-label">
+          Liczba czerwonych kartek musi być liczbą całkowitą
+        </ion-label>
+      </ion-item>
+    }
+    <ion-item>
+      <ion-label position="floating">Kary czasowe</ion-label>
+      <ion-input formControlName="timePenalties"></ion-input>
+    </ion-item>
+    @if (formHasError( 'awayScore','timePenalties', 'oneToHundred')) {
+      <ion-item lines="none">
+        <ion-label class="error-label">
+          Liczba kar czasowych musi być liczbą całkowitą
+        </ion-label>
+      </ion-item>
+    }
+  </div>
+
+  <ion-row class="ion-padding">
+    <ion-col size-lg="3" offset-lg="3">
+      <ion-button type="submit" color="primary" expand="block" [disabled]="!scoreFormGroup.valid">
+        <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
+        Zapisz
+      </ion-button>
+    </ion-col>
+    <ion-col size-lg="3">
+      <ion-button color="medium" expand="block" fill="outline" (click)="onCancel()">
+        Anuluj
+      </ion-button>
+    </ion-col>
+  </ion-row>
+  </div>
+</form>

@@ -11,12 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
-import static com.handballleague.util.UUIDGenerator.generateRandomLongUUID;
+import static com.handballleague.util.UUIDGenerator.generateRandomIntegerUUID;
 
 @Service
 public class LeagueService implements HandBallService<League>{
@@ -59,7 +58,7 @@ public class LeagueService implements HandBallService<League>{
             LocalDateTime matchDate = firstRoundStartDate.plusWeeks(round).withHour(defaultHour).withMinute(defaultMinute).withSecond(0).withNano(0);
 
             Round currentRound = new Round();
-            currentRound.setUuid(generateRandomLongUUID());
+            currentRound.setUuid(generateRandomIntegerUUID());
             currentRound.setNumber(round + 1);
             currentRound.setContest(league);
             currentRound.setStartDate(matchDate);
@@ -76,7 +75,7 @@ public class LeagueService implements HandBallService<League>{
                     Team away = teams.get(awayIndex);
 
                     Match newMatch = new Match();
-                    newMatch.setUuid(generateRandomLongUUID());
+                    newMatch.setUuid(generateRandomIntegerUUID());
                     newMatch.setGameDate(matchDate);
                     newMatch.setHomeTeam(home);
                     newMatch.setAwayTeam(away);

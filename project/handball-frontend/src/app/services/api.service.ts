@@ -12,7 +12,8 @@ import {ApiResponse} from "../model/ApiResponse";
 export class ApiService {
 
   constructor(private http: HttpClient,
-              private authService: AuthService) { }
+              private authService: AuthService) {
+  }
 
   async get<ApiResponse>(url: string, options?: {
     headers?: HttpHeaders;
@@ -51,6 +52,20 @@ export class ApiService {
       options = await this.addAuthHeader(options);
       console.log('after auth add', options)
       return await firstValueFrom(this.http.put<ApiResponse>(`${environment.API_URL}${url}`, body, options));
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  async patch<ApiResponse>(url: string, body: any | null, options?: {
+    headers?: HttpHeaders;
+    params?: HttpParams
+  }): Promise<ApiResponse> {
+
+    try {
+      options = await this.addAuthHeader(options);
+      return await firstValueFrom(this.http.patch<ApiResponse>(`${environment.API_URL}${url}`, body, options));
     } catch (error) {
       console.error(error);
       throw error;

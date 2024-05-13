@@ -1,5 +1,6 @@
 package com.handballleague.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
@@ -7,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.List;
 import java.util.Objects;
@@ -42,6 +45,12 @@ public class Team {
     @JoinColumn(name = "team_id", referencedColumnName = "uuid")
     @JsonManagedReference
     private List<Player> players;
+
+    @ManyToOne(cascade = {CascadeType.MERGE})
+    @JoinColumn(name = "league_id", referencedColumnName = "uuid")
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    @JsonBackReference
+    private League league;
 
     public Team(String teamName) {
         this.teamName = teamName;

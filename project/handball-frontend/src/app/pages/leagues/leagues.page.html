@@ -12,15 +12,16 @@
     <div class="ion-text-right">
       <ion-button (click)="onAddNewLeague()">Stwórz nową ligę</ion-button>
     </div>
-    <ion-grid>
-      <ion-row>
+    <ion-grid class="table_component">
+      <ion-row class="header-row">
         <ion-col>Identyfikator ligi</ion-col>
         <ion-col>Nazwa ligi</ion-col>
         <ion-col>Liczba zespołów</ion-col>
         <ion-col>Data rozpoczęcia</ion-col>
+        <ion-col>Wygenerowany harmonogram</ion-col>
         <ion-col>Akcje</ion-col>
       </ion-row>
-      @if (leagues) {
+      @if (leagues && leagues.length > 0) {
         @for (league of leagues; track league.uuid) {
           <ion-row class="data-row">
             <ion-col>{{league.uuid}}</ion-col>
@@ -28,10 +29,21 @@
             <ion-col>{{league.teams.length}}</ion-col>
             <ion-col>{{league.startDate | date: undefined:undefined:'pl-PL'}}</ion-col>
             <ion-col>
+              @if (league.scheduleGenerated) {
+                <ion-icon style="font-size: 20px" name="checkmark-circle-outline"></ion-icon>
+              }
+            </ion-col>
+            <ion-col>
               <ion-icon style="cursor: pointer" (click)="openPopover($event, league, actionButtons)" name="ellipsis-vertical-outline"></ion-icon>
             </ion-col>
           </ion-row>
         }
+      } @else if (leagues && leagues?.length === 0) {
+        <div class="ion-text-center no-data">
+          <h3>Nie ma jeszcze żadnych lig</h3>
+          <h5>Stwórz nową ligę</h5>
+        </div>
+
       } @else {
         <div class="ion-text-center">
           <ion-spinner></ion-spinner>

@@ -3,6 +3,7 @@ import {BehaviorSubject, map, take} from "rxjs";
 import {UserAuthData} from "../model/UserAuthData";
 import {Utils} from "../utils/utils";
 import {jwtDecode} from "jwt-decode";
+import {Router} from "@angular/router";
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +11,7 @@ import {jwtDecode} from "jwt-decode";
 export class AuthService {
 
   constructor(private utils: Utils,
+              private router: Router
   ) {
   }
 
@@ -91,10 +93,13 @@ export class AuthService {
     );
   }
 
-  logout() {
+  logout(redirectPath: string = null) {
     this.utils.removeStorageObject('userAuthData').then(() => {
       this.utils.removeStorageObject('user').then(() => {
         window.location.reload();
+        if (redirectPath) {
+          this.router.navigateByUrl(redirectPath);
+        }
       });
     });
   }
