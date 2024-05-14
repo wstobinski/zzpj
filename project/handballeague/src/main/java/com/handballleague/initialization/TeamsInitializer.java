@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.handballleague.model.Team;
 import com.handballleague.repositories.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -15,10 +16,15 @@ import java.net.http.HttpResponse;
 
 @Service
 public class TeamsInitializer {
-    private final String apiKey = "5cd3647c52894e848f3ca0cfa92c186b";
+    @Value("${hanbdall.api.key}")
+    private String apiKey;
 
+    private final TeamRepository teamRepository;
     @Autowired
-    private TeamRepository teamRepository;
+    public TeamsInitializer(TeamRepository teamRepository) {
+        this.teamRepository = teamRepository;
+    }
+
 
     public void addTeamsToDatabase(String jsonData) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();

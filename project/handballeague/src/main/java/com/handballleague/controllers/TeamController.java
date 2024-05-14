@@ -19,12 +19,13 @@ public class TeamController {
 
     private final JWTService jwtService;
 
-    private final TeamsInitializer teamsInitializer = new TeamsInitializer(); // ??
+    private final TeamsInitializer teamsInitializer;
 
     @Autowired
-    public TeamController(TeamService teamService, JWTService jwtService) {
+    public TeamController(TeamService teamService, JWTService jwtService, TeamsInitializer teamsInitializer) {
         this.teamService = teamService;
         this.jwtService = jwtService;
+        this.teamsInitializer = teamsInitializer;
     }
 
     @GetMapping
@@ -138,14 +139,14 @@ public class TeamController {
             String season = body.get("season");
 
             if (leagueId == null || season == null) {
-                return ResponseEntity.badRequest().body(Map.of("error", "Invalid input"));
+                return ResponseEntity.badRequest().body(Map.of("ok", false, "error", "Invalid input"));
             }
 
             teamsInitializer.fetchAndFillData(leagueId, season);
             return ResponseEntity.ok(Map.of("ok", true, "message", "Teams generated successfully"));
         } catch (Exception e) {
             System.err.println("Error generating teams: " + e.getMessage());
-            return ResponseEntity.status(500).body(Map.of("error", "An error occurred while generating teams"));
+            return ResponseEntity.status(500).body(Map.of("ok", false, "error", "An error occurred while generating teams"));
         }
     }
 }
