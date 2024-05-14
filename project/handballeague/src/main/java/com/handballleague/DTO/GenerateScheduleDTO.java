@@ -12,5 +12,4 @@ public class GenerateScheduleDTO {
     private LocalDateTime startDate;
     private String defaultHour;
     private DayOfWeek defaultDay;
-
 }

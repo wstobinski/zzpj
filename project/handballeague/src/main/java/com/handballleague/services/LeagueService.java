@@ -6,11 +6,13 @@ import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
 import com.handballleague.model.*;
 import com.handballleague.repositories.*;
+import com.handballleague.util.DateManager;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
@@ -38,7 +40,6 @@ public class LeagueService implements HandBallService<League>{
 
 
     @Transactional
-
     public void generateSchedule(League league, GenerateScheduleDTO generateScheduleDTO) throws EntityAlreadyExistsException{
         if(league.isScheduleGenerated()) throw new EntityAlreadyExistsException("This league already has a schedule generated.");
         List<Team> teams = new ArrayList<>(league.getTeams());
@@ -52,10 +53,24 @@ public class LeagueService implements HandBallService<League>{
         String[] defaultHourSplit = generateScheduleDTO.getDefaultHour().split(":");
         int defaultHour = Integer.parseInt(defaultHourSplit[0]);
         int defaultMinute = Integer.parseInt(defaultHourSplit[1]);
-        LocalDateTime firstRoundStartDate = generateScheduleDTO.getStartDate().with(TemporalAdjusters.nextOrSame(generateScheduleDTO.getDefaultDay()));
+        LocalDateTime firstRoundStartDate = generateScheduleDTO
+                .getStartDate()
+                .with(TemporalAdjusters.nextOrSame(generateScheduleDTO.getDefaultDay()));
 
         for (int round = 0; round < numTeams - 1; round++) {
-            LocalDateTime matchDate = firstRoundStartDate.plusWeeks(round).withHour(defaultHour).withMinute(defaultMinute).withSecond(0).withNano(0);
+            LocalDateTime matchDate = firstRoundStartDate
+                    .plusWeeks(round)
+                    .withHour(defaultHour)
+                    .withMinute(defaultMinute)
+                    .withSecond(0)
+                    .withNano(0);
+
+            while(!DateManager.isDateValid(matchDate))  matchDate = firstRoundStartDate
+                    .plusWeeks(1)
+                    .withHour(defaultHour)
+                    .withMinute(defaultMinute)
+                    .withSecond(0)
+                    .withNano(0);
 
             Round currentRound = new Round();
             currentRound.setUuid(generateRandomIntegerUUID());
@@ -90,22 +105,18 @@ public class LeagueService implements HandBallService<League>{
         league.setScheduleGenerated(true);
     }
 
-    // Rotate the list elements except the first one
-    public static void rotateTeams(List<Team> teams) {
-        if (teams.size() < 2) return; // No need to rotate if there isn't enough elements
+    private static void rotateTeams(List<Team> teams) {
+        if (teams.size() < 2) return;
 
-        // Store the second element
         Team temp = teams.get(1);
 
-        // Shift elements to the left
         for (int i = 1; i < teams.size() - 1; i++) {
             teams.set(i, teams.get(i + 1));
         }
-        // Move the stored element to the end of the list
         teams.set(teams.size() - 1, temp);
     }
 
-    public Referee drawReferee(int matchNumber) {
+    private Referee drawReferee(int matchNumber) {
         List<Referee> referees = refereeRepository.findAll();
         return referees.get(matchNumber % referees.size());
     }
@@ -117,6 +128,9 @@ public class LeagueService implements HandBallService<League>{
         if(checkIfEntityExistsInDb(league)) throw new EntityAlreadyExistsException("League with given data already exists in the database");
         if(league.getName().isEmpty() ||
             league.getStartDate() == null) throw new InvalidArgumentException("At least one of league parameters is invalid.");
+        if(league.getTeams().size() > 12 || league.getTeams().size() < 3)
+            throw new InvalidArgumentException("League needs to have at least 3 teams, and no more than 12 teams.");
+
         League createdLeague = leagueRepository.save(league);
         for (Team team: createdLeague.getTeams()) {
             teamContestService.create(createdLeague.getUuid(), team.getUuid());
@@ -230,5 +244,24 @@ public class LeagueService implements HandBallService<League>{
 
         return leagueMatches;
     }
+
+    public LocalDateTime finishLeague(Long leagueId) throws RuntimeException {
+        try {
+            League league = leagueRepository.findById(leagueId)
+                    .orElseThrow(() -> new ObjectNotFoundInDataBaseException("League not found"));
+
+            if(league.getFinishedDate() != null)
+                throw new RuntimeException("League is already finished");
+
+            LocalDateTime finishedTime = LocalDateTime.now();
+            league.setFinishedDate(finishedTime);
+            leagueRepository.save(league);
+
+            return finishedTime;
+        } catch (Exception e) {
+            throw new RuntimeException("Error finishing the league: " + e.getMessage(), e);
+        }
+    }
+
 
 }

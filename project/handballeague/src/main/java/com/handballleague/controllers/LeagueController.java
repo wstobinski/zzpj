@@ -137,4 +137,15 @@ public class LeagueController {
             return response2;
         }
     }
+
+    @PatchMapping("/finish/{league_uuid}")
+    public ResponseEntity<?> finishLeague(@PathVariable Long league_uuid, @RequestHeader(name = "Authorization") String token) throws RuntimeException {
+        ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
+        ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "arbiter");
+        if (response.getStatusCode().is2xxSuccessful() || response2.getStatusCode().is2xxSuccessful()) {
+            return ResponseEntity.ok(Map.of("ok", true, "response", leagueService.finishLeague(league_uuid)));
+        } else {
+            return response2;
+        }
+    }
 }

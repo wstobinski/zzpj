@@ -103,7 +103,7 @@ public class TeamContestService implements HandBallService<TeamContest>{
 
     @Override
     public List<TeamContest> getAll() {
-        return teamContestRepository.findAll();
+        return teamContestRepository.findAllByOrderByPointsDescGoalsAcquiredDescGoalsLostAsc();
     }
 
     @Override
@@ -124,8 +124,9 @@ public class TeamContestService implements HandBallService<TeamContest>{
     }
 
     public List<TeamContest> findTeamContestsInCertainLeague(Long leagueId) {
-        Sort sortByPoints = Sort.by(Sort.Direction.DESC, "points");
-        return teamContestRepository.findAll(sortByPoints).stream().filter(teamContest -> teamContest.getLeague().getUuid().equals(leagueId)).toList();
+      return teamContestRepository
+              .findAllByOrderByPointsDescGoalsAcquiredDescGoalsLostAsc()
+              .stream().filter(teamContest -> teamContest.getLeague().getUuid().equals(leagueId)).toList();
     }
 
     public List<TeamContest> findTeamContestsForTeam(Long teamId) {

@@ -32,6 +32,7 @@ public class TeamContestController {
 
     }
 
+
     @PostMapping
     public ResponseEntity<?> registerNewTeamContest(@RequestParam Long leagueID, @RequestParam Long teamID,
                                                     @RequestHeader(name = "Authorization") String token) {
