@@ -70,9 +70,8 @@ public class TeamContest {
             this.setDraws(newTeamContest.getDraws());
             this.setLosses(newTeamContest.getLosses());
         }
-
-
-
     }
+
+
 }
 
