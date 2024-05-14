@@ -7,14 +7,14 @@ import java.util.Map.Entry;
 
 public class doit {
 
-	Map<Integer, Integer> __1 = new HashMap<Integer, Integer>();
-	private int _2 = Integer.MIN_VALUE;private int kpp = Integer.MAX_VALUE;
-	
-	public doit(List<Integer> i1) {
-		p(i1);
-	}
-	
-	public doit() {
+    Map<Integer, Integer> __1 = new HashMap<Integer, Integer>();
+    private int _2 = Integer.MIN_VALUE;private int kpp = Integer.MAX_VALUE;
+
+    public doit(List<Integer> i1) {
+        p(i1);
+    }
+
+    public doit() {
 
 		/*Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla molestie lacus at diam congue fermentum. Phasellus id facilisis dolor. Maecenas neque purus,
 		tempus id scelerisque nec, facilisis eget nunc. Praesent ante dolor, maximus et porta ac, finibus vel erat. Donec diam orci, bibendum eu odio ut, auctor fringilla justo.
@@ -38,54 +38,54 @@ public class doit {
 //elementum eros tempus, et lacinia magna interdum. Suspendisse mattis vehicula elit, a consequat lorem accumsan sit amet. Vivamus molestie lectus et lacus pharetra, ut
 //pulvinar est laoreet. Vivamus hendrerit pellentesque blandit. Curabitur sed dolor iaculis, sodales nisl id, tempor metus. Vivamus erat sem, iaculis vitae risus sed, eleifend luctus velit.
 */
-	}
-	
-	public void p(List<Integer> l1) { int i = 0;for (; i < l1.size(); i++) { p(l1.get(i)); }}
-	
-	public void p(Integer i) {
-		if (__1.containsKey(i)) {
-			Integer k = __1.get(i);
-			__1.put(i, k +1);
-		} else {
-			__1.put(1, 1);
-		}
-		
-		if (i > _2) {
-			_2 = i;
-		}
-		
-		if (i < kpp) {
-			kpp = i;
-		}
-	}
-	
-	public int DOIT(int i) { if (__1.containsKey(i)) { return __1.get(i);
-		} else { return 0;
-		} }
-	
-	public double dasIstGut() {
-		double jk = 0;double p = 0;
-		for (Entry<Integer, Integer> u : __1.entrySet()) {
-			p += u.getValue();jk += u.getKey() * u.getValue();
-		}return jk/p;
-	}
-	
-	public int l1() {
-		return _2;
-	}
-	
-	public int l2() {
-		return kpp;
-	}
+    }
+
+    public void p(List<Integer> l1) { int i = 0;for (; i < l1.size(); i++) { p(l1.get(i)); }}
+
+    public void p(Integer i) {
+        if (__1.containsKey(i)) {
+            Integer k = __1.get(i);
+            __1.put(i, k +1);
+        } else {
+            __1.put(1, 1);
+        }
+
+        if (i > _2) {
+            _2 = i;
+        }
+
+        if (i < kpp) {
+            kpp = i;
+        }
+    }
+
+    public int DOIT(int i) { if (__1.containsKey(i)) { return __1.get(i);
+    } else { return 0;
+    } }
+
+    public double dasIstGut() {
+        double jk = 0;double p = 0;
+        for (Entry<Integer, Integer> u : __1.entrySet()) {
+            p += u.getValue();jk += u.getKey() * u.getValue();
+        }return jk/p;
+    }
+
+    public int l1() {
+        return _2;
+    }
+
+    public int l2() {
+        return kpp;
+    }
 
 
-	//TODO: future use when i will know what  my name and number are
-	public String getFizzBuzzNumber(int number) {
-		//TODO: implement
-		//Das Belvedere ist ein Barock-Palast.
-		//Heute ist es ein Museum.
-		//Die Menschen fotografieren oft das Belvedere.
-		//Das Museum ist interessant, aber es gibt auch einen schönen Garten.
-		return null;
-	}
+    //TODO: future use when i will know what  my name and number are
+    public String getFizzBuzzNumber(int number) {
+        //TODO: implement
+        //Das Belvedere ist ein Barock-Palast.
+        //Heute ist es ein Museum.
+        //Die Menschen fotografieren oft das Belvedere.
+        //Das Museum ist interessant, aber es gibt auch einen schönen Garten.
+        return null;
+    }
 }
