@@ -4,9 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.handballleague.model.Team;
 import com.handballleague.repositories.TeamRepository;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -17,30 +15,29 @@ import java.net.http.HttpResponse;
 
 @Service
 public class TeamsInitializer {
-    String apiKey = "5cd3647c52894e848f3ca0cfa92c186b";
+    private final String apiKey = "5cd3647c52894e848f3ca0cfa92c186b";
 
     @Autowired
     private TeamRepository teamRepository;
 
-    public void addTeamsToDatabase(String jsonData) {
+    public void addTeamsToDatabase(String jsonData) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
 
-        try {
-            JsonNode rootNode = objectMapper.readTree(jsonData);
-            JsonNode teamsNode = rootNode.get("response");
+        JsonNode rootNode = objectMapper.readTree(jsonData);
+        JsonNode teamsNode = rootNode.get("response");
 
-            for (JsonNode teamNode : teamsNode) {
-                Long teamId = teamNode.get("id").asLong();
-                String teamName = teamNode.get("name").asText();
+        if (teamsNode == null) {
+            throw new IOException("Invalid JSON format: response node not found");
+        }
 
-                if (!teamRepository.existsById(teamId) && teamRepository.findByTeamName(teamName) == null) {
-                    Team team = new Team(teamName);
+        for (JsonNode teamNode : teamsNode) {
+            Long teamId = teamNode.get("id").asLong();
+            String teamName = teamNode.get("name").asText();
 
-                    teamRepository.save(team);
-                }
+            if (!teamRepository.existsById(teamId) && teamRepository.findByTeamName(teamName) == null) {
+                Team team = new Team(teamName);
+                teamRepository.save(team);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -54,10 +51,16 @@ public class TeamsInitializer {
 
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() != 200) {
+                throw new IOException("HTTP request failed with status code: " + response.statusCode());
+            }
+
             String responseBody = response.body();
             addTeamsToDatabase(responseBody);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
-    }
+}
+
 }
