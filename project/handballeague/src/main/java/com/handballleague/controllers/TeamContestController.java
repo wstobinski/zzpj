@@ -32,14 +32,6 @@ public class TeamContestController {
 
     }
 
-    @GetMapping("/for-league/{leagueId}")
-    public ResponseEntity<?> getTeamContestsForLeague(@PathVariable Long leagueId) {
-
-        List<TeamContest> teamContests = teamContestService.findTeamContestsInCertainLeague(leagueId);
-        return ResponseEntity.ok(teamContests);
-
-    }
-
 
     @PostMapping
     public ResponseEntity<?> registerNewTeamContest(@RequestParam Long leagueID, @RequestParam Long teamID,
