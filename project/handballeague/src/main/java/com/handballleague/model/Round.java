@@ -1,5 +1,6 @@
 package com.handballleague.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
@@ -20,6 +21,10 @@ public class Round {
     @Id
     private Long uuid;
 
+    @OneToMany(cascade = {CascadeType.MERGE})
+    @JoinColumn(name = "round_id", referencedColumnName = "uuid")
+    @JsonManagedReference
+    private List<Match> matches;
     @Column
     @Positive(message = "Round number has to be a positive number")
     private int number;

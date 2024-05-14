@@ -7,6 +7,7 @@ import com.handballleague.services.JWTService;
 import com.handballleague.services.LeagueService;
 import com.handballleague.services.MatchService;
 import com.handballleague.services.RoundService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +41,18 @@ public class MatchController {
                     "ok", true));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error completing match: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/{matchId}")
+    public ResponseEntity<?> updateMatch(@PathVariable Long matchId, @Valid @RequestBody Match match, @RequestHeader(name = "Authorization") String token) {
+        ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
+        ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "captain");
+        if (response.getStatusCode().is2xxSuccessful() || response2.getStatusCode().is2xxSuccessful()) {
+            Match newMatch = matchService.update(matchId, match);
+            return ResponseEntity.ok(Map.of("ok", true, "response", newMatch));
+        } else {
+            return response2;
         }
     }
 }
