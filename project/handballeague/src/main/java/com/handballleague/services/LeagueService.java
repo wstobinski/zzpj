@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
@@ -244,5 +245,24 @@ public class LeagueService implements HandBallService<League>{
 
         return leagueMatches;
     }
+
+    public LocalDateTime finishLeague(Long leagueId) throws RuntimeException {
+        try {
+            League league = leagueRepository.findById(leagueId)
+                    .orElseThrow(() -> new ObjectNotFoundInDataBaseException("League not found"));
+
+            if(league.getFinishedDate() != null)
+                throw new RuntimeException("League is already finished");
+
+            LocalDateTime finishedTime = LocalDateTime.now();
+            league.setFinishedDate(finishedTime);
+            leagueRepository.save(league);
+
+            return finishedTime;
+        } catch (Exception e) {
+            throw new RuntimeException("Error finishing the league: " + e.getMessage(), e);
+        }
+    }
+
 
 }

@@ -70,6 +70,7 @@ public class MatchService implements HandBallService<Match>{
         matchToChange.setGameDate(entity.getGameDate());
         matchToChange.setHomeTeam(entity.getHomeTeam());
         matchToChange.setAwayTeam(entity.getAwayTeam());
+        matchToChange.setReferee(entity.getReferee());
 
         return matchRepository.save(matchToChange);
     }
