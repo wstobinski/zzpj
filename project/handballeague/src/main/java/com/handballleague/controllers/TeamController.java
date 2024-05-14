@@ -126,16 +126,26 @@ public class TeamController {
         }
     }
 
-    @PostMapping("/generate-teams") // TODO improve this method, add error handling
+    @PostMapping("/generate-teams")
     public ResponseEntity<?> generateTeams(@Valid @RequestBody Map<String, String> body, @RequestHeader(name = "Authorization") String token) {
-        ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
-        if (response.getStatusCode().is2xxSuccessful()) {
+        try {
+            ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                return response;
+            }
+
             String leagueId = body.get("leagueId");
             String season = body.get("season");
+
+            if (leagueId == null || season == null) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Invalid input"));
+            }
+
             teamsInitializer.fetchAndFillData(leagueId, season);
             return ResponseEntity.ok(Map.of("ok", true, "message", "Teams generated successfully"));
-        } else {
-            return response;
+        } catch (Exception e) {
+            System.err.println("Error generating teams: " + e.getMessage());
+            return ResponseEntity.status(500).body(Map.of("error", "An error occurred while generating teams"));
         }
     }
 }
