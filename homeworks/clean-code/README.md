@@ -4,7 +4,7 @@ Oryginalny plik README znajduje się poniżej
 
 **Zadanie 1:** Clean Code
 
-Klasa `pl.zzpj.cleancode.doIt` nie przestrzega zasad Clean Code. Przerefaktoruj kod zgodnie z zasadami poznanymi podczas prezentacji.
+Klasa `pl.zzpj.cleancode.DoIt` nie przestrzega zasad Clean Code. Przerefaktoruj kod zgodnie z zasadami poznanymi podczas prezentacji.
 
 Pytania pomocnicze:
 - Jaka jest rola tej klasy? 

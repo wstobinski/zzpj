@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class doIt {
+public class DoIt {
 
 	Map<Integer, Integer> hashMap = new HashMap<>();
 	private int intMaxVal = Integer.MIN_VALUE;
