@@ -3,6 +3,7 @@ import {ApiService} from "./api.service";
 import {ApiResponse} from "../model/ApiResponse";
 import {League} from "../model/league.model";
 import {GenerateScheduleDto} from "../model/DTO/generate-schedule.dto";
+import {from, Observable} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -11,10 +12,8 @@ export class LeagueService {
 
   constructor(private apiService: ApiService) { }
 
-  async getAllLeagues(): Promise<ApiResponse> {
-
-    return await this.apiService.get<ApiResponse>("/leagues");
-
+  getAllLeagues(): Observable<ApiResponse> {
+    return from(this.apiService.get<ApiResponse>("/leagues"));
   }
   async getLeagueById(leagueId: string): Promise<ApiResponse> {
     return await this.apiService.get<ApiResponse>(`/leagues/${leagueId}`);

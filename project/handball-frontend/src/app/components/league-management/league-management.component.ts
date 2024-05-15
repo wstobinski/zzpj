@@ -36,13 +36,13 @@ export class LeagueManagementComponent  implements OnInit {
       this.teamsSelected = this.league.teams;
       this.leagueFormGroup = this.formBuilder.group({
         name: [this.league.name, [Validators.required]],
-        teams: [this.league.teams, [Validators.required]],
+        teams: [this.league.teams, [Validators.required, this.utils.rangeValidator(3,12)]],
         startDate: [this.league.startDate, [Validators.required]]
       });
     } else {
       this.leagueFormGroup = this.formBuilder.group({
         name: ['', [Validators.required]],
-        teams: [null, [Validators.required]],
+        teams: [null, [Validators.required, this.utils.rangeValidator(3,12)]],
         startDate: [null, [Validators.required]]
       });
     }

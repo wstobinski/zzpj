@@ -30,6 +30,13 @@
           }
         </ion-select>
       </ion-item>
+      @if (formHasError('teams', 'rangeError')) {
+        <ion-item lines="none">
+          <ion-label class="error-label">
+            Liga musi posiadać minimum 3 zespoły
+          </ion-label>
+        </ion-item>
+      }
       <ion-text color="primary">
         <h3 style="margin-left: 16px">Data rozpoczęcia</h3>
       </ion-text>

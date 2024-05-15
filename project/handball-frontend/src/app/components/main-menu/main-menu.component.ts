@@ -1,10 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
 import {MenuController} from "@ionic/angular";
 import {UserService} from "../../services/user.service";
 import {Subscription} from "rxjs";
 import {User} from "../../model/user.model";
-import {Utils} from "../../utils/utils";
 import {AuthService} from "../../services/auth.service";
 import {LeagueService} from "../../services/league.service";
 import {League} from "../../model/league.model";
@@ -14,7 +13,8 @@ import {League} from "../../model/league.model";
   templateUrl: './main-menu.component.html',
   styleUrls: ['./main-menu.component.scss'],
 })
-export class MainMenuComponent  implements OnInit {
+export class MainMenuComponent  implements OnInit, OnDestroy {
+
 
   constructor(private router: Router,
               private menu: MenuController,
@@ -25,13 +25,14 @@ export class MainMenuComponent  implements OnInit {
   user: User;
   userSub: Subscription;
   leagues: League[];
+  private leaguesSub: Subscription;
 
   ngOnInit() {
 
     this.userSub = this.userService.getUser().subscribe(user => {
     this.user = user;
     });
-    this.leagueService.getAllLeagues().then(r => {
+    this.leaguesSub = this.leagueService.getAllLeagues().subscribe(r => {
       if (r.ok) {
         const allLeagues = r.response as League[];
         this.leagues = allLeagues.filter(l => {
@@ -54,5 +55,11 @@ export class MainMenuComponent  implements OnInit {
   goToLeaguePanel(league: League) {
     this.router.navigate(['league-panel', league.uuid]);
     this.menu.close();
+  }
+
+  ngOnDestroy(): void {
+    if (this.leaguesSub) {
+      this.leaguesSub.unsubscribe();
+    }
   }
 }

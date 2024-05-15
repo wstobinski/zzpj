@@ -11,6 +11,7 @@ import {
   GenerateScheduleModalComponent
 } from "../../components/generate-schedule-modal/generate-schedule-modal.component";
 import {Router} from "@angular/router";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-leagues',
@@ -21,6 +22,7 @@ export class LeaguesPage extends GenericPage implements OnInit {
   actionButtons: ActionButton[];
   leagues: League[];
   leagueToEdit: League;
+  private leaguesSub: Subscription;
 
   constructor(loadingService: LoadingService,
               popoverController: PopoverController,
@@ -33,7 +35,11 @@ export class LeaguesPage extends GenericPage implements OnInit {
 
   override async ngOnInit() {
     super.ngOnInit();
-    this.leagues = (await this.leaguesService.getAllLeagues()).response;
+    this.leaguesSub = this.leaguesService.getAllLeagues().subscribe(r => {
+      if (r.ok) {
+        this.leagues = r.response;
+      }
+    });
     console.log(this.leagues);
     this.actionButtons = [
       {
@@ -157,7 +163,6 @@ export class LeaguesPage extends GenericPage implements OnInit {
 
   async onTeamEdited($event: League) {
     this.leagueToEdit = null;
-    this.leagues = (await this.leaguesService.getAllLeagues()).response;
 
   }
 

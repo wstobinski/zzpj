@@ -130,4 +130,14 @@ export class Utils {
       : {oneToHundred: true};
   };
 
+  rangeValidator(min: number, max: number): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value;
+      if (value && value.length >= min && value.length <= max) {
+        return null;
+      }
+      return { rangeError: `Selection must be between ${min} and ${max} items` };
+    };
+  }
+
 }
