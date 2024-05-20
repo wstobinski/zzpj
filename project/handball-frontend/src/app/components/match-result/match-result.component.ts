@@ -69,6 +69,8 @@ export class MatchResultComponent  implements OnInit {
     if (matchCompletedResponse.ok) {
       this.utils.presentInfoToast("Wyniki meczu zapisano pomyślnie!");
       this.match.finished = true;
+      this.match.homeTeamScore = team1Score.goals;
+      this.match.awayTeamScore = team2Score.goals;
       this.matchFinishedEmitter.emit(this.match);
     } else {
       this.utils.presentAlertToast("Wystąpił błąd podczas zapisywania wyników meczu");

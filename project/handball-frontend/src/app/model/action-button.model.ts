@@ -1,5 +1,5 @@
 export interface ActionButton {
-  buttonName: string;
+  buttonName: string | ((object: any) => string);
   buttonAction: any;
   actionColor?: string;
   displayCondition?: any;

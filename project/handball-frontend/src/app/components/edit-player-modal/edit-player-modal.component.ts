@@ -85,7 +85,9 @@ export class EditPlayerModalComponent implements OnInit {
       this.player = Object.assign(this.player, this.playerFormGroup.value);
     } else {
       this.player = Object.assign(new Player(), this.playerFormGroup.value);
+
     }
+
     this.modalController.dismiss(this.player, this.mode);
   }
 }

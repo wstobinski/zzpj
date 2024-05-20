@@ -77,7 +77,7 @@ public class RefereeController {
         ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "captain");
         if (response.getStatusCode().is2xxSuccessful() || response2.getStatusCode().is2xxSuccessful()) {
             Referee newReferee = refereeService.update(refereeId, referee);
-            return ResponseEntity.ok(Map.of("ok", true, "response", refereeId));
+            return ResponseEntity.ok(Map.of("ok", true, "response", newReferee));
         } else {
             return response2;
         }

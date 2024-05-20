@@ -92,6 +92,7 @@ public class PlayerService implements HandBallService<Player>{
         playerToChange.setPitchNumber(newPlayer.getPitchNumber());
         playerToChange.setCaptain(newPlayer.isCaptain());
         playerToChange.setSuspended(newPlayer.isSuspended());
+        playerToChange.setEmail(newPlayer.getEmail());
 
         return playerRepository.save(playerToChange);
     }

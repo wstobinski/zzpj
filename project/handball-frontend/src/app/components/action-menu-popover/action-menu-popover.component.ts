@@ -23,4 +23,8 @@ export class ActionMenuPopoverComponent  implements OnInit {
     }
     await this.popoverController.dismiss();
   }
+
+  isFunction(value: any): value is Function {
+    return typeof value === 'function';
+  }
 }

@@ -43,7 +43,7 @@ export class LeaguesPage extends GenericPage implements OnInit {
     console.log(this.leagues);
     this.actionButtons = [
       {
-        buttonName: "Przejdź do panelu ligi",
+        buttonName: this.getLeaguePanelName.bind(this),
         buttonAction: this.onLeaguePanelOpened.bind(this),
         displayCondition: this.canDisplayPanel.bind(this)
       },
@@ -136,7 +136,8 @@ export class LeaguesPage extends GenericPage implements OnInit {
       () => {
         this.leaguesService.finishLeague(league.uuid).then(r => {
           if (r.ok) {
-            // todo fetch new league data (when backend ready)
+            league.finishedDate = r.response;
+            console.log("FINISHED league ", league);
             this.utils.presentInfoToast(`Liga ${league.name} zakończona pomyślnie`);
           } else {
             this.utils.presentAlertToast(`Wystąpił błąd przy kończeniu rozgrywek ligowych`);
@@ -182,6 +183,10 @@ export class LeaguesPage extends GenericPage implements OnInit {
 
   canDisplayPanel(league: League) {
     return league.scheduleGenerated;
+  }
+
+  getLeaguePanelName(league: League) {
+    return league.finishedDate ? "Przejdź do archiwum ligi" : "Przejdź do panelu ligi";
   }
 
   canFinishLeague(league: League) {

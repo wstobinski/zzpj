@@ -5,6 +5,7 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Utils} from "../../utils/utils";
 import {UserService} from "../../services/user.service";
 import {User} from "../../model/user.model";
+import {ChangePasswordDto} from "../../model/DTO/change-password.dto";
 
 @Component({
   selector: 'app-account',
@@ -12,6 +13,8 @@ import {User} from "../../model/user.model";
   styleUrls: ['./account.page.scss'],
 })
 export class AccountPage implements OnInit, OnDestroy {
+
+
 
   constructor(private loadingService: LoadingService,
               private formBuilder: FormBuilder,
@@ -26,14 +29,15 @@ export class AccountPage implements OnInit, OnDestroy {
   userSub: Subscription;
   accountFormGroup: FormGroup;
   pwdType: 'password' | 'text' = 'password';
+  oldPwdType: 'password' | 'text' = 'password';
   showPwdIcon: 'eye-off-outline' | 'eye-outline' = 'eye-off-outline';
+  showOldPwdIcon: 'eye-off-outline' | 'eye-outline' = 'eye-off-outline';
   ngOnInit() {
     this.userSub = this.userService.getUser().subscribe(user => {
       this.user = user;
       this.accountFormGroup = this.formBuilder.group({
-        email: [this.user?.email, [Validators.required, Validators.email]],
-        role: [this.user?.role, [Validators.required]],
-        password: ['', [Validators.required, Validators.minLength(8)]],
+        oldPassword: ['', [Validators.required, Validators.minLength(8)]],
+        newPassword: ['', [Validators.required, Validators.minLength(8)]],
         passwordConfirm: ['', [Validators.required]]
       }, {validators: this.utils.passwordMismatchValidator});
     });
@@ -54,34 +58,45 @@ export class AccountPage implements OnInit, OnDestroy {
       this.hasUnsavedChanges = true;
     }
   }
-  onChangePwdType() {
-    if(this.pwdType === 'password'){
-      this.pwdType = 'text';
-      this.showPwdIcon = 'eye-outline';
+  onChangePwdType(type: 'old' | 'new') {
+
+    if (type === "new") {
+      if(this.pwdType === 'password'){
+        this.pwdType = 'text';
+        this.showPwdIcon = 'eye-outline';
+      } else {
+        this.pwdType = 'password';
+        this.showPwdIcon = 'eye-off-outline';
+      }
     } else {
-      this.pwdType = 'password';
-      this.showPwdIcon = 'eye-off-outline';
+      if(this.oldPwdType === 'password'){
+        this.oldPwdType = 'text';
+        this.showOldPwdIcon = 'eye-outline';
+      } else {
+        this.oldPwdType = 'password';
+        this.showOldPwdIcon = 'eye-off-outline';
+      }
     }
+
+
   }
 
-  onAccountEdit() {
-    this.user = Object.assign(this.user, this.accountFormGroup.value);
-    console.log(this.user);
-    this.userService.updateUser(this.user.uuid, this.user).then(r => {
+  onPasswordChanged() {
+    const rawFormValue: ChangePasswordDto = this.accountFormGroup.getRawValue();
+    this.userService.changePassword(rawFormValue).then(r => {
       if (r.ok) {
-        this.userService.setUser(r.response);
-        this.user = r.response;
-        this.accountFormGroup.get('password').reset();
+        this.accountFormGroup.get('oldPassword').reset();
+        this.accountFormGroup.get('newPassword').reset();
         this.accountFormGroup.get('passwordConfirm').reset();
-        this.utils.presentInfoToast('Edycja konta zakończona pomyślnie');
+        this.utils.presentInfoToast('Hasło zmieniono pomyślnie');
       } else {
-        this.utils.presentAlertToast('Wystąpił błąd podczas edycji konta');
+        this.utils.presentAlertToast('Wystąpił błąd podczas zmiany hasła');
       }
     }).catch(e => {
       if (e.status === 401) {
-        this.utils.presentAlertToast('Wystąpił błąd podczas edycji konta. Twoja sesja wygasła, zaloguj się ponownie');
+        this.utils.presentAlertToast('Wystąpił błąd podczas zmiany hasła. Twoja sesja wygasła, zaloguj się ponownie');
       } else {
-        this.utils.presentAlertToast('Wystąpił błąd podczas edycji konta');
+        this.utils.presentAlertToast('Wystąpił błąd podczas zmiany hasła');
       }
     })
   }

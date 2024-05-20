@@ -48,6 +48,11 @@ public class Player {
             name = "phone_number"
     )
     private String phoneNumber;
+
+    @Column(
+            name = "email"
+    )
+    private String email;
     @Column(
             name = "pitch_number",
             nullable = false

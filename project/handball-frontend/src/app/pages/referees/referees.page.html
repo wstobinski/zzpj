@@ -1,0 +1,39 @@
+<app-top-toolbar title="Sędziowie"></app-top-toolbar>
+@if (isLoading) {
+  <ion-progress-bar type="indeterminate"></ion-progress-bar>
+}
+<ion-content>
+
+  <ion-item class="ion-align-self-center" lines="none">
+    <ion-text color="secondary">
+      <h3>Lista sędziów</h3>
+    </ion-text>
+  </ion-item>
+  <div class="ion-text-right">
+    <ion-button (click)="openRefereeDetailsModal(null, 'ADD')">Dodaj nowego sędziego</ion-button>
+  </div>
+  <ion-grid class="table_component">
+    <ion-row class="header-row">
+      <ion-col>Identyfikator sędziego</ion-col>
+      <ion-col>Imię i nazwisko</ion-col>
+      <ion-col>Ocena</ion-col>
+      <ion-col>Akcje</ion-col>
+    </ion-row>
+    @if (referees) {
+      @for (referee of referees; track referee.uuid) {
+        <ion-row class="data-row">
+          <ion-col>{{referee.uuid}}</ion-col>
+          <ion-col>{{referee.firstName}} {{referee.lastName}}</ion-col>
+          <ion-col>{{referee.rating}}</ion-col>
+          <ion-col>
+            <ion-icon style="cursor: pointer" (click)="openPopover($event, referee, actionButtons)" name="ellipsis-vertical-outline"></ion-icon>
+          </ion-col>
+        </ion-row>
+      }
+    } @else {
+      <div class="ion-text-center">
+        <ion-spinner></ion-spinner>
+      </div>
+    }
+  </ion-grid>
+</ion-content>

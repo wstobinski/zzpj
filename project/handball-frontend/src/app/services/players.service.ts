@@ -29,7 +29,6 @@ export class PlayersService {
   }
 
   async updatePlayer(player: Player): Promise<ApiResponse> {
-    console.log('inService', player)
     return await this.apiService.put<ApiResponse>(`/players/${player.uuid}`, player);
   }
 

@@ -5,111 +5,128 @@
 
 <ion-content>
   <div [hidden]="matchToFinish">
-  @if (league) {
-    <ion-item class="ion-align-self-center" lines="none">
-      <ion-text color="secondary">
-        <h3>Przebieg ligi - {{league?.name}}</h3>
-      </ion-text>
-    </ion-item>
-    <ion-segment (ionChange)="onSegmentChanged($event)" value="MATCHES">
-      <ion-segment-button value="MATCHES">
-        <ion-label>Harmonogram</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="STANDINGS">
-        <ion-label>Tabela wyników</ion-label>
-      </ion-segment-button>
-    </ion-segment>
+    @if (league) {
+      <ion-item class="ion-align-self-center" lines="none">
 
-    @if (currentSegment === "MATCHES") {
-      <div class="ion-text-center">
         <ion-text color="secondary">
-          <h3>Mecze ligowe</h3>
+          @if (!league.finishedDate) {
+            <h3>Przebieg ligi - {{ league?.name }}</h3>
+          } @else {
+            <h3>Archiwum ligi - {{ league?.name }}</h3>
+          }
         </ion-text>
-        @if (rounds) {
-          <ion-list style="width: 50%; margin: auto">
-            @for (round of rounds; track round.uuid) {
-              <ion-item lines="none">
-                <ion-text color="secondary">
-                  <h3>Runda {{round.number}}</h3>
-                </ion-text>
-              </ion-item>
-              @for (match of round.matches; track $index) {
-                <ion-item>
-                  <ion-card class="match-card">
-                    <ion-card-header>
-                      <ion-card-title>Mecz {{$index + 1}}</ion-card-title>
-                      <ion-card-subtitle>{{match.homeTeam.teamName}} - {{match.awayTeam.teamName}}</ion-card-subtitle>
-                    </ion-card-header>
+      </ion-item>
+      <ion-segment (ionChange)="onSegmentChanged($event)" value="MATCHES">
+        <ion-segment-button value="MATCHES">
+          <ion-label>Harmonogram</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="STANDINGS">
+          <ion-label>Tabela wyników</ion-label>
+        </ion-segment-button>
+      </ion-segment>
 
-                    <ion-card-content>
-                      <p>{{match.gameDate | date: "d MMM y, H:mm" : undefined : 'pl-PL'}}</p>
-                      <p>Sędzia: {{match.referee.firstName}} {{match.referee.lastName}}</p>
-                      @if (match.finished) {
-                        <ion-text color="primary"><p>Mecz zakończony</p></ion-text>
-                      }
-
-                    </ion-card-content>
-                    @if (!match.finished) {
-                      <ion-button fill="clear" (click)="onMatchEdit(match)">Edytuj</ion-button>
-                      <ion-button fill="clear" (click)="onMatchFinishEntered(match)">Uzupełnij wynik</ion-button>
-                    } @else {
-<!--                      <ion-button fill="clear">Zobacz wynik</ion-button>-->
-                    }
-                  </ion-card>
+      @if (currentSegment === "MATCHES") {
+        <div class="ion-text-center">
+          <ion-text color="secondary">
+            <h3>Mecze ligowe</h3>
+          </ion-text>
+          @if (rounds) {
+            <ion-list style="width: 50%; margin: auto">
+              @for (round of rounds; track round.uuid) {
+                <ion-item lines="none">
+                  <ion-text color="secondary">
+                    <h3>Runda {{ round.number }}</h3>
+                  </ion-text>
                 </ion-item>
+                @for (match of round.matches; track $index) {
+                  <ion-item>
+                    <ion-card class="match-card">
+                      <ion-card-header>
+                        <ion-card-title>Mecz {{ $index + 1 }}</ion-card-title>
+                        <ion-card-subtitle>{{ match.homeTeam.teamName }} - {{ match.awayTeam.teamName }}
+                        </ion-card-subtitle>
+                      </ion-card-header>
+
+                      <ion-card-content>
+                        <p>{{ match.gameDate | date: "d MMM y, H:mm" : undefined : 'pl-PL' }}</p>
+                        <p>Sędzia: {{ match.referee.firstName }} {{ match.referee.lastName }}</p>
+                        @if (match.finished && match.awayTeamScore && match.homeTeamScore) {
+                          <ion-text color="primary">
+                            <p style="font-size: 18px;">Mecz zakończony wynikiem
+                              <ion-text  color="secondary">
+                                {{ match.homeTeamScore }} - {{ match.awayTeamScore }}
+                              </ion-text>
+                            </p>
+                          </ion-text>
+                        } @else if (match.finished) {
+                          <ion-text color="primary">
+                            <p style="font-size: 18px;">Mecz zakończony
+                            </p>
+                          </ion-text>
+                        }
+
+                      </ion-card-content>
+                      @if (!match.finished) {
+                        <ion-button [disabled]="league.finishedDate" fill="clear" (click)="onMatchEdit(match)">Edytuj</ion-button>
+                        <ion-button [disabled]="league.finishedDate" fill="clear" (click)="onMatchFinishEntered(match)">Uzupełnij wynik</ion-button>
+                      } @else {
+                        <!--                      <ion-button fill="clear">Zobacz wynik</ion-button>-->
+                      }
+                    </ion-card>
+                  </ion-item>
+                }
               }
-            }
-          </ion-list>
-        } @else {
-          <div class="ion-text-center">
-            <ion-spinner></ion-spinner>
-          </div>
-        }
+            </ion-list>
+          } @else {
+            <div class="ion-text-center">
+              <ion-spinner></ion-spinner>
+            </div>
+          }
 
-      </div>
-    } @else if (currentSegment === 'STANDINGS') {
+        </div>
+      } @else if (currentSegment === 'STANDINGS') {
 
-      <div class="ion-text-center">
-        <ion-text color="secondary">
-          <h3>Tabela ligowa</h3>
-        </ion-text>
-        @if (teamContests) {
-          <ion-grid class="table_component">
-            <ion-row class="header-row">
-              <ion-col>Pozycja</ion-col>
-              <ion-col>Zespół</ion-col>
-              <ion-col>Punkty</ion-col>
-              <ion-col>Bilans bramek</ion-col>
-            </ion-row>
-            @for (teamContest of teamContests; track $index) {
-              <ion-row class="data-row">
-                <ion-col>{{$index + 1}}</ion-col>
-                <ion-col>{{teamContest.team.teamName}}</ion-col>
-                <ion-col>{{teamContest.points}}</ion-col>
-                <ion-col>{{teamContest.goalsAcquired}}:{{teamContest.goalsLost}}</ion-col>
+        <div class="ion-text-center">
+          <ion-text color="secondary">
+            <h3>Tabela ligowa</h3>
+          </ion-text>
+          @if (teamContests) {
+            <ion-grid class="table_component">
+              <ion-row class="header-row">
+                <ion-col>Pozycja</ion-col>
+                <ion-col>Zespół</ion-col>
+                <ion-col>Punkty</ion-col>
+                <ion-col>Bilans bramek</ion-col>
               </ion-row>
-            }
-          </ion-grid>
-        } @else {
-          <div class="ion-text-center">
-            <ion-spinner></ion-spinner>
-          </div>
-        }
+              @for (teamContest of teamContests; track $index) {
+                <ion-row class="data-row">
+                  <ion-col>{{ $index + 1 }}</ion-col>
+                  <ion-col>{{ teamContest.team.teamName }}</ion-col>
+                  <ion-col>{{ teamContest.points }}</ion-col>
+                  <ion-col>{{ teamContest.goalsAcquired }}:{{ teamContest.goalsLost }}</ion-col>
+                </ion-row>
+              }
+            </ion-grid>
+          } @else {
+            <div class="ion-text-center">
+              <ion-spinner></ion-spinner>
+            </div>
+          }
 
+        </div>
+      }
+
+    } @else {
+      <div class="ion-text-center">
+        <ion-spinner></ion-spinner>
       </div>
     }
-
-  } @else {
-    <div class="ion-text-center">
-      <ion-spinner></ion-spinner>
-    </div>
-  }
   </div>
   @if (matchToFinish) {
     <app-match-result [match]="matchToFinish"
-                           (cancelMatchFinishEmitter)="onEditCancelled($event)"
-                           (matchFinishedEmitter)="onMatchFinished($event)"
-                           (hasUnsavedChangesEmitter)="onHasUnsavedChanges($event)">
+                      (cancelMatchFinishEmitter)="onEditCancelled($event)"
+                      (matchFinishedEmitter)="onMatchFinished($event)"
+                      (hasUnsavedChangesEmitter)="onHasUnsavedChanges($event)">
 
     </app-match-result>
   }

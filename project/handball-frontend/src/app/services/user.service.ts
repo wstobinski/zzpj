@@ -4,6 +4,7 @@ import {User} from "../model/user.model";
 import {Utils} from "../utils/utils";
 import {ApiService} from "./api.service";
 import {ApiResponse} from "../model/ApiResponse";
+import {ChangePasswordDto} from "../model/DTO/change-password.dto";
 
 @Injectable({
   providedIn: 'root'
@@ -46,6 +47,18 @@ export class UserService {
 
   async updateUser(userId: number, user: User): Promise<ApiResponse> {
     return await this.apiService.put(`/users/${userId}`, user);
+  }
+
+  async changePassword(dto: ChangePasswordDto): Promise<ApiResponse> {
+
+    return await this.apiService.put<ApiResponse>("/users/changePassword", dto);
+
+  }
+
+  async generateAccount(user: User): Promise<ApiResponse> {
+
+    return await this.apiService.post<ApiResponse>("/users/register", user);
+
   }
 
 }

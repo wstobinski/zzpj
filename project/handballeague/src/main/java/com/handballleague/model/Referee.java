@@ -39,9 +39,16 @@ public class Referee {
             name = "phone_number"
     )
     private String phoneNumber;
+
+    // todo NULLABLE = false (zmiany wymagają usunięcia tabeli referee
+    @Column(
+            name = "email"
+
+    )
+    private String email;
     @Column(
             name = "rating"
     )
-    private double rating = 0;
+    private double rating;
 
 }
