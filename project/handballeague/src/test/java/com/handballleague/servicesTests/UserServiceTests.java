@@ -48,6 +48,73 @@ public class UserServiceTests {
     }
 
     @Test
+    void changePassword_WithEmptyParameters_ThrowsException() {
+        // Given
+        String email = "";
+        String oldPassword = "";
+        String newPassword = "";
+
+        // When & Then
+        assertThatThrownBy(() -> userService.changePassword(email, oldPassword, newPassword))
+                .isInstanceOf(InvalidArgumentException.class)
+                .hasMessageContaining("At least one of parameters is invalid.");
+    }
+
+    @Test
+    void changePassword_NonExistingUser_ThrowsException() {
+        // Given
+        String email = "john.doe@example.com";
+        String oldPassword = "oldPassword123";
+        String newPassword = "newPassword123";
+
+        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+
+        // When & Then
+        assertThatThrownBy(() -> userService.changePassword(email, oldPassword, newPassword))
+                .isInstanceOf(ObjectNotFoundInDataBaseException.class)
+                .hasMessageContaining("User with given email was not found in database.");
+    }
+
+    @Test
+    void changePassword_InvalidOldPassword_ThrowsException() {
+        // Given
+        String email = "john.doe@example.com";
+        String oldPassword = "invalidOldPassword";
+        String newPassword = "newPassword123";
+        String hashedPassword = BCrypt.hashpw("correctOldPassword", BCrypt.gensalt());
+        User user = new User(email, hashedPassword, "user");
+
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+
+        // When & Then
+        assertThatThrownBy(() -> userService.changePassword(email, oldPassword, newPassword))
+                .isInstanceOf(InvalidArgumentException.class)
+                .hasMessageContaining("Old password is invalid.");
+    }
+
+    @Test
+    void changePassword_ValidOldPassword_ChangesPassword() {
+        // Given
+        String email = "john.doe@example.com";
+        String oldPassword = "oldPassword123";
+        String newPassword = "newPassword123";
+        String hashedOldPassword = BCrypt.hashpw(oldPassword, BCrypt.gensalt());
+        User user = new User(email, hashedOldPassword, "user");
+
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+
+        // When
+        userService.changePassword(email, oldPassword, newPassword);
+
+        // Then
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).save(userCaptor.capture());
+        User capturedUser = userCaptor.getValue();
+
+        assertThat(BCrypt.checkpw(newPassword, capturedUser.getPassword())).isTrue();
+    }
+
+    @Test
     void createUser_WithValidInput_ReturnsUser() {
         // Given
         User user = new User("john.doe@example.com", "password123", "user");

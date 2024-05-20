@@ -38,6 +38,30 @@ public class UserController {
         }
     }
 
+    @PutMapping("/changePassword")
+    public ResponseEntity<?> changePassword(@RequestHeader(name = "Authorization") String token, @RequestBody Map<String, String> credentials) {
+        ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
+        String email = jwtService.extractSubject(token);
+        if (response.getStatusCode().is2xxSuccessful()) {
+            User newUser = userService.changePassword(email, credentials.get("oldPassword"), credentials.get("newPassword"));
+            return ResponseEntity.ok(Map.of("ok", true, "response", newUser));
+        } else {
+            ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "captain");
+            if (response2.getStatusCode().is2xxSuccessful()) {
+                User newUser = userService.changePassword(email, credentials.get("oldPassword"), credentials.get("newPassword"));
+                return ResponseEntity.ok(Map.of("ok", true, "response", newUser));
+            } else {
+                ResponseEntity<?> response3 = jwtService.handleAuthorization(token, "arbiter");
+                if (response3.getStatusCode().is2xxSuccessful()) {
+                    User newUser =  userService.changePassword(email, credentials.get("oldPassword"), credentials.get("newPassword"));
+                    return ResponseEntity.ok(Map.of("ok", true, "response", newUser));
+                } else {
+                    return response3;
+                }
+            }
+        }
+    }
+
     @PostMapping("/activate")
     public ResponseEntity<?> activateUser(Map<String, Object> requestBody) {
         int code = (int) requestBody.get("code");

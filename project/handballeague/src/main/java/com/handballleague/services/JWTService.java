@@ -59,6 +59,16 @@ public class JWTService {
         return (String) claims.get("role");
     }
 
+    public String extractSubject(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.getSubject();
+    }
+
     public ResponseEntity<?> handleAuthorization(String token, String roleToCheck) {
         if  (token == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("ok", false, "message", "JWT token missing"));
         if (isTokenExpired(token)) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("ok", false, "message", "JWT token expired"));
