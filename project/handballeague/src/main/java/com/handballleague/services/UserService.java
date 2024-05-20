@@ -5,17 +5,12 @@ import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
 import com.handballleague.model.User;
 import com.handballleague.repositories.UserRepository;
-import jakarta.mail.*;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 
 @Service
 public class UserService implements HandBallService<User> {
@@ -86,6 +81,18 @@ public class UserService implements HandBallService<User> {
         userToChange.setPassword(BCrypt.hashpw(entity.getPassword(), BCrypt.gensalt()));
 
         return userRepository.save(userToChange);
+    }
+
+    public User changePassword(String email, String oldPassword, String newPassword){
+        if (email.isEmpty() || oldPassword.isEmpty() || newPassword.isEmpty()) throw new InvalidArgumentException("At least one of parameters is invalid.");
+        User userToChange = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ObjectNotFoundInDataBaseException("User with given email was not found in database."));
+        if (BCrypt.checkpw(oldPassword, userToChange.getPassword())) {
+            userToChange.setPassword(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
+            return userRepository.save(userToChange);
+        } else {
+            throw new InvalidArgumentException("Old password is invalid.");
+        }
     }
 
     @Override
