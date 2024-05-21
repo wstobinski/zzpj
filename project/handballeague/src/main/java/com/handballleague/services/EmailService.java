@@ -4,15 +4,21 @@ import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
 import com.handballleague.model.User;
 import com.handballleague.repositories.UserRepository;
+import jakarta.activation.DataHandler;
+import jakarta.activation.DataSource;
+import jakarta.activation.FileDataSource;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Random;
@@ -37,7 +43,7 @@ public class EmailService {
         return randomNumber;
     }
 
-    public Message sendEmail(String email) {
+    public Message sendEmail(String email, String role) {
         if (email == null) throw new InvalidArgumentException("Passed email is invalid.");
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty())
@@ -59,13 +65,43 @@ public class EmailService {
                 return new PasswordAuthentication(username, password);
             }
         });
+        String roleToEmail;
+
+        if (role.equals("captain")) {
+            roleToEmail = "kapitana";
+        }  else {
+            roleToEmail = "sędziego";
+        }
 
         try {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(username));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
             message.setSubject("Witamy w HandBallLeague!");
-            message.setText("Oto twój kod aktywacyjny: " + code);
+            MimeMultipart multipart = new MimeMultipart("related");
+
+            BodyPart messageBodyPart = new MimeBodyPart();
+            String htmlText = "<html>" +
+                    "<head>" +
+                    "<meta charset=\"UTF-8\">" +
+                    "</head>" +
+                    "<body>" +
+                    "<p>Twoje konto " + roleToEmail + " jest już gotowe!</p>" +
+                    "<p>Oto twój kod aktywacyjny: " + code + "</p>" +
+                    "<p>Zespół Handball League</p>" +
+                    "<img src=\"cid:logo\">" +
+                    "</body>" +
+                    "</html>";
+            messageBodyPart.setContent(htmlText, "text/html; charset=UTF-8");
+            multipart.addBodyPart(messageBodyPart);
+
+            messageBodyPart = new MimeBodyPart();
+            DataSource fds = new FileDataSource(new File("project/handballeague/src/main/resources/logo.jpg"));
+            messageBodyPart.setDataHandler(new DataHandler(fds));
+            messageBodyPart.setHeader("Content-ID", "<logo>");
+            multipart.addBodyPart(messageBodyPart);
+
+            message.setContent(multipart);
 
             Transport.send(message);
 

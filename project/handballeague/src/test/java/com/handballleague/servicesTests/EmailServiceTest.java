@@ -8,6 +8,7 @@ import com.handballleague.services.EmailService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mindrot.jbcrypt.BCrypt;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -39,14 +40,13 @@ class EmailServiceTest {
         autoCloseable.close();
     }
 
-
     @Test
     void sendEmail_WithInvalidEmail_ThrowsException() {
         // Given
         String email = null;
 
         // When & Then
-        assertThatThrownBy(() -> emailService.sendEmail(email))
+        assertThatThrownBy(() -> emailService.sendEmail(email, ""))
                 .isInstanceOf(InvalidArgumentException.class)
                 .hasMessageContaining("Passed email is invalid.");
     }
@@ -58,7 +58,7 @@ class EmailServiceTest {
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThatThrownBy(() -> emailService.sendEmail(email))
+        assertThatThrownBy(() -> emailService.sendEmail(email, ""))
                 .isInstanceOf(ObjectNotFoundInDataBaseException.class)
                 .hasMessageContaining("User with given email was not found in database.");
     }
