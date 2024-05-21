@@ -24,8 +24,8 @@ public class JWTService {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", user.getRole());
         return Jwts.builder()
-                .setSubject(user.getEmail())
                 .setClaims(claims)
+                .setSubject(user.getEmail())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(SignatureAlgorithm.HS384, secretKey)

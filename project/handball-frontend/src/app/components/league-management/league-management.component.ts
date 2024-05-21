@@ -46,7 +46,6 @@ export class LeagueManagementComponent  implements OnInit {
         startDate: [null, [Validators.required]]
       });
     }
-    // todo getFreeTeams(). concat freeTeams with current league teams
     this.teamsService.getFreeAgents().then(r => {
       if (r.ok) {
         this.availableTeams = r.response;
@@ -105,7 +104,7 @@ export class LeagueManagementComponent  implements OnInit {
       this.leagueService.createLeague(this.league).then(r => {
         if (r.ok) {
           this.utils.presentInfoToast("Tworzenie ligi zakończono sukcesem");
-          this.leagueEditedEmitter.emit(this.league);
+          this.leagueEditedEmitter.emit(r.response);
         } else {
           this.utils.presentAlertToast("Wystąpił błąd podczas tworzenia ligi");
         }

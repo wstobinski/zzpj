@@ -29,7 +29,7 @@ public class RefereeService implements HandBallService<Referee>{
         if(checkIfEntityExistsInDb(entity)) throw new EntityAlreadyExistsException("Referee with given data already exists in the database");
         if(entity.getFirstName().isEmpty() ||
                 entity.getLastName().isEmpty() ||
-                entity.getPhoneNumber().isEmpty()) throw new InvalidArgumentException("At least one of referee parameters is invalid.");
+                entity.getEmail().isEmpty()) throw new InvalidArgumentException("At least one of referee parameters is invalid.");
         refereeRepository.save(entity);
 
         return entity;
@@ -62,6 +62,7 @@ public class RefereeService implements HandBallService<Referee>{
         refereeToChange.setFirstName(entity.getFirstName());
         refereeToChange.setLastName(entity.getLastName());
         refereeToChange.setPhoneNumber(entity.getPhoneNumber());
+        refereeToChange.setEmail(entity.getEmail());
 
         return refereeRepository.save(refereeToChange);
     }
