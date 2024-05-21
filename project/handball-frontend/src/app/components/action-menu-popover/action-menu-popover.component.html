@@ -3,7 +3,13 @@
     @for (actionButton of actionButtons; track $index) {
       @if (!actionButton.displayCondition || actionButton.displayCondition(this.actionObject)) {
         <ion-item [color]="actionButton.actionColor" button (click)="onOptionClick($index)">
-          {{actionButton.buttonName}}
+          @if (isFunction(actionButton.buttonName)) {
+<!--            ts-ignore-->
+            {{actionButton.buttonName(actionObject)}}
+          } @else {
+            {{actionButton.buttonName}}
+          }
+
         </ion-item>
       }
     }

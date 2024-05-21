@@ -41,6 +41,10 @@
           </ion-accordion>
         </ion-accordion-group>
       }
+      <ion-item (click)="goTo('referees')">
+        <ion-icon name="person-outline" slot="start"></ion-icon>
+        <ion-label>Sędziowie</ion-label>
+      </ion-item>
       @if (user) {
         <ion-item (click)="goTo('account')">
           <ion-icon name="key-outline" slot="start"></ion-icon>

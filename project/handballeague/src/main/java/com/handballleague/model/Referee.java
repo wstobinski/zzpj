@@ -39,9 +39,16 @@ public class Referee {
             name = "phone_number"
     )
     private String phoneNumber;
+
+    @Column(
+            name = "email",
+            nullable = false
+
+    )
+    private String email;
     @Column(
             name = "rating"
     )
-    private double rating = 0;
+    private double rating;
 
 }

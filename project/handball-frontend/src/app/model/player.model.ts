@@ -2,7 +2,7 @@ export class Player {
   public uuid: number;
   public firstName: string;
   public lastName: string;
-  public phoneNumber: string;
+  public phoneNumber?: string;
   public pitchNumber: number;
   public suspended: boolean;
   public captain: boolean;

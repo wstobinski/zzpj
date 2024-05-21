@@ -1,0 +1,87 @@
+<ion-content>
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="end">
+        <ion-icon size="large" (click)="onClose()" name="close-outline"></ion-icon>
+      </ion-buttons>
+      <ion-title>{{title}}</ion-title>
+
+    </ion-toolbar>
+  </ion-header>
+  <form [formGroup]="refereeFormGroup" (keyup)="markUnsavedChanges()" (ngSubmit)="onRefereeEdit()">
+    <ion-list>
+      <ion-item>
+        <ion-label position="floating">Imię <small>*</small></ion-label>
+        <ion-input formControlName="firstName"></ion-input>
+      </ion-item>
+      @if (formHasError('firstName', 'required')) {
+        <ion-item lines="none">
+          <ion-label class="error-label">
+            Imię jest wymagane
+          </ion-label>
+        </ion-item>
+      }
+      <ion-item>
+        <ion-label position="floating">Nazwisko <small>*</small></ion-label>
+        <ion-input formControlName="lastName"></ion-input>
+      </ion-item>
+      @if (formHasError('lastName', 'required')) {
+        <ion-item lines="none">
+          <ion-label class="error-label">
+            Nazwisko jest wymagane
+          </ion-label>
+        </ion-item>
+      }
+      <ion-item>
+        <ion-label position="floating">Telefon</ion-label>
+        <ion-input formControlName="phoneNumber"></ion-input>
+      </ion-item>
+      @if (formHasError('phoneNumber', 'maxlength')) {
+        <ion-item lines="none">
+          <ion-label class="error-label">
+            Podaj poprawny numer telefonu (9 znaków)
+          </ion-label>
+        </ion-item>
+      }
+      @if (formHasError('phoneNumber', 'minlength')) {
+        <ion-item lines="none">
+          <ion-label class="error-label">
+            Podaj poprawny numer telefonu (9 znaków)
+          </ion-label>
+        </ion-item>
+      }
+      <ion-item>
+        <ion-label position="floating">Email <small>*</small></ion-label>
+        <ion-input formControlName="email"></ion-input>
+      </ion-item>
+      @if (formHasError('email', 'email')) {
+        <ion-item lines="none">
+          <ion-label class="error-label">
+            Podaj poprawny adres email
+          </ion-label>
+        </ion-item>
+      } @else if (formHasError('email', 'required'))  {
+      <ion-item lines="none">
+        <ion-label class="error-label">
+          Email jest wymagany
+        </ion-label>
+      </ion-item>
+    }
+    </ion-list>
+    <ion-row class="ion-padding">
+      <ion-col size-lg="3" offset-lg="3">
+        <ion-button type="submit" color="primary" expand="block" [disabled]="!refereeFormGroup.valid">
+          <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
+          Zapisz
+        </ion-button>
+      </ion-col>
+      <ion-col size-lg="3">
+        <ion-button color="medium" expand="block" fill="outline" (click)="onClose()">
+          Anuluj
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </form>
+
+
+</ion-content>

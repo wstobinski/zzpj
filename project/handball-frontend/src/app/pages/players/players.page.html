@@ -19,7 +19,7 @@
       <ion-col>Numer na boisku</ion-col>
       <ion-col>Akcje</ion-col>
     </ion-row>
-    @if (players) {
+    @if (players && players?.length > 0) {
       @for (player of players; track player.uuid) {
         <ion-row class="data-row">
           <ion-col>{{player.uuid}}</ion-col>
@@ -30,6 +30,14 @@
           </ion-col>
         </ion-row>
       }
+    }  @else if (players && players?.length === 0) {
+      <div class="ion-text-center no-data">
+        <ion-text color="primary">
+          <h3>Brak zawodników</h3>
+        </ion-text>
+        <ion-button (click)="openPlayerDetailsModal(null, 'ADD')">Dodaj nowego zawodnika</ion-button>
+      </div>
+
     } @else {
       <div class="ion-text-center">
         <ion-spinner></ion-spinner>

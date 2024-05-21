@@ -11,7 +11,7 @@
       <h4>Wynik drużyny {{match.homeTeam.teamName}}</h4>
     </ion-text>
     <ion-item>
-      <ion-label position="floating">Liczba bramek</ion-label>
+      <ion-label position="floating">Liczba bramek <small>*</small></ion-label>
       <ion-input formControlName="goals"></ion-input>
     </ion-item>
     @if (formHasError('homeScore','goals', 'required')) {
@@ -28,17 +28,6 @@
     </ion-item>
   }
     <ion-item>
-      <ion-label position="floating">Liczba fauli</ion-label>
-      <ion-input formControlName="fouls"></ion-input>
-    </ion-item>
-    @if (formHasError('homeScore','fouls', 'oneToHundred')) {
-    <ion-item lines="none">
-      <ion-label class="error-label">
-        Liczba fauli musi być liczbą całkowitą
-      </ion-label>
-    </ion-item>
-    }
-    <ion-item>
       <ion-label position="floating">Posiadanie piłki (%)</ion-label>
       <ion-input (ionChange)="onBallPossessionChanged('homeScore')" formControlName="ballPossession"></ion-input>
     </ion-item>
@@ -48,6 +37,17 @@
           Procent posiadania piłki musi być liczbą całkowitą
         </ion-label>
       </ion-item>
+    }
+    <ion-item>
+      <ion-label position="floating">Liczba fauli</ion-label>
+      <ion-input formControlName="fouls"></ion-input>
+    </ion-item>
+    @if (formHasError('homeScore','fouls', 'oneToHundred')) {
+    <ion-item lines="none">
+      <ion-label class="error-label">
+        Liczba fauli musi być liczbą całkowitą
+      </ion-label>
+    </ion-item>
     }
     <ion-item>
       <ion-label position="floating">Żółte kartki</ion-label>
@@ -90,7 +90,7 @@
       <h4>Wynik drużyny {{match.awayTeam.teamName}}</h4>
     </ion-text>
     <ion-item>
-      <ion-label position="floating">Liczba bramek</ion-label>
+      <ion-label position="floating">Liczba bramek <small>*</small></ion-label>
       <ion-input formControlName="goals"></ion-input>
     </ion-item>
     @if (formHasError( 'awayScore','goals', 'required')) {
@@ -107,17 +107,6 @@
       </ion-item>
     }
     <ion-item>
-      <ion-label position="floating">Liczba fauli</ion-label>
-      <ion-input formControlName="fouls"></ion-input>
-    </ion-item>
-    @if (formHasError( 'awayScore','fouls', 'oneToHundred')) {
-      <ion-item lines="none">
-        <ion-label class="error-label">
-          Liczba fauli musi być liczbą całkowitą
-        </ion-label>
-      </ion-item>
-    }
-    <ion-item>
       <ion-label position="floating">Posiadanie piłki (%)</ion-label>
       <ion-input (ionChange)="onBallPossessionChanged('awayScore')" formControlName="ballPossession"></ion-input>
     </ion-item>
@@ -125,6 +114,17 @@
       <ion-item lines="none">
         <ion-label class="error-label">
           Procent posiadania piłki musi być liczbą całkowitą
+        </ion-label>
+      </ion-item>
+    }
+    <ion-item>
+      <ion-label position="floating">Liczba fauli</ion-label>
+      <ion-input formControlName="fouls"></ion-input>
+    </ion-item>
+    @if (formHasError( 'awayScore','fouls', 'oneToHundred')) {
+      <ion-item lines="none">
+        <ion-label class="error-label">
+          Liczba fauli musi być liczbą całkowitą
         </ion-label>
       </ion-item>
     }

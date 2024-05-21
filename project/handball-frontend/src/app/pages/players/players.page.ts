@@ -61,9 +61,14 @@ export class PlayersPage extends GenericPage implements OnInit {
       if (data && data.data && data.role === 'EDIT') {
         this.playersService.updatePlayer(data.data as Player).then(r => {
           if (r.ok) {
-
             this.utils.presentInfoToast("Edycja zawodnika zakończona sukcesem");
-            player = r.response;
+            const responsePlayer = r.response as Player;
+
+            const index = this.players.findIndex(player => player.uuid === responsePlayer.uuid);
+
+            if (index !== -1) {
+              this.players[index] = responsePlayer;
+            }
           } else {
             console.log(r);
             this.utils.presentAlertToast("Wystąpił błąd podczas edycji zawodnika");
