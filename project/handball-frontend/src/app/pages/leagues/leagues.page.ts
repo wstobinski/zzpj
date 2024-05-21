@@ -164,6 +164,7 @@ export class LeaguesPage extends GenericPage implements OnInit {
 
   async onTeamEdited($event: League) {
     this.leagueToEdit = null;
+    this.leagues.push($event);
 
   }
 

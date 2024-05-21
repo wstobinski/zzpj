@@ -40,8 +40,10 @@
         }
       } @else if (leagues && leagues?.length === 0) {
         <div class="ion-text-center no-data">
-          <h3>Nie ma jeszcze żadnych lig</h3>
-          <h5>Stwórz nową ligę</h5>
+          <ion-text color="primary">
+            <h3>Nie ma jeszcze żadnych lig</h3>
+          </ion-text>
+          <ion-button (click)="onAddNewLeague()">Stwórz nową ligę</ion-button>
         </div>
 
       } @else {

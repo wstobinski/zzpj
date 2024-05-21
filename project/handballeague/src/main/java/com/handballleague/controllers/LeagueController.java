@@ -48,8 +48,8 @@ public class LeagueController {
     public ResponseEntity<?> registerNewLeague(@Valid @RequestBody League league, @RequestHeader(name = "Authorization") String token) {
         ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
         if (response.getStatusCode().is2xxSuccessful()) {
-            leagueService.create(league);
-            return ResponseEntity.ok(Map.of("ok", true, "message", "League successfully registered"));
+            League newLeague = leagueService.create(league);
+            return ResponseEntity.ok(Map.of("ok", true, "message", "League successfully registered", "response", newLeague));
         } else {
             return response;
         }

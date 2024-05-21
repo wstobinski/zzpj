@@ -40,9 +40,9 @@ public class Referee {
     )
     private String phoneNumber;
 
-    // todo NULLABLE = false (zmiany wymagają usunięcia tabeli referee
     @Column(
-            name = "email"
+            name = "email",
+            nullable = false
 
     )
     private String email;

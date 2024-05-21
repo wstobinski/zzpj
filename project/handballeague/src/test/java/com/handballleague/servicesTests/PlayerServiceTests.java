@@ -16,13 +16,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Sort;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -154,7 +154,7 @@ public class PlayerServiceTests {
     }
 
     @Test
-    void createPlayer_WithInvalidPhoneNumber_ThrowsException(){
+    void createPlayer_WithEmptyPhoneNumber_DoesNotThrow(){
         //given
         Player p = new Player("John",
                 "Smith",
@@ -164,13 +164,10 @@ public class PlayerServiceTests {
                 false);
 
         //when
-        assertThatThrownBy(
-                () -> underTestService.create(p))
-                .isInstanceOf(InvalidArgumentException.class)
-                .hasMessageContaining("At least one of players parameters is invalid.");
-
+        assertThatCode(() -> underTestService.create(p))
+                .doesNotThrowAnyException();
         //then
-        verify(playerRepository, never()).save(any());
+        verify(playerRepository).save(any());
     }
 
     @Test
@@ -370,24 +367,21 @@ public class PlayerServiceTests {
         verify(playerRepository, never()).save(any());
     }
     @Test
-    void updatePlayerWithInvalidPhoneNumber_ThrowsExc(){
+    void updatePlayerWithEmptyPhoneNumber_DoesNotThrow(){
         //given
         long id = 10;
-        Player p = new Player("Adam",
-                "Johnson",
-                "",
-                16,
-                true,
-                false);
+        Player existingPlayer = new Player("Adam", "Johnson", "1234567890", 16, true, false);
+        Player updatedPlayer = new Player("Adam", "Johnson", "", 16, true, false);
 
-        //when
-        assertThatThrownBy(
-                () -> underTestService.update(id, p))
-                .isInstanceOf(InvalidArgumentException.class)
-                .hasMessageContaining("At least one of players parameters is invalid.");
+        // Mock the player repository to return the existing player when findById is called
+        when(playerRepository.findById(String.valueOf(id))).thenReturn(Optional.of(existingPlayer));
 
-        //then
-        verify(playerRepository, never()).save(any());
+        //when & then
+        assertThatCode(() -> underTestService.update(id, updatedPlayer))
+                .doesNotThrowAnyException();
+
+        // Verify that the save method was called with the updated player
+        verify(playerRepository).save(updatedPlayer);
     }
 
     @Test

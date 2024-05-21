@@ -19,7 +19,7 @@
       <ion-col>Ocena</ion-col>
       <ion-col>Akcje</ion-col>
     </ion-row>
-    @if (referees) {
+    @if (referees && referees?.length > 0) {
       @for (referee of referees; track referee.uuid) {
         <ion-row class="data-row">
           <ion-col>{{referee.uuid}}</ion-col>
@@ -30,6 +30,14 @@
           </ion-col>
         </ion-row>
       }
+    } @else if (referees && referees?.length === 0) {
+      <div class="ion-text-center no-data">
+        <ion-text color="primary">
+          <h3>Brak sędziów</h3>
+        </ion-text>
+        <ion-button (click)="openRefereeDetailsModal(null, 'ADD')">Dodaj nowego sędziego</ion-button>
+      </div>
+
     } @else {
       <div class="ion-text-center">
         <ion-spinner></ion-spinner>

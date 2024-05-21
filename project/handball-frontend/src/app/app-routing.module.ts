@@ -44,7 +44,8 @@ const routes: Routes = [
   },
   {
     path: 'referees',
-    loadChildren: () => import('./pages/referees/referees.module').then( m => m.RefereesPageModule)
+    loadChildren: () => import('./pages/referees/referees.module').then( m => m.RefereesPageModule),
+    canActivate: [AuthenticatedGuard]
   },
   { path: '404',
     component: NotFoundComponent },
