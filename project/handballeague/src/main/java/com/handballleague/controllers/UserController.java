@@ -31,7 +31,7 @@ public class UserController {
         ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
         if (response.getStatusCode().is2xxSuccessful()) {
             userService.create(entity);
-            emailService.sendEmail(entity.getEmail());
+            emailService.sendEmail(entity.getEmail(), entity.getRole());
             return ResponseEntity.ok("User created successfully");
         } else {
             return response;
