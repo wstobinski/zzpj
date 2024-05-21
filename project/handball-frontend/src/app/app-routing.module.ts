@@ -42,10 +42,17 @@ const routes: Routes = [
     loadChildren: () => import('./pages/league-panel/league-panel.module').then( m => m.LeaguePanelPageModule),
     canActivate: [AuthenticatedGuard]
   },
+  {
+    path: 'referees',
+    loadChildren: () => import('./pages/referees/referees.module').then( m => m.RefereesPageModule),
+    canActivate: [AuthenticatedGuard]
+  },
   { path: '404',
     component: NotFoundComponent },
   { path: '**',
-    redirectTo: '/404' }
+    redirectTo: '/404' },
+
+
 
 
 

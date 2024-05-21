@@ -8,4 +8,6 @@ export class Match {
   public awayTeam: Team;
   public referee: Referee;
   public finished: boolean;
+  public homeTeamScore?: number;
+  public awayTeamScore?: number;
 }

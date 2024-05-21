@@ -17,6 +17,7 @@ import {EditTeamModalComponent} from "../../components/edit-team-modal/edit-team
 import {Team} from "../../model/team.model";
 import {MatchEditModalComponent} from "../../components/match-edit-modal/match-edit-modal.component";
 import {MatchService} from "../../services/match.service";
+import {Score} from "../../model/score.model";
 
 @Component({
   selector: 'app-league-panel',
@@ -60,6 +61,19 @@ export class LeaguePanelPage extends GenericPage implements OnInit {
             const roundsResponse = await this.leagueService.getRounds(this.league.uuid);
             if (roundsResponse.ok) {
               this.rounds = roundsResponse.response;
+              for (let round of this.rounds) {
+
+                for (let match of round.matches) {
+
+                  if (match.finished) {
+                    const matchScores: Score[] = (await this.matchService.getMatchScores(match)).response;
+                    match.homeTeamScore = matchScores[0].goals;
+                    match.awayTeamScore = matchScores[0].lostGoals;
+                  }
+
+                }
+
+              }
             } else {
               this.utils.presentAlertToast("Wystąpił błąd podczas pobierania harmonogramu ligi");
             }

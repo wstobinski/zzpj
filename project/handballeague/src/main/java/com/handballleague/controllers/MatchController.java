@@ -1,8 +1,11 @@
 package com.handballleague.controllers;
 
 import com.handballleague.DTO.MatchScoreDTO;
+import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
 import com.handballleague.model.Match;
+import com.handballleague.model.Score;
 import com.handballleague.model.Team;
+import com.handballleague.repositories.ScoreRepository;
 import com.handballleague.services.JWTService;
 import com.handballleague.services.LeagueService;
 import com.handballleague.services.MatchService;
@@ -20,10 +23,12 @@ import java.util.Map;
 public class MatchController {
     private final MatchService matchService;
     private final JWTService jwtService;
+    private final ScoreRepository scoreRepository;
 
-    public MatchController(MatchService matchService, JWTService jwtService) {
+    public MatchController(MatchService matchService, JWTService jwtService, ScoreRepository scoreRepository) {
         this.matchService = matchService;
         this.jwtService = jwtService;
+        this.scoreRepository = scoreRepository;
     }
 
     @GetMapping
@@ -54,5 +59,13 @@ public class MatchController {
         } else {
             return response2;
         }
+    }
+
+    @GetMapping("score/{matchId}")
+    public ResponseEntity<?> getMatchScores(@PathVariable Long matchId) {
+
+        List<Score> scores = scoreRepository.findByMatch(matchService.getById(matchId)).orElseThrow(() -> new ObjectNotFoundInDataBaseException("Match not found"));
+        return ResponseEntity.ok(Map.of("ok", true, "response", scores));
+
     }
 }

@@ -29,5 +29,11 @@ export class MatchService {
     return await this.apiService.post<ApiResponse>(`/matches/${match.uuid}/finish-match`, matchScoreDto);
   }
 
+  async getMatchScores(match:Match): Promise<ApiResponse> {
+
+    return await this.apiService.get<ApiResponse>(`/matches/score/${match.uuid}`);
+
+  }
+
 
 }

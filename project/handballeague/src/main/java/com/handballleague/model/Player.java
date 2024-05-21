@@ -15,10 +15,7 @@ import java.util.Objects;
 @ToString
 @Entity
 @Table(
-        name = "player",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "player_phone_number_unique",columnNames = "phone_number")
-        }
+        name = "player"
 )
 public class Player {
     @Id
@@ -48,6 +45,11 @@ public class Player {
             name = "phone_number"
     )
     private String phoneNumber;
+
+    @Column(
+            name = "email"
+    )
+    private String email;
     @Column(
             name = "pitch_number",
             nullable = false

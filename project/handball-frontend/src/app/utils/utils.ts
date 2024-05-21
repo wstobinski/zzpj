@@ -95,7 +95,7 @@ export class Utils {
   passwordMismatchValidator: ValidatorFn = (
     control: AbstractControl,
   ): ValidationErrors | null => {
-    const password = control.get('password');
+    const password = control.get('newPassword');
     const passwordConfirm = control.get('passwordConfirm');
 
     return password && passwordConfirm && password.value !== passwordConfirm.value

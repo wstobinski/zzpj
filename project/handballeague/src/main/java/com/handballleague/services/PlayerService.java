@@ -54,7 +54,6 @@ public class PlayerService implements HandBallService<Player>{
         if(checkIfEntityExistsInDb(player)) throw new EntityAlreadyExistsException("Player with given data already exists in the database");
         if(player.getFirstName().isEmpty() ||
                 player.getLastName().isEmpty() ||
-                player.getPhoneNumber().isEmpty() ||
                 player.getPitchNumber() <= 0) throw new InvalidArgumentException("At least one of players parameters is invalid.");
         playerRepository.save(player);
 
@@ -80,7 +79,6 @@ public class PlayerService implements HandBallService<Player>{
             throw new InvalidArgumentException("New player is null.");
         if(newPlayer.getFirstName().isEmpty() ||
                 newPlayer.getLastName().isEmpty() ||
-                newPlayer.getPhoneNumber().isEmpty() ||
                 newPlayer.getPitchNumber() <= 0) throw new InvalidArgumentException("At least one of players parameters is invalid.");
 
         Player playerToChange = playerRepository.findById(String.valueOf(id))
@@ -92,6 +90,7 @@ public class PlayerService implements HandBallService<Player>{
         playerToChange.setPitchNumber(newPlayer.getPitchNumber());
         playerToChange.setCaptain(newPlayer.isCaptain());
         playerToChange.setSuspended(newPlayer.isSuspended());
+        playerToChange.setEmail(newPlayer.getEmail());
 
         return playerRepository.save(playerToChange);
     }

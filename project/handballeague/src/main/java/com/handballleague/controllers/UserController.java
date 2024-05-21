@@ -32,7 +32,7 @@ public class UserController {
         if (response.getStatusCode().is2xxSuccessful()) {
             userService.create(entity);
             emailService.sendEmail(entity.getEmail());
-            return ResponseEntity.ok("User created successfully");
+            return ResponseEntity.ok(Map.of("ok", true, "message", "User created successfully"));
         } else {
             return response;
         }
@@ -51,21 +51,21 @@ public class UserController {
         if (response.getStatusCode().is2xxSuccessful()) {
             User newUser = userService.changePassword(email, credentials.get("oldPassword"), credentials.get("newPassword"));
             return ResponseEntity.ok(Map.of("ok", true, "response", newUser));
-        } else {
-            ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "captain");
-            if (response2.getStatusCode().is2xxSuccessful()) {
-                User newUser = userService.changePassword(email, credentials.get("oldPassword"), credentials.get("newPassword"));
-                return ResponseEntity.ok(Map.of("ok", true, "response", newUser));
-            } else {
-                ResponseEntity<?> response3 = jwtService.handleAuthorization(token, "arbiter");
-                if (response3.getStatusCode().is2xxSuccessful()) {
-                    User newUser =  userService.changePassword(email, credentials.get("oldPassword"), credentials.get("newPassword"));
-                    return ResponseEntity.ok(Map.of("ok", true, "response", newUser));
-                } else {
-                    return response3;
-                }
-            }
         }
+        ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "captain");
+        if (response2.getStatusCode().is2xxSuccessful()) {
+            User newUser = userService.changePassword(email, credentials.get("oldPassword"), credentials.get("newPassword"));
+            return ResponseEntity.ok(Map.of("ok", true, "response", newUser));
+        }
+        ResponseEntity<?> response3 = jwtService.handleAuthorization(token, "arbiter");
+        if (response3.getStatusCode().is2xxSuccessful()) {
+            User newUser = userService.changePassword(email, credentials.get("oldPassword"), credentials.get("newPassword"));
+            return ResponseEntity.ok(Map.of("ok", true, "response", newUser));
+        } else {
+            return response3;
+        }
+
+
     }
 
     @PostMapping("/activate")

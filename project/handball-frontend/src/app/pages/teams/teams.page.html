@@ -19,7 +19,7 @@
       <ion-col>Liczba zawodników</ion-col>
       <ion-col>Akcje</ion-col>
     </ion-row>
-  @if (teams) {
+  @if (teams && teams?.length > 0) {
       @for (team of teams; track team.uuid) {
         <ion-row class="data-row">
           <ion-col>{{team.uuid}}</ion-col>
@@ -30,6 +30,14 @@
           </ion-col>
         </ion-row>
       }
+  } @else if (teams && teams?.length === 0) {
+    <div class="ion-text-center no-data">
+      <ion-text color="primary">
+        <h3>Brak zespołów</h3>
+      </ion-text>
+      <ion-button (click)="onAddNewTeam()">Dodaj nowy zespół</ion-button>
+    </div>
+
   } @else {
     <div class="ion-text-center">
       <ion-spinner></ion-spinner>
