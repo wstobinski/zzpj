@@ -46,7 +46,7 @@ public class Team {
     @JsonManagedReference
     private List<Player> players;
 
-    @ManyToOne(cascade = {CascadeType.MERGE})
+    @ManyToOne
     @JoinColumn(name = "league_id", referencedColumnName = "uuid")
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @JsonBackReference

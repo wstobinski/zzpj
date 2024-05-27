@@ -22,7 +22,7 @@ public class TeamContest {
     private Team team;
 
     @Id
-    @ManyToOne(cascade = {CascadeType.MERGE})
+    @ManyToOne
     @JoinColumn(name = "league_id", referencedColumnName = "uuid")
     private League league;
 

@@ -1,5 +1,6 @@
 package com.handballleague.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
@@ -33,6 +34,7 @@ public class Round {
     private LocalDateTime startDate;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "league_uuid", referencedColumnName = "uuid")
     private League contest;
 
