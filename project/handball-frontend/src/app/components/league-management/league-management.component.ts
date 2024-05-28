@@ -11,10 +11,13 @@ import {LeagueService} from "../../services/league.service";
   templateUrl: './league-management.component.html',
   styleUrls: ['./league-management.component.scss'],
 })
-export class LeagueManagementComponent  implements OnInit {
+export class LeagueManagementComponent implements OnInit {
 
   @Input() league: League;
-  @Output() leagueEditedEmitter: EventEmitter<League> = new EventEmitter<League>();
+  @Output() leagueEditedEmitter: EventEmitter<{ mode: 'ADD' | 'EDIT', league: League }> = new EventEmitter<{
+    mode: 'ADD' | 'EDIT',
+    league: League
+  }>();
   @Output() cancelLeagueEditedEmitter: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() hasUnsavedChangesEmitter: EventEmitter<boolean> = new EventEmitter<boolean>();
   hasUnsavedChanges = false;
@@ -36,13 +39,13 @@ export class LeagueManagementComponent  implements OnInit {
       this.teamsSelected = this.league.teams;
       this.leagueFormGroup = this.formBuilder.group({
         name: [this.league.name, [Validators.required]],
-        teams: [this.league.teams, [Validators.required, this.utils.rangeValidator(3,12)]],
+        teams: [this.league.teams, [Validators.required, this.utils.rangeValidator(3, 12)]],
         startDate: [this.league.startDate, [Validators.required]]
       });
     } else {
       this.leagueFormGroup = this.formBuilder.group({
         name: ['', [Validators.required]],
-        teams: [null, [Validators.required, this.utils.rangeValidator(3,12)]],
+        teams: [null, [Validators.required, this.utils.rangeValidator(3, 12)]],
         startDate: [null, [Validators.required]]
       });
     }
@@ -73,10 +76,12 @@ export class LeagueManagementComponent  implements OnInit {
       this.hasUnsavedChangesEmitter.emit(this.hasUnsavedChanges);
     }
   }
+
   onCancel() {
     console.log(this.leagueFormGroup)
     this.cancelLeagueEditedEmitter.emit(true);
   }
+
   onLeagueEdit() {
 
     const startDateString = this.leagueFormGroup.get('startDate').value as string;
@@ -88,7 +93,7 @@ export class LeagueManagementComponent  implements OnInit {
       this.leagueService.updateLeague(this.league).then(r => {
         if (r.ok) {
           this.utils.presentInfoToast("Edycja ligi zakończona sukcesem");
-          this.leagueEditedEmitter.emit(this.league);
+          this.leagueEditedEmitter.emit({mode: this.mode, league: this.league});
         } else {
           this.utils.presentAlertToast("Wystąpił błąd podczas edycji ligi");
         }
@@ -104,7 +109,7 @@ export class LeagueManagementComponent  implements OnInit {
       this.leagueService.createLeague(this.league).then(r => {
         if (r.ok) {
           this.utils.presentInfoToast("Tworzenie ligi zakończono sukcesem");
-          this.leagueEditedEmitter.emit(r.response);
+          this.leagueEditedEmitter.emit({mode: this.mode, league: r.response});
         } else {
           this.utils.presentAlertToast("Wystąpił błąd podczas tworzenia ligi");
         }
