@@ -11,5 +11,6 @@ import java.util.List;
 public interface PlayerRepository extends JpaRepository<Player, String> {
     //TODO: ZAMIENIC STRING NA LONG I ZMIENIC CALY PLAYER SERVICE
     List<Player> findByTeam(Team team);
+    Player findByEmail(String email);
 
 }

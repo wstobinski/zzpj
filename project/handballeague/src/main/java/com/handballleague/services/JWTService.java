@@ -1,6 +1,9 @@
 package com.handballleague.services;
 
+import com.handballleague.model.Player;
 import com.handballleague.model.User;
+import com.handballleague.repositories.PlayerRepository;
+import com.handballleague.repositories.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -16,9 +19,20 @@ import java.util.Map;
 
 @Service
 public class JWTService {
+    private final UserRepository userRepository;
+    private final PlayerRepository playerRepository;
+    private final PlayerService playerService;
+    private final RefereeService refereeService;
     @Value("${jwt.secret}")
     private String secretKey;
     private static final long EXPIRATION_TIME = 3600000;
+
+    public JWTService(UserRepository userRepository, PlayerRepository playerRepository, PlayerService playerService, RefereeService refereeService) {
+        this.userRepository = userRepository;
+        this.playerRepository = playerRepository;
+        this.playerService = playerService;
+        this.refereeService = refereeService;
+    }
 
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
@@ -74,6 +88,21 @@ public class JWTService {
         if (isTokenExpired(token)) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("ok", false, "message", "JWT token expired"));
         if (!roleToCheck.equals(extractRole(token))) return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("ok", false, "message", "Insufficient role"));
         return ResponseEntity.ok(Map.of("ok", true, "message", "Token and role are valid"));
+    }
+
+    public Object tokenToModel(String token) {
+
+        String email = extractSubject(token);
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        if (user.getRole().equals("captain")) {
+
+            return playerService.getById(user.getModelId());
+
+        } else if (user.getRole().equals("arbiter")){
+            return refereeService.getById(user.getModelId());
+        }
+
+        return null;
     }
 
 }

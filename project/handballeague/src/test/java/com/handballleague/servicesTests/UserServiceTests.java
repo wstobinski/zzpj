@@ -5,6 +5,8 @@ import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
 import com.handballleague.model.Team;
 import com.handballleague.model.User;
+import com.handballleague.repositories.PlayerRepository;
+import com.handballleague.repositories.RefereeRepository;
 import com.handballleague.repositories.UserRepository;
 import com.handballleague.services.JWTService;
 import com.handballleague.services.UserService;
@@ -32,6 +34,10 @@ public class UserServiceTests {
     @Mock
     private UserRepository userRepository;
     @Mock
+    private PlayerRepository playerRepository;
+    @Mock
+    private RefereeRepository refereeRepository;
+    @Mock
     private JWTService jwtService;
 
     private AutoCloseable autoCloseable;
@@ -40,7 +46,7 @@ public class UserServiceTests {
     @BeforeEach
     void setUp() {
         autoCloseable = MockitoAnnotations.openMocks(this);
-        userService = new UserService(userRepository, jwtService);
+        userService = new UserService(userRepository, jwtService, playerRepository, refereeRepository);
     }
 
     @AfterEach

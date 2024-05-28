@@ -60,6 +60,22 @@ export class LoginPage implements OnInit {
   }
   onActivate() {
 
+    const rawForm = this.activationForm.getRawValue();
+    rawForm.code = Number(rawForm.code);
+    this.userService.activateAccount(rawForm).then(r => {
+      if (r.ok) {
+        this.utils.presentInfoToast("Konto aktywowano pomyślnie!");
+      } else {
+        this.utils.presentAlertToast("Wystąpił problem podczas aktywacji konta");
+      }
+    }).catch(e => {
+      if (e.status === 401) {
+        this.utils.presentAlertToast("Wystąpił problem podczas aktywacji konta. Twoja sesja wygasła, zaloguj się ponownie");
+      } else {
+        this.utils.presentAlertToast("Wystąpił problem podczas aktywacji konta");
+      }
+    })
+
   }
 
   getCardTitle() {

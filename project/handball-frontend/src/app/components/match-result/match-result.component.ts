@@ -65,17 +65,24 @@ export class MatchResultComponent  implements OnInit {
     team1Score.lostGoals = team2Score.goals;
     team2Score.lostGoals = team1Score.goals;
     const matchScoreDto: MatchScoreDto = {team1Score, team2Score};
-    const matchCompletedResponse = await this.matchService.completeMatch(this.match, matchScoreDto);
-    if (matchCompletedResponse.ok) {
-      this.utils.presentInfoToast("Wyniki meczu zapisano pomyślnie!");
-      this.match.finished = true;
-      this.match.homeTeamScore = team1Score.goals;
-      this.match.awayTeamScore = team2Score.goals;
-      this.matchFinishedEmitter.emit(this.match);
-    } else {
+    try {
+      const matchCompletedResponse = await this.matchService.completeMatch(this.match, matchScoreDto);
+      if (matchCompletedResponse.ok) {
+        this.utils.presentInfoToast("Wyniki meczu zapisano pomyślnie!");
+        this.match.finished = true;
+        this.match.homeTeamScore = team1Score.goals;
+        this.match.awayTeamScore = team2Score.goals;
+        this.matchFinishedEmitter.emit(this.match);
+      } else {
+        this.utils.presentAlertToast("Wystąpił błąd podczas zapisywania wyników meczu");
+        this.cancelMatchFinishEmitter.emit(true);
+      }
+    } catch (e) {
       this.utils.presentAlertToast("Wystąpił błąd podczas zapisywania wyników meczu");
       this.cancelMatchFinishEmitter.emit(true);
     }
+
+
   }
 
   onCancel() {

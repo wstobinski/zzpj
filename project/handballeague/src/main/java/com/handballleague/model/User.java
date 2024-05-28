@@ -37,6 +37,8 @@ public class User {
     private Integer code;
     @Column(columnDefinition = "boolean default false")
     private boolean active;
+    @Column()
+    private Long modelId;
 
     public User(String email, String password, String role) {
         this.email = email;

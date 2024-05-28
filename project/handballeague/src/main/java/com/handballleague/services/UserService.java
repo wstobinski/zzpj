@@ -3,7 +3,11 @@ package com.handballleague.services;
 import com.handballleague.exceptions.EntityAlreadyExistsException;
 import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
+import com.handballleague.model.Player;
+import com.handballleague.model.Referee;
 import com.handballleague.model.User;
+import com.handballleague.repositories.PlayerRepository;
+import com.handballleague.repositories.RefereeRepository;
 import com.handballleague.repositories.UserRepository;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,16 +15,29 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 public class UserService implements HandBallService<User> {
     private final UserRepository userRepository;
     private final JWTService jwtService;
+    private final PlayerRepository playerRepository;
+    private final RefereeRepository refereeRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository, JWTService jwtService) {
+    public UserService(UserRepository userRepository, JWTService jwtService, PlayerRepository playerRepository, RefereeRepository refereeRepository) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
+        this.playerRepository = playerRepository;
+        this.refereeRepository = refereeRepository;
+    }
+
+    public int generateCode() {
+        Random random = new Random();
+
+        int randomNumber = 100000 + random.nextInt(900000);
+
+        return randomNumber;
     }
 
     @Override
@@ -34,6 +51,15 @@ public class UserService implements HandBallService<User> {
         if (entity.getEmail().isEmpty() ||
                 entity.getRole().isEmpty())
             throw new InvalidArgumentException("At least one of user parameters is invalid.");
+
+        if (entity.getRole().equals("captain")) {
+            Player captain = playerRepository.findByEmail(entity.getEmail());
+            entity.setModelId(captain.getUuid());
+        } else if (entity.getRole().equals("arbiter")) {
+            Referee referee = refereeRepository.findByEmail(entity.getEmail());
+            entity.setModelId(referee.getUuid());
+        }
+        entity.setCode(generateCode());
         entity.setPassword(BCrypt.hashpw(entity.getPassword(), BCrypt.gensalt()));
         return userRepository.save(entity);
     }
