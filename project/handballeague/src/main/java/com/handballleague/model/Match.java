@@ -32,7 +32,7 @@ public class Match {
     @JoinColumn(name = "away_team_id", referencedColumnName = "uuid")
     private Team awayTeam;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "referee_id", referencedColumnName = "uuid")
     private Referee referee;
 

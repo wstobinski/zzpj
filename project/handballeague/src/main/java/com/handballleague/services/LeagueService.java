@@ -27,15 +27,19 @@ public class LeagueService implements HandBallService<League>{
     private final MatchRepository matchRepository;
     private final RefereeRepository refereeRepository;
     private final TeamContestService teamContestService;
+    private final TeamContestRepository teamContestRepository;
+    private final ScoreRepository scoreRepository;
 
     @Autowired
-    public LeagueService(LeagueRepository leagueRepository, TeamRepository teamRepository, RoundRepository roundRepository, MatchRepository matchRepository, RefereeRepository refereeRepository, @Lazy TeamContestService teamContestService) {
+    public LeagueService(LeagueRepository leagueRepository, TeamRepository teamRepository, RoundRepository roundRepository, MatchRepository matchRepository, RefereeRepository refereeRepository, @Lazy TeamContestService teamContestService, TeamContestRepository teamContestRepository, ScoreRepository scoreRepository) {
         this.leagueRepository = leagueRepository;
         this.teamRepository = teamRepository;
         this.roundRepository = roundRepository;
         this.matchRepository = matchRepository;
         this.refereeRepository = refereeRepository;
         this.teamContestService = teamContestService;
+        this.teamContestRepository = teamContestRepository;
+        this.scoreRepository = scoreRepository;
     }
 
 
@@ -103,6 +107,13 @@ public class LeagueService implements HandBallService<League>{
             rotateTeams(teams);
         }
         league.setScheduleGenerated(true);
+        populateTeamContest(league);
+    }
+
+    private void populateTeamContest(League league) {
+        for (Team team: league.getTeams()) {
+            teamContestService.create(league.getUuid(), team.getUuid());
+        }
     }
 
     private static void rotateTeams(List<Team> teams) {
@@ -131,21 +142,23 @@ public class LeagueService implements HandBallService<League>{
         if(league.getTeams().size() > 12 || league.getTeams().size() < 3)
             throw new InvalidArgumentException("League needs to have at least 3 teams, and no more than 12 teams.");
 
-        League createdLeague = leagueRepository.save(league);
-        for (Team team: createdLeague.getTeams()) {
-            teamContestService.create(createdLeague.getUuid(), team.getUuid());
-        }
-        return createdLeague;
+        return leagueRepository.save(league);
     }
 
     @Override
     public boolean delete(Long id) throws InvalidArgumentException, ObjectNotFoundInDataBaseException{
         if(id <= 0) throw new InvalidArgumentException("Passed id is invalid.");
-        if(leagueRepository.existsById(id)) {
-            leagueRepository.deleteById(id);
-        } else {
-            throw new ObjectNotFoundInDataBaseException("League with id: " + id + " not found in the database.");
+        League league = leagueRepository.findById(id).orElseThrow(() -> new ObjectNotFoundInDataBaseException("League not found"));
+        List<Round> relevantRounds = league.getRounds();
+        for (Round round : relevantRounds) {
+            for (Match match : round.getMatches()) {
+                scoreRepository.deleteAll(scoreRepository.findByMatch(match).orElseThrow(() -> new ObjectNotFoundInDataBaseException("Match not found")));
+                matchRepository.delete(match);
+            }
         }
+        roundRepository.deleteAll(relevantRounds);
+        teamContestRepository.deleteAll(teamContestService.findTeamContestsInCertainLeague(id));
+        leagueRepository.delete(league);
         return true;
     }
 

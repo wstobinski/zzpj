@@ -56,7 +56,7 @@
   @if (leagueToEdit) {
     <app-league-management [league]="leagueToEdit"
                          (cancelLeagueEditedEmitter)="onEditCancelled($event)"
-                         (leagueEditedEmitter)="onTeamEdited($event)"
+                         (leagueEditedEmitter)="onLeagueEdited($event)"
                          (hasUnsavedChangesEmitter)="onHasUnsavedChanges($event)">
 
     </app-league-management>

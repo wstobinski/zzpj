@@ -15,10 +15,15 @@ import java.util.List;
 @Entity
 @Table(name = "league")
 public class League extends Contest{
-    @OneToMany(cascade = {CascadeType.MERGE})
+    @OneToMany
     @JoinColumn(name = "league_id", referencedColumnName = "uuid")
     @JsonManagedReference
     private List<Team> teams;
+
+    @OneToMany
+    @JsonManagedReference
+    @JoinColumn(name = "league_uuid", referencedColumnName = "uuid")
+    private List<Round> rounds;
 
     public League(String name, LocalDateTime startDate) {
         super(name, startDate);

@@ -162,9 +162,12 @@ export class LeaguesPage extends GenericPage implements OnInit {
     this.leagueToEdit = null;
   }
 
-  async onTeamEdited($event: League) {
+  async onLeagueEdited($event: {mode: 'ADD' | 'EDIT', league: League }) {
     this.leagueToEdit = null;
-    this.leagues.push($event);
+    if ($event.mode === "ADD") {
+      this.leagues.push($event.league);
+    }
+
 
   }
 
