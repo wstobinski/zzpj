@@ -149,12 +149,14 @@ public class LeagueService implements HandBallService<League>{
     public boolean delete(Long id) throws InvalidArgumentException, ObjectNotFoundInDataBaseException{
         if(id <= 0) throw new InvalidArgumentException("Passed id is invalid.");
         League league = leagueRepository.findById(id).orElseThrow(() -> new ObjectNotFoundInDataBaseException("League not found"));
-        List<Match> relevantMatches = getAllMatchesInLeague(id);
-        for (Match match : relevantMatches) {
-            scoreRepository.deleteAll(scoreRepository.findByMatch(match).orElseThrow(() -> new ObjectNotFoundInDataBaseException("Match not found")));
-            matchRepository.delete(match);
+        List<Round> relevantRounds = league.getRounds();
+        for (Round round : relevantRounds) {
+            for (Match match : round.getMatches()) {
+                scoreRepository.deleteAll(scoreRepository.findByMatch(match).orElseThrow(() -> new ObjectNotFoundInDataBaseException("Match not found")));
+                matchRepository.delete(match);
+            }
         }
-        roundRepository.deleteAll(league.getRounds());
+        roundRepository.deleteAll(relevantRounds);
         teamContestRepository.deleteAll(teamContestService.findTeamContestsInCertainLeague(id));
         leagueRepository.delete(league);
         return true;
