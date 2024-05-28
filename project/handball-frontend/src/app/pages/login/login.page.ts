@@ -4,6 +4,7 @@ import {Utils} from "../../utils/utils";
 import {AuthService} from "../../services/auth.service";
 import {UserService} from "../../services/user.service";
 import {ActivatedRoute, Router} from "@angular/router";
+import {User} from "../../model/user.model";
 
 @Component({
   selector: 'app-login',
@@ -58,6 +59,20 @@ export class LoginPage implements OnInit {
 
 
   }
+
+  loginWithActivateData(activateData) {
+    this.userService.login(activateData).then(r => {
+      console.log(r);
+      this.authService.setUserAuthData(r.response.token);
+      this.userService.setUser(r.response.user);
+      console.log(this.route);
+      const redirectURL = this.route.snapshot.params['returnUrl'] || '/home';
+      this.router.navigateByUrl(redirectURL);
+    });
+
+
+  }
+
   onActivate() {
 
     const rawForm = this.activationForm.getRawValue();
@@ -65,6 +80,9 @@ export class LoginPage implements OnInit {
     this.userService.activateAccount(rawForm).then(r => {
       if (r.ok) {
         this.utils.presentInfoToast("Konto aktywowano pomyślnie!");
+        const activatedUser = r.response as User;
+        const loginData = {email: activatedUser.email, password: rawForm.password};
+        this.loginWithActivateData(loginData);
       } else {
         this.utils.presentAlertToast("Wystąpił problem podczas aktywacji konta");
       }

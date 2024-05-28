@@ -71,9 +71,8 @@ public class UserController {
 
     @PostMapping("/activate")
     public ResponseEntity<?> activateUser(@RequestBody ActivateAccountDTO requestBody) {
-        System.out.println("REQUEST BODY: " + requestBody);
-        emailService.activateAcc(requestBody.getCode(), requestBody.getPassword());
-        return ResponseEntity.ok(Map.of("ok", true, "message", "User activated successfully"));
+        User activatedUser = emailService.activateAcc(requestBody.getCode(), requestBody.getPassword());
+        return ResponseEntity.ok(Map.of("ok", true, "message", "User activated successfully", "response", activatedUser));
     }
 
     @PostMapping("/login")

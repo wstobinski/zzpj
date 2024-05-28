@@ -7,6 +7,8 @@ import {Utils} from "../../utils/utils";
 import {Player} from "../../model/player.model";
 import {ModalController, PopoverController} from "@ionic/angular";
 import {EditPlayerModalComponent} from "../../components/edit-player-modal/edit-player-modal.component";
+import {User} from "../../model/user.model";
+import {UserService} from "../../services/user.service";
 
 @Component({
   selector: 'app-players',
@@ -15,9 +17,11 @@ import {EditPlayerModalComponent} from "../../components/edit-player-modal/edit-
 })
 export class PlayersPage extends GenericPage implements OnInit {
 
+
   constructor(private playersService: PlayersService,
               private utils: Utils,
               private modalController: ModalController,
+              private userService: UserService,
               loadingService: LoadingService,
               popoverController: PopoverController) {
     super(loadingService, popoverController);
@@ -36,6 +40,11 @@ export class PlayersPage extends GenericPage implements OnInit {
       {
         buttonName: "Edytuj zawodnika",
         buttonAction: this.openPlayerDetailsModal.bind(this)
+      },
+      {
+        buttonName: "Wygeneruj konto",
+        buttonAction: this.generatePlayerAccount.bind(this),
+        displayCondition: this.generateAccountActive.bind(this)
       },
       {
         buttonName: "Usuń zawodnika",
@@ -121,5 +130,40 @@ export class PlayersPage extends GenericPage implements OnInit {
 
       });
 
+  }
+
+  generatePlayerAccount(player:Player) {
+
+    const newUser = new User();
+    newUser.role = "captain";
+    newUser.email = player.email;
+    if (!player.captain) {
+      this.utils.presentAlertToast("Konto można wygenerować, tylko dla zawodnika, który jest kapitanem");
+      return;
+    }
+    if (!player.email) {
+      this.utils.presentAlertToast("Konto można wygenerować, tylko dla zawodnika, który posiada adres email");
+      return;
+    }
+    this.userService.generateAccount(newUser).then(r => {
+      if (r.ok) {
+        this.utils.presentInfoToast("Konto zostało poprawnie wygenerowane. Aktywacyjna wiadomość email została wysłana", 8000);
+      } else {
+        this.utils.presentAlertToast("Wystąpił błąd przy generowaniu konta")
+      }
+    }).catch(e => {
+      if (e.status === 401) {
+        this.utils.presentAlertToast("Wystąpił błąd przy generowaniu konta. Twoja sesja wygasła, zaloguj się ponownie");
+
+      } else {
+        this.utils.presentAlertToast("Wystąpił błąd przy generowaniu konta")
+
+      }
+    })
+
+  }
+
+  private generateAccountActive(player: Player) {
+    return player.captain && player.email;
   }
 }
