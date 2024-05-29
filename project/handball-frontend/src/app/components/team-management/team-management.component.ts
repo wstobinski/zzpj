@@ -16,7 +16,7 @@ import {EditPlayerModalComponent} from "../edit-player-modal/edit-player-modal.c
 export class TeamManagementComponent implements OnInit {
 
   @Input() team: Team;
-  @Output() teamEditedEmitter: EventEmitter<Team> = new EventEmitter<Team>();
+  @Output() teamEditedEmitter: EventEmitter<{mode: "ADD" | "EDIT", team: Team}> = new EventEmitter<{mode: "ADD" | "EDIT", team: Team}>();
   @Output() cancelTeamEditedEmitter: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() hasUnsavedChangesEmitter: EventEmitter<boolean> = new EventEmitter<boolean>();
   hasUnsavedChanges = false;
@@ -50,7 +50,6 @@ export class TeamManagementComponent implements OnInit {
         captain: [{value: null, disabled: true}, [Validators.required]]
       });
     }
-    // todo getFreeAgents(). concat freeAgents with current team players
     this.playersService.getFreeAgents().then(r => {
       if (r.ok) {
         this.availablePlayers = r.response;
@@ -93,7 +92,7 @@ export class TeamManagementComponent implements OnInit {
             this.teamsService.changeCaptains(newCaptain, oldCaptain).then(r => {
               if (r && r.ok) {
                 this.utils.presentInfoToast("Edycja zespołu zakończona sukcesem");
-                this.teamEditedEmitter.emit(this.team);
+                this.teamEditedEmitter.emit({mode: this.mode, team: this.team});
               } else {
                 this.utils.presentAlertToast("Wystąpił błąd podczas edycji zespołu");
               }
@@ -106,7 +105,7 @@ export class TeamManagementComponent implements OnInit {
             });
           } else {
             this.utils.presentInfoToast("Edycja zespołu zakończona sukcesem");
-            this.teamEditedEmitter.emit(this.team);
+            this.teamEditedEmitter.emit({mode: this.mode, team: this.team});
           }
         } else {
           this.utils.presentAlertToast("Wystąpił błąd podczas edycji zespołu");
@@ -128,7 +127,7 @@ export class TeamManagementComponent implements OnInit {
           this.playersService.updatePlayer(captain).then(r => {
             if (r.ok) {
               this.utils.presentInfoToast("Tworzenie zespołu zakończone sukcesem");
-              this.teamEditedEmitter.emit(this.team);
+              this.teamEditedEmitter.emit({mode: this.mode, team: this.team});
             } else {
               this.utils.presentAlertToast("Wystąpił błąd podczas tworzenia zespołu");
             }

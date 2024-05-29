@@ -10,11 +10,12 @@
         </ion-text>
       </ion-item>
   <div class="ion-text-right">
-    <ion-button (click)="onAddNewTeam()">Dodaj nowy zespół</ion-button>
+    @if (user.role === 'admin') {
+      <ion-button (click)="onAddNewTeam()">Dodaj nowy zespół</ion-button>
+    }
   </div>
   <ion-grid class="table_component">
     <ion-row class="header-row">
-      <ion-col>Identyfikator zespołu</ion-col>
       <ion-col>Nazwa zespołu</ion-col>
       <ion-col>Liczba zawodników</ion-col>
       <ion-col>Akcje</ion-col>
@@ -22,7 +23,6 @@
   @if (teams && teams?.length > 0) {
       @for (team of teams; track team.uuid) {
         <ion-row class="data-row">
-          <ion-col>{{team.uuid}}</ion-col>
           <ion-col>{{team.teamName}}</ion-col>
           <ion-col>{{team.players.length}}</ion-col>
           <ion-col>
@@ -35,7 +35,9 @@
       <ion-text color="primary">
         <h3>Brak zespołów</h3>
       </ion-text>
-      <ion-button (click)="onAddNewTeam()">Dodaj nowy zespół</ion-button>
+      @if (user.role === 'admin') {
+        <ion-button (click)="onAddNewTeam()">Dodaj nowy zespół</ion-button>
+      }
     </div>
 
   } @else {

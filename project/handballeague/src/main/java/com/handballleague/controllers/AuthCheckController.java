@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/auth-check")
+@RequestMapping("/api/v1/auth-check")
 public class AuthCheckController {
 
     private final MatchService matchService;
@@ -56,9 +56,9 @@ public class AuthCheckController {
             if (isCaptainOfHomeTeam || isCaptainOfAwayTeam) {
                 return ResponseEntity.ok(Map.of("ok", true, "message", "Captain is part of this match"));
             }
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("ok", false, "message", "Captain is not part of this match"));
+            return ResponseEntity.ok(Map.of("ok", false, "message", "Captain is not part of this match"));
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("ok", false, "message", "Unauthorized action"));
+        return ResponseEntity.ok(Map.of("ok", false, "message", "Unauthorized action"));
     }
 
     @GetMapping("/is-captain-of-team/{teamId}")
@@ -72,7 +72,7 @@ public class AuthCheckController {
             if (isCaptainOfTeam) {
                 return ResponseEntity.ok(Map.of("ok", true, "message", "Player is captain of this team"));
             }
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("ok", false, "message", "Player is not captain of this team"));
+            return ResponseEntity.ok(Map.of("ok", false, "message", "Player is not captain of this team"));
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("ok", false, "message", "Unauthorized action"));
     }
