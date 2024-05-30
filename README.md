@@ -72,7 +72,6 @@
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
 
@@ -81,18 +80,15 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
-
-There are many great README templates available on GitHub; however, I didn't find one that really suited my needs so I created this enhanced one. I want to create a README template so amazing that it'll be the last one you ever need -- I think this is it.
+We believe that sports are for everyone—not just the chosen few! Our project is designed to support local sports league owners and participants in conveniently managing their environments. Say goodbye to Excel spreadsheets and paper sheets—everything is digitalized and accessible right from your phone! Haven't I convinced you yet why you should use our product?
 
 Here's why:
-* Your time should be focused on creating something amazing. A project that solves a problem and helps others
-* You shouldn't be doing the same tasks over and over like creating a README from scratch
-* You should implement DRY principles to the rest of your life :smile:
 
-Of course, no one template will serve all projects since your needs may be different. So I'll be adding more in the near future. You may also suggest changes by forking this repo and creating a pull request or opening an issue. Thanks to all the people have contributed to expanding this template!
-
-Use the `BLANK_README.md` to get started.
+* Your time should be focused on creating something amazing. Minimize paperwork, maximize passion.
+* You shouldn't be doing the same tasks over and over again.
+* You should always try to make your life easier 😄
+  
+Of course, no one system will suit all projects since your needs may differ. We'll be adding more features in the near future. You may also suggest changes by forking this repo and creating a pull request or opening an issue. Thanks to everyone who has contributed to expanding this project!
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -100,16 +96,14 @@ Use the `BLANK_README.md` to get started.
 
 ### Built With
 
-This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
+[![Angular][Angular.io]][Angular-url]
+[![PostgreSQL][PostgreSQL]][PostgreSQL-url]
+[![Java][Java]][Java-url]
+[![GoogleCloud][GoogleCloud]][GoogleCloud-url]
+[![Spring][Spring]][Spring-url]
+[![GHActions][GHActions]][GHActions-url]
+[![Ionic][Ionic]][Ionic-url]
 
-* [![Next][Next.js]][Next-url]
-* [![React][React.js]][React-url]
-* [![Vue][Vue.js]][Vue-url]
-* [![Angular][Angular.io]][Angular-url]
-* [![Svelte][Svelte.dev]][Svelte-url]
-* [![Laravel][Laravel.com]][Laravel-url]
-* [![Bootstrap][Bootstrap.com]][Bootstrap-url]
-* [![JQuery][JQuery.com]][JQuery-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -118,33 +112,41 @@ This section should list any major frameworks/libraries used to bootstrap your p
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+Here are listed steps developers need to take to launch our app localy.
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
-* npm
+List of properties shown below is required to launch this app as a developer.
+
+Update your npm
   ```sh
-  npm install npm@latest -g
+  npm install -g npm
   ```
+Install Ionic
+  ```sh
+  npm install -g @ionic/cli
+  ```
+If you don't have Java installed localy, you will need it! [Here is how](https://www.java.com/en/download/help/windows_manual_download.html)
 
 ### Installation
 
 _Below is an example of how you can instruct your audience on installing and setting up your app. This template doesn't rely on any external dependencies or services._
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
+1. Clone the repo
+   
    ```sh
-   git clone https://github.com/your_username_/Project-Name.git
+   https://github.com/wstobinski/zzpj.git
    ```
-3. Install NPM packages
+2. Install NPM packages
    ```sh
    npm install
    ```
-4. Enter your API in `config.js`
+3. Fill in your API and data sources in `application.properties`
    ```js
-   const API_KEY = 'ENTER YOUR API';
+   spring.datasource.url="your/url"
+   spring.datasource.password="YourPassword"
+   jwt.secret="yourSecretKey"
+   mail.password="yourMailPassword"
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -154,7 +156,13 @@ _Below is an example of how you can instruct your audience on installing and set
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+This system is designed to manage various aspects of a sports league effectively and securely. Users are assigned different roles (Admin, Captain, Referee), each with specific permissions that dictate their available actions within the system.
+
+- **Admins** have full access to all functionalities. They can create new leagues and teams, generate detailed reports, edit team and player information, manage players, change match schedules, generate announcements on the forum, update match statistics, and evaluate referee performance.
+- **Captains** can manage and edit their respective teams and players. They have permissions to update their team data, manage team members, and provide feedback on referees' performance. Captains do not have access to league creation, report generation, or schedule changes.
+- **Referees** have restricted access primarily focused on match-related functionalities. They can modify match schedules, generate forum posts (such as updates on match timings), and update match statistics. Referees do not have permissions to create leagues, teams, or generate reports.
+
+This comprehensive set of features ensures that each user can efficiently perform their role within the system, facilitating smooth and organized management of the sports league. The system's security measures protect against unauthorized access, and its scalability allows for adjustments based on the league's needs. Additionally, the system is designed to be user-friendly and compliant with relevant regulations, including data protection laws.
 
 _For more examples, please refer to the [Documentation](https://example.com)_
 
@@ -165,15 +173,15 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <!-- ROADMAP -->
 ## Roadmap
 
-- [x] Add Changelog
-- [x] Add back to top links
-- [ ] Add Additional Templates w/ Examples
-- [ ] Add "components" document to easily copy & paste sections of the readme
+- [x] League Management
+- [x] Schedule Generation
+- [ ] Add sentiment analisys for comments about referees
+- [ ] Image scanning photos of match raports 
 - [ ] Multi-language Support
-    - [ ] Chinese
-    - [ ] Spanish
+    - [ ] Polish
+    - [ ] English
 
-See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/wstobinski/zzpj/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -209,27 +217,10 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@your_twitter](https://twitter.com/your_username) - email@example.com
+Wojciech Stobiński - [@linkedin](https://www.linkedin.com/in/wojciech-stobi%C5%84ski-9ba6a091/) - 242538@edu.p.lodz.pl\
+Artur Włodarczyk - [@linkedin](https://www.linkedin.com/in/artur-w%C5%82odarczyk/) - 242564@edu.p.lodz.pl
 
-Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name)
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- ACKNOWLEDGMENTS -->
-## Acknowledgments
-
-Use this space to list resources you find helpful and would like to give credit to. I've included a few of my favorites to kick things off!
-
-* [Choose an Open Source License](https://choosealicense.com)
-* [GitHub Emoji Cheat Sheet](https://www.webpagefx.com/tools/emoji-cheat-sheet)
-* [Malven's Flexbox Cheatsheet](https://flexbox.malven.co/)
-* [Malven's Grid Cheatsheet](https://grid.malven.co/)
-* [Img Shields](https://shields.io)
-* [GitHub Pages](https://pages.github.com)
-* [Font Awesome](https://fontawesome.com)
-* [React Icons](https://react-icons.github.io/react-icons/search)
+Project Link: [HandBy](https://github.com/wstobinski/zzpj)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -254,19 +245,17 @@ Use this space to list resources you find helpful and would like to give credit 
 
 [product-screenshot]: images/screenshot.png
 
-[Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
-[Next-url]: https://nextjs.org/
-[React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
-[React-url]: https://reactjs.org/
-[Vue.js]: https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D
-[Vue-url]: https://vuejs.org/
+[Spring]: https://img.shields.io/badge/spring-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white
+[Spring-url]: https://spring.io/projects/spring-boot/
+[PostgreSQL]: https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white
+[PostgreSQL-url]: https://www.postgresql.org.pl/
+[GoogleCloud]: https://img.shields.io/badge/GoogleCloud-%234285F4.svg?style=for-the-badge&logo=google-cloud&logoColor=white
+[GoogleCloud-url]: https://cloud.google.com/
 [Angular.io]: https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white
 [Angular-url]: https://angular.io/
-[Svelte.dev]: https://img.shields.io/badge/Svelte-4A4A55?style=for-the-badge&logo=svelte&logoColor=FF3E00
-[Svelte-url]: https://svelte.dev/
-[Laravel.com]: https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white
-[Laravel-url]: https://laravel.com
-[Bootstrap.com]: https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white
-[Bootstrap-url]: https://getbootstrap.com
-[JQuery.com]: https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white
-[JQuery-url]: https://jquery.com
+[GHActions]: https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white
+[GHActions-url]: https://docs.github.com/en/actions
+[Java]: https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white
+[Java-url]: https://www.java.com/pl/
+[Ionic]: https://img.shields.io/badge/Ionic-%233880FF.svg?style=for-the-badge&logo=Ionic&logoColor=white
+[Ionic-url]: https://ionicframework.com/docs
