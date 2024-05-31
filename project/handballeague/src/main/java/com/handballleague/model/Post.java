@@ -41,8 +41,7 @@ public class Post {
     private String content;
 
     @Column(
-            name = "posted_date",
-            nullable = false
+            name = "posted_date"
     )
     private LocalDateTime postedDate;
 

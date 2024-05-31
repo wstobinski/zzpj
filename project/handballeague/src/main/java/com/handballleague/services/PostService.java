@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,8 +27,8 @@ public class PostService implements HandBallService<Post>{
         if (entity == null) throw new InvalidArgumentException("Passed parameter is invalid");
         if (checkIfEntityExistsInDb(entity)) throw new EntityAlreadyExistsException("Post with given data already exists in the database");
         if (entity.getContent().isEmpty() ||
-                entity.getPostedDate() == null ||
-                entity.getTitle().isEmpty()) throw new InvalidArgumentException("Post content cannot be empty and author must be specified.");
+                entity.getTitle().isEmpty()) throw new InvalidArgumentException("Post content cannot be empty and title must be specified.");
+        entity.setPostedDate(LocalDateTime.now());
         postRepository.save(entity);
         return entity;
     }
@@ -53,7 +54,7 @@ public class PostService implements HandBallService<Post>{
                 .orElseThrow(() -> new ObjectNotFoundInDataBaseException("Post with given id was not found in the database."));
 
         postToUpdate.setContent(entity.getContent());
-        postToUpdate.setPostedDate(entity.getPostedDate());
+        postToUpdate.setTitle(entity.getTitle());
         return postRepository.save(postToUpdate);
     }
 

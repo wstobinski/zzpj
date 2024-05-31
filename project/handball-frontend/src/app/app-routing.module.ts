@@ -48,10 +48,16 @@ const routes: Routes = [
     loadChildren: () => import('./pages/referees/referees.module').then( m => m.RefereesPageModule),
     canActivate: [AuthenticatedGuard, roleGuard(['admin'])]
   },
+  {
+    path: 'news',
+    loadChildren: () => import('./pages/news/news.module').then( m => m.NewsPageModule)
+  },
   { path: '404',
     component: NotFoundComponent },
   { path: '**',
     redirectTo: '/404' },
+
+
 
 
 

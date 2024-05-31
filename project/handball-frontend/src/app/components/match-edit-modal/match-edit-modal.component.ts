@@ -23,6 +23,7 @@ export class MatchEditModalComponent  implements OnInit {
   hasUnsavedChanges: boolean = false;
   matchFormGroup: FormGroup;
   referees: Referee[];
+  createPost: boolean = true;
   async ngOnInit() {
     this.referees = [this.match.referee];
     this.matchFormGroup = this.formBuilder.group({
@@ -61,7 +62,7 @@ export class MatchEditModalComponent  implements OnInit {
 
   onMatchEdit() {
     this.match = Object.assign(this.match, this.matchFormGroup.value);
-    this.modalController.dismiss(this.match, 'submit');
+    this.modalController.dismiss({match: this.match, createPost: this.createPost}, 'submit');
 
   }
 

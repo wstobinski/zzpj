@@ -1,0 +1,53 @@
+<ion-content>
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="end">
+        <ion-icon size="large" (click)="onClose()" name="close-outline"></ion-icon>
+      </ion-buttons>
+      <ion-title>{{title}}</ion-title>
+
+    </ion-toolbar>
+  </ion-header>
+  <form [formGroup]="postFormGroup" (keyup)="markUnsavedChanges()" (ngSubmit)="onRefereeEdit()">
+    <ion-list>
+      <ion-item>
+        <ion-label position="floating">Tytuł <small>*</small></ion-label>
+        <ion-input formControlName="title"></ion-input>
+      </ion-item>
+      @if (formHasError('title', 'required')) {
+        <ion-item lines="none">
+          <ion-label class="error-label">
+            Tytuł ogłoszenia jest wymagany
+          </ion-label>
+        </ion-item>
+      }
+      <ion-item>
+        <ion-textarea auto-grow="true" formControlName="content" labelPlacement="floating">
+          <div slot="label">Treść <ion-text>*</ion-text></div>
+        </ion-textarea>
+      </ion-item>
+      @if (formHasError('content', 'required')) {
+        <ion-item lines="none">
+          <ion-label class="error-label">
+            Treść ogłoszenia jest wymagana
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+    <ion-row class="ion-padding">
+      <ion-col size-lg="3" offset-lg="3">
+        <ion-button type="submit" color="primary" expand="block" [disabled]="!postFormGroup.valid">
+          <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
+          {{mode === 'ADD' ? "Publikuj" : "Edytuj"}}
+        </ion-button>
+      </ion-col>
+      <ion-col size-lg="3">
+        <ion-button color="medium" expand="block" fill="outline" (click)="onClose()">
+          Anuluj
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </form>
+
+
+</ion-content>

@@ -1,0 +1,54 @@
+<app-top-toolbar title="Ogłoszenia"></app-top-toolbar>
+@if (isLoading) {
+  <ion-progress-bar type="indeterminate"></ion-progress-bar>
+}
+<ion-content>
+  <div class="ion-text-center">
+    <ion-text color="secondary">
+      <h3>Lista najnowszych ogłoszeń</h3>
+    </ion-text>
+    @if (isAdmin()) {
+      <div style="margin-bottom: 20px" class="ion-text-right">
+        <ion-button (click)="openAddNewsModal()">Opublikuj nowe ogłoszenie</ion-button>
+      </div>
+    }
+    @if (posts && posts.length > 0) {
+      <ion-list style="width: 50%; margin: auto">
+          @for (post of posts; track $index) {
+            <ion-item>
+              <ion-card class="news-card">
+                <ion-card-header>
+                  @if (isAdmin()) {
+                    <div class="ion-text-right">
+                      <ion-icon (click)="openEditNewsModal(post)" name="brush-outline"></ion-icon>
+                    </div>
+                  }
+                  <ion-card-title color="primary">{{post.title}} </ion-card-title>
+                  <ion-card-subtitle color="secondary">{{post.postedDate | date: 'd MMM y, HH:mm':undefined:'pl-PL'}}
+                  </ion-card-subtitle>
+
+                </ion-card-header>
+                <ion-card-content>{{post.content}}
+                </ion-card-content>
+
+              </ion-card>
+            </ion-item>
+          }
+      </ion-list>
+    } @else if (posts && posts.length === 0) {
+      <div class="ion-text-center no-data">
+        <ion-text color="primary">
+          <h3>Brak ogłoszeń</h3>
+        </ion-text>
+        @if (isAdmin()) {
+          <ion-button (click)="openAddNewsModal()">Dodaj nowe ogłoszenie</ion-button>
+        }
+      </div>
+
+    } @else {
+      <div class="ion-text-center">
+        <ion-spinner></ion-spinner>
+      </div>
+    }
+  </div>
+</ion-content>
