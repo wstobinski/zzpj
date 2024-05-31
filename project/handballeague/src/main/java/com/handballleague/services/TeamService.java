@@ -44,7 +44,7 @@ public class TeamService implements HandBallService<Team>{
 
         Optional<Team> optionalTeam = teamRepository.findById(id);
         if (optionalTeam.isEmpty())
-            throw new ObjectNotFoundInDataBaseException("Object with given id was not found in the database.");
+            throw new ObjectNotFoundInDataBaseException("Team with given id was not found in the database.");
 
         return optionalTeam.get();
     }

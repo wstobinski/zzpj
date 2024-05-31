@@ -388,7 +388,7 @@ public class TeamServiceTests {
         //when
         assertThatThrownBy(() -> underTestService.getById(id))
                 .isInstanceOf(ObjectNotFoundInDataBaseException.class)
-                .hasMessageContaining("Object with given id was not found in the database.");
+                .hasMessageContaining("Team with given id was not found in the database.");
     }
 
     /** checkIfEntityExistsInDb */

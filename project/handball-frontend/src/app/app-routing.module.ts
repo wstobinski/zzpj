@@ -36,7 +36,7 @@ const routes: Routes = [
   {
     path: 'leagues',
     loadChildren: () => import('./pages/leagues/leagues.module').then( m => m.LeaguesPageModule),
-    canActivate: [AuthenticatedGuard]
+    canActivate: [AuthenticatedGuard, roleGuard(['admin'])]
   },
   {
     path: 'league-panel/:leagueId',

@@ -29,20 +29,20 @@ export class MatchResultComponent  implements OnInit {
 
     this.scoreFormGroup = this.formBuilder.group({
       homeScore: this.formBuilder.group({
-        goals: ['', [Validators.required, this.utils.oneToHundredValidator]],
-        fouls: ['', this.utils.oneToHundredValidator],
-        ballPossession: ['', this.utils.oneToHundredValidator],
-        yellowCards: ['', this.utils.oneToHundredValidator],
-        redCards: ['', this.utils.oneToHundredValidator],
-        timePenalties: ['', this.utils.oneToHundredValidator]
+        goals: ['', [Validators.required, this.utils.zeroToHundredValidator]],
+        fouls: ['', this.utils.zeroToHundredValidator],
+        ballPossession: ['', this.utils.zeroToHundredValidator],
+        yellowCards: ['', this.utils.zeroToHundredValidator],
+        redCards: ['', this.utils.zeroToHundredValidator],
+        timePenalties: ['', this.utils.zeroToHundredValidator]
       }),
       awayScore: this.formBuilder.group({
-        goals: ['',  [Validators.required, this.utils.oneToHundredValidator]],
-        fouls: ['', this.utils.oneToHundredValidator],
-        ballPossession: ['', this.utils.oneToHundredValidator],
-        yellowCards: ['', this.utils.oneToHundredValidator],
-        redCards: ['', this.utils.oneToHundredValidator],
-        timePenalties: ['', this.utils.oneToHundredValidator]
+        goals: ['',  [Validators.required, this.utils.zeroToHundredValidator]],
+        fouls: ['', this.utils.zeroToHundredValidator],
+        ballPossession: ['', this.utils.zeroToHundredValidator],
+        yellowCards: ['', this.utils.zeroToHundredValidator],
+        redCards: ['', this.utils.zeroToHundredValidator],
+        timePenalties: ['', this.utils.zeroToHundredValidator]
       })
     });
 

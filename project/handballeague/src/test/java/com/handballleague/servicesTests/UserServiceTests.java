@@ -55,15 +55,6 @@ public class UserServiceTests {
     }
 
     @Test
-    void test() {
-        User user = new User("test@test.com", "pass", "admin");
-        String token = jwtService.generateToken(user);
-        System.out.println(jwtService.extractSubject("eyJhbGciOiJIUzM4NCJ9.eyJyb2xlIjoiYWRtaW4iLCJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiaWF0IjoxNzE2MjM4MTE3LCJleHAiOjE3MTYyNDE3MTd9.JenS4I1QfRTyDjQ-GYVxXfVBOJ41AR5a8rrbRAZN7no5GqcStzTLoxLAwW_cvMjH"));
-        System.out.println(jwtService.extractRole("eyJhbGciOiJIUzM4NCJ9.eyJyb2xlIjoiYWRtaW4iLCJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiaWF0IjoxNzE2MjM4MTE3LCJleHAiOjE3MTYyNDE3MTd9.JenS4I1QfRTyDjQ-GYVxXfVBOJ41AR5a8rrbRAZN7no5GqcStzTLoxLAwW_cvMjH"));
-        System.out.println(token);
-    }
-
-    @Test
     void changePassword_WithEmptyParameters_ThrowsException() {
         // Given
         String email = "";

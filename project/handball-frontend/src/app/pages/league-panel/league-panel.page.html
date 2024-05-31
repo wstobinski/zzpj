@@ -66,11 +66,15 @@
                         }
 
                       </ion-card-content>
-                      @if (!match.finished) {
+                      @if (!match.finished && user?.role === 'admin') {
                         <ion-button [disabled]="league.finishedDate" fill="clear" (click)="onMatchEdit(match)">Edytuj</ion-button>
                         <ion-button [disabled]="league.finishedDate" fill="clear" (click)="onMatchFinishEntered(match)">Uzupełnij wynik</ion-button>
-                      } @else {
-                        <!--                      <ion-button fill="clear">Zobacz wynik</ion-button>-->
+                      } @else if (!match.finished && match.canEdit) {
+                        <ion-button [disabled]="league.finishedDate" fill="clear" (click)="onMatchEdit(match)">Edytuj</ion-button>
+                        <ion-button [disabled]="league.finishedDate" fill="clear" (click)="onMatchFinishEntered(match)">Uzupełnij wynik</ion-button>
+                      }
+                      @else if (match.finished && match.canComment) {
+                                              <ion-button [disabled]="league.finishedDate" fill="clear" (click)="onRefereeCommentEntered(match)">Oceń pracę sędziego</ion-button>
                       }
                     </ion-card>
                   </ion-item>

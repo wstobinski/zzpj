@@ -75,7 +75,7 @@ public class ScoreService implements HandBallService<Score>{
 
         Optional<Score> optionalScore = scoreRepository.findById(id);
         if (optionalScore.isEmpty())
-            throw new ObjectNotFoundInDataBaseException("Object with given id was not found in the database.");
+            throw new ObjectNotFoundInDataBaseException("Score with given id was not found in the database.");
 
         return optionalScore.get();
     }

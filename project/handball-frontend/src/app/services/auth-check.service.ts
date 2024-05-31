@@ -16,4 +16,11 @@ export class AuthCheckService {
     return await this.apiService.get<ApiResponse>(`/auth-check/is-captain-of-team/${teamId}`);
   }
 
+  async isCaptainInMatch(matchId: number): Promise<ApiResponse> {
+    return await this.apiService.get<ApiResponse>(`/auth-check/is-captain-in-match/${matchId}`);
+  }
+
+  async isRefereeInMatch(matchId: number): Promise<ApiResponse> {
+    return await this.apiService.get<ApiResponse>(`/auth-check/is-referee-in-match/${matchId}`);
+  }
 }

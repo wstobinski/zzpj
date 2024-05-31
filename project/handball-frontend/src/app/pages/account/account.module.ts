@@ -8,16 +8,18 @@ import { AccountPageRoutingModule } from './account-routing.module';
 
 import { AccountPage } from './account.page';
 import {HandballComponentsModule} from "../../handball-components.module";
+import {RoleTranslatePipe} from "../../pipes/role-translate.pipe";
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    AccountPageRoutingModule,
-    HandballComponentsModule,
-    ReactiveFormsModule
-  ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        IonicModule,
+        AccountPageRoutingModule,
+        HandballComponentsModule,
+        ReactiveFormsModule,
+        RoleTranslatePipe
+    ],
   declarations: [AccountPage]
 })
 export class AccountPageModule {}

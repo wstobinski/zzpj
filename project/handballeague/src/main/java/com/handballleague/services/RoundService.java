@@ -73,7 +73,7 @@ public class RoundService implements HandBallService<Round> {
 
         Optional<Round> optionalRound = roundRepository.findById(String.valueOf(id));
         if (optionalRound.isEmpty())
-            throw new ObjectNotFoundInDataBaseException("Object with given id was not found in the database.");
+            throw new ObjectNotFoundInDataBaseException("Round with given id was not found in the database.");
 
         return optionalRound.get();
     }

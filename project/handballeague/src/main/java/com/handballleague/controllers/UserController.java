@@ -39,11 +39,6 @@ public class UserController {
         }
     }
 
-    @PostMapping("/test")
-    public ResponseEntity<?> test(@RequestBody String token) {
-        String test = jwtService.extractSubject(token);
-        return ResponseEntity.ok(test);
-    }
 
     @PutMapping("/changePassword")
     public ResponseEntity<?> changePassword(@RequestHeader(name = "Authorization") String token, @RequestBody Map<String, String> credentials) {

@@ -38,7 +38,7 @@ public class AuthCheckController {
             if (match.getReferee().equals(modelReferee)) {
                 return ResponseEntity.ok(Map.of("ok", true, "message", "Referee is assigned to this match"));
             }
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("ok", false, "message", "Referee is not assigned to this match"));
+            return ResponseEntity.ok(Map.of("ok", false, "message", "Referee is not assigned to this match"));
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("ok", false, "message", "Unauthorized action"));
     }

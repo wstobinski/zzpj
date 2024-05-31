@@ -189,7 +189,7 @@ public class LeagueService implements HandBallService<League>{
 
         Optional<League> optionalLeague = leagueRepository.findById(id);
         if (optionalLeague.isEmpty())
-            throw new ObjectNotFoundInDataBaseException("Object with given id was not found in the database.");
+            throw new ObjectNotFoundInDataBaseException("League with given id was not found in the database.");
 
         return optionalLeague.get();
     }
@@ -267,6 +267,10 @@ public class LeagueService implements HandBallService<League>{
 
             LocalDateTime finishedTime = LocalDateTime.now();
             league.setFinishedDate(finishedTime);
+
+            for (Team team: league.getTeams()) {
+                team.setLeague(null);
+            }
             leagueRepository.save(league);
 
             return finishedTime;

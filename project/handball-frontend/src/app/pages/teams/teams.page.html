@@ -6,7 +6,12 @@
   <div [hidden]="teamToEdit">
       <ion-item class="ion-align-self-center" lines="none">
         <ion-text color="secondary">
-          <h3>Lista zespołów</h3>
+          @if (user?.role === 'captain') {
+            <h3>Mój zespół</h3>
+          } @else {
+            <h3>Lista zespołów</h3>
+          }
+
         </ion-text>
       </ion-item>
   <div class="ion-text-right">
@@ -49,6 +54,7 @@
   </div>
   @if (teamToEdit) {
     <app-team-management [team]="teamToEdit"
+                         [user]="user"
                          (cancelTeamEditedEmitter)="onEditCancelled($event)"
                          (teamEditedEmitter)="onTeamEdited($event)"
                          (hasUnsavedChangesEmitter)="onHasUnsavedChanges($event)">

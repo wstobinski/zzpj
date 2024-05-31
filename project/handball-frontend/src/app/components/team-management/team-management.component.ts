@@ -7,6 +7,7 @@ import {PlayersService} from "../../services/players.service";
 import {ModalController, SelectCustomEvent} from "@ionic/angular";
 import {TeamsService} from "../../services/teams.service";
 import {EditPlayerModalComponent} from "../edit-player-modal/edit-player-modal.component";
+import {User} from "../../model/user.model";
 
 @Component({
   selector: 'app-team-management',
@@ -16,6 +17,7 @@ import {EditPlayerModalComponent} from "../edit-player-modal/edit-player-modal.c
 export class TeamManagementComponent implements OnInit {
 
   @Input() team: Team;
+  @Input() user: User;
   @Output() teamEditedEmitter: EventEmitter<{mode: "ADD" | "EDIT", team: Team}> = new EventEmitter<{mode: "ADD" | "EDIT", team: Team}>();
   @Output() cancelTeamEditedEmitter: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() hasUnsavedChangesEmitter: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -185,6 +187,9 @@ export class TeamManagementComponent implements OnInit {
       captainControl.setValue(null);
       captainControl.markAsTouched();
       // captainControl.setErrors({required: true});
+    } else if (players.includes(this.teamCaptain)) {
+      captainControl.setValue(this.teamCaptain);
+      captainControl.markAsTouched();
     }
 
   }

@@ -64,7 +64,8 @@ export class TeamsPage extends GenericPage implements OnInit, OnDestroy {
       {
         buttonName: "Usuń zespół",
         buttonAction: this.deleteTeam.bind(this),
-        actionColor: 'danger'
+        actionColor: 'danger',
+        displayCondition: this.isAdmin.bind(this)
       },
     ]
 
@@ -77,64 +78,6 @@ export class TeamsPage extends GenericPage implements OnInit, OnDestroy {
     }
   }
 
-
-  async openTeamDetailsModal(team: Team) {
-    const modal = await this.modalController.create({
-      component: EditTeamModalComponent,
-      componentProps: {
-        team,
-        title: `Edytuj zespół ${team?.teamName}`,
-        mode: team? 'EDIT' : 'ADD'
-      }
-    });
-    modal.onWillDismiss().then(async data => {
-      if (data && data.data && data.role === 'EDIT') {
-        this.teamsService.updateTeam(data.data.team as Team).then(r => {
-          if (r.ok) {
-            if (data.data.oldCaptain.uuid !== data.data.newCaptain.uuid) {
-              this.teamsService.changeCaptains(data.data.newCaptain, data.data.oldCaptain).then(r => {
-                if (r && r.ok) {
-                  this.utils.presentInfoToast("Edycja zespołu zakończona sukcesem");
-                } else {
-                  this.utils.presentAlertToast("Wystąpił błąd podczas edycji zespołu");
-                }
-              }).catch(e => {
-                this.utils.presentAlertToast("Wystąpił błąd podczas edycji zespołu");
-              })
-            }
-            team = r.response;
-          } else {
-            this.utils.presentAlertToast("Wystąpił błąd podczas edycji zespołu");
-          }
-        }).catch(e => {
-          console.log(e);
-          if (e.status === 401) {
-            this.utils.presentAlertToast("Wystąpił błąd podczas edycji zespołu. Twoja sesja wygasła. Zaloguj się ponownie");
-          } else {
-            this.utils.presentAlertToast("Wystąpił błąd podczas edycji zespołu");
-          }
-        });
-      } else if (data && data.data && data.role === 'ADD') {
-        this.teamsService.createTeam(data.data.team).then(async r => {
-          if (r.ok) {
-            const newTeams = await this.teamsService.getAllTeams();
-            this.teams = newTeams.response;
-            this.utils.presentInfoToast("Utworzenie zespołu zakończono sukcesem");
-          } else {
-            this.utils.presentAlertToast("Wystąpił błąd podczas tworzenia zespołu");
-          }
-        }).catch(e => {
-          console.log(e);
-          if (e.status === 401) {
-            this.utils.presentAlertToast("Wystąpił błąd podczas tworzenia zespołu. Twoja sesja wygasła. Zaloguj się ponownie");
-          } else {
-            this.utils.presentAlertToast("Wystąpił błąd podczas tworzenia zespołu");
-          }
-        });
-      }
-    });
-    return await modal.present();
-  }
 
   deleteTeam(team: Team) {
 
@@ -182,5 +125,9 @@ export class TeamsPage extends GenericPage implements OnInit, OnDestroy {
 
   onAddNewTeam() {
     this.teamToEdit = new Team();
+  }
+
+  isAdmin() {
+    return this.user.role === 'admin';
   }
 }

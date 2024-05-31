@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {GenericPage} from "../generic/generic.page";
 import {LoadingService} from "../../services/loading.service";
 import {PlayersService} from "../../services/players.service";
@@ -9,13 +9,14 @@ import {ModalController, PopoverController} from "@ionic/angular";
 import {EditPlayerModalComponent} from "../../components/edit-player-modal/edit-player-modal.component";
 import {User} from "../../model/user.model";
 import {UserService} from "../../services/user.service";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-players',
   templateUrl: './players.page.html',
   styleUrls: ['./players.page.scss'],
 })
-export class PlayersPage extends GenericPage implements OnInit {
+export class PlayersPage extends GenericPage implements OnInit, OnDestroy {
 
 
   constructor(private playersService: PlayersService,
@@ -29,9 +30,15 @@ export class PlayersPage extends GenericPage implements OnInit {
 
   players: Player[];
   actionButtons: ActionButton[];
+  user: User;
+  userSub: Subscription;
 
   override async ngOnInit() {
     super.ngOnInit();
+    this.userSub = this.userService.getUser().subscribe(u => {
+      console.log('got user', u)
+      this.user = u;
+    });
     const playersResponse = await this.playersService.getAllPlayers()
     console.log(playersResponse)
     this.players = playersResponse.response;
@@ -39,7 +46,8 @@ export class PlayersPage extends GenericPage implements OnInit {
     this.actionButtons = [
       {
         buttonName: "Edytuj zawodnika",
-        buttonAction: this.openPlayerDetailsModal.bind(this)
+        buttonAction: this.openPlayerDetailsModal.bind(this),
+        displayCondition: this.isAdmin.bind(this)
       },
       {
         buttonName: "Wygeneruj konto",
@@ -49,12 +57,67 @@ export class PlayersPage extends GenericPage implements OnInit {
       {
         buttonName: "Usuń zawodnika",
         buttonAction: this.deletePlayer.bind(this),
-        actionColor: 'danger'
+        actionColor: 'danger',
+        displayCondition: this.isAdmin.bind(this)
+      },
+      {
+        buttonName: "Zawieś zawodnika",
+        buttonAction: this.suspendPlayer.bind(this),
+        actionColor: 'danger',
+        displayCondition: this.suspendPlayerActive.bind(this)
+      },
+      {
+        buttonName: "Anuluj zawieszenie zawodnika",
+        buttonAction: this.cancelSuspendPlayer.bind(this),
+        displayCondition: this.cancelSuspendPlayerActive.bind(this)
       },
     ]
 
   }
 
+  override ngOnDestroy() {
+    super.ngOnDestroy();
+    if (this.userSub) {
+      this.userSub.unsubscribe();
+    }
+  }
+
+
+  async suspendPlayer(player: Player) {
+
+    player.suspended = true;
+    this.playersService.updatePlayer(player).then(r => {
+      if (r.ok) {
+        this.utils.presentInfoToast("Zawodnik został zawieszony");
+      } else {
+        this.utils.presentAlertToast("Wystąpił błąd podczas zawieszania zawodnika");
+      }
+    }).catch(e => {
+      if (e.status === 401) {
+        this.utils.presentAlertToast("Wystąpił błąd podczas zawieszania zawodnika. Twoja sesja wygasła, zaloguj się ponownie");
+      } else {
+        this.utils.presentAlertToast("Wystąpił błąd podczas zawieszania zawodnika");
+      }
+    });
+  }
+
+  async cancelSuspendPlayer(player: Player) {
+
+    player.suspended = false;
+    this.playersService.updatePlayer(player).then(r => {
+      if (r.ok) {
+        this.utils.presentInfoToast("Anulowano zawieszenie zawodnika");
+      } else {
+        this.utils.presentAlertToast("Wystąpił błąd podczas anulowania zawieszenie zawodnika");
+      }
+    }).catch(e => {
+      if (e.status === 401) {
+        this.utils.presentAlertToast("Wystąpił błąd podczas anulowania zawieszenia zawodnika. Twoja sesja wygasła, zaloguj się ponownie");
+      } else {
+        this.utils.presentAlertToast("Wystąpił błąd podczas anulowania zawieszenia zawodnika");
+      }
+    });
+  }
 
   async openPlayerDetailsModal(player: Player, mode: 'EDIT' | 'ADD' = 'EDIT') {
     console.log("Entering playerDetails", player)
@@ -164,6 +227,22 @@ export class PlayersPage extends GenericPage implements OnInit {
   }
 
   private generateAccountActive(player: Player) {
-    return player.captain && player.email;
+    return this.isAdmin() && player.captain && player.email;
+  }
+
+  protected isAdmin() {
+    return this.user.role === 'admin';
+  }
+
+  private suspendPlayerActive(player: Player) {
+    return this.isReferee() && !player.suspended;
+  }
+
+  private cancelSuspendPlayerActive(player: Player) {
+    return this.isReferee() && player.suspended;
+  }
+
+  private isReferee() {
+    return this.user.role === 'arbiter';
   }
 }
