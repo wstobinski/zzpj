@@ -1,5 +1,6 @@
 package com.handballleague.controllers;
 
+import com.handballleague.DTO.ActivateAccountDTO;
 import com.handballleague.model.User;
 import com.handballleague.services.EmailService;
 import com.handballleague.services.JWTService;
@@ -31,18 +32,13 @@ public class UserController {
         ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
         if (response.getStatusCode().is2xxSuccessful()) {
             userService.create(entity);
-            emailService.sendEmail(entity.getEmail(), entity.getRole());
+//            emailService.sendEmail(entity.getEmail(), entity.getRole());
             return ResponseEntity.ok(Map.of("ok", true, "message", "User created successfully"));
         } else {
             return response;
         }
     }
 
-    @PostMapping("/test")
-    public ResponseEntity<?> test(@RequestBody String token) {
-        String test = jwtService.extractSubject(token);
-        return ResponseEntity.ok(test);
-    }
 
     @PutMapping("/changePassword")
     public ResponseEntity<?> changePassword(@RequestHeader(name = "Authorization") String token, @RequestBody Map<String, String> credentials) {
@@ -69,11 +65,9 @@ public class UserController {
     }
 
     @PostMapping("/activate")
-    public ResponseEntity<?> activateUser(Map<String, Object> requestBody) {
-        int code = (int) requestBody.get("code");
-        String password = (String) requestBody.get("password");
-        emailService.activateAcc(code, password);
-        return ResponseEntity.ok("User account successfully activated!");
+    public ResponseEntity<?> activateUser(@RequestBody ActivateAccountDTO requestBody) {
+        User activatedUser = emailService.activateAcc(requestBody.getCode(), requestBody.getPassword());
+        return ResponseEntity.ok(Map.of("ok", true, "message", "User activated successfully", "response", activatedUser));
     }
 
     @PostMapping("/login")

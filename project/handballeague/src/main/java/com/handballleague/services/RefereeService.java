@@ -74,7 +74,7 @@ public class RefereeService implements HandBallService<Referee>{
 
         Optional<Referee> optionalReferee = refereeRepository.findById(id);
         if (optionalReferee.isEmpty())
-            throw new ObjectNotFoundInDataBaseException("Object with given id was not found in the database.");
+            throw new ObjectNotFoundInDataBaseException("Referee with given id was not found in the database.");
 
         return optionalReferee.get();
     }

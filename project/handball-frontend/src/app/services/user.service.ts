@@ -61,4 +61,8 @@ export class UserService {
 
   }
 
+  async activateAccount(body : {code: number, password: string}) : Promise<ApiResponse> {
+    return await this.apiService.post<ApiResponse>("/users/activate", body);
+  }
+
 }

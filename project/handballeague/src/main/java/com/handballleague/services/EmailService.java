@@ -35,13 +35,6 @@ public class EmailService {
     @Value("${mail.password}")
     private String password;
 
-    public int generateCode() {
-        Random random = new Random();
-
-        int randomNumber = 100000 + random.nextInt(900000);
-
-        return randomNumber;
-    }
 
     public Message sendEmail(String email, String role) {
         if (email == null) throw new InvalidArgumentException("Passed email is invalid.");
@@ -58,7 +51,6 @@ public class EmailService {
         props.put("mail.smtp.host", host);
         props.put("mail.smtp.port", "587");
 
-        int code = generateCode();
 
         Session session = Session.getInstance(props, new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
@@ -66,6 +58,7 @@ public class EmailService {
             }
         });
         String roleToEmail;
+        User user= userRepository.findByEmail(email).orElseThrow(() -> new ObjectNotFoundInDataBaseException("User with given email was not found in database."));
 
         if (role.equals("captain")) {
             roleToEmail = "kapitana";
@@ -87,7 +80,7 @@ public class EmailService {
                     "</head>" +
                     "<body>" +
                     "<p>Twoje konto " + roleToEmail + " jest już gotowe!</p>" +
-                    "<p>Oto twój kod aktywacyjny: " + code + "</p>" +
+                    "<p>Oto twój kod aktywacyjny: " + user.getCode() + "</p>" +
                     "<p>Zespół Handball League</p>" +
                     "<img src=\"cid:logo\">" +
                     "</body>" +
@@ -105,9 +98,7 @@ public class EmailService {
 
             Transport.send(message);
 
-            User user= userRepository.findByEmail(email).orElseThrow(() -> new ObjectNotFoundInDataBaseException("User with given email was not found in database."));
-            System.out.println(code);
-            user.setCode(code);
+
             userRepository.save(user);
 
             return message;

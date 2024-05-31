@@ -11,17 +11,57 @@
     <ion-row>
       <ion-col>
         <ion-card class="ion-text-center" color="secondary" style="width: 50%; margin: 0 auto;">
-          <ion-card-header>
-            <ion-card-title>Witaj w Handball League</ion-card-title>
-            <ion-card-subtitle>Poradnik na start</ion-card-subtitle>
-          </ion-card-header>
+          @switch (user?.role) {
+            @case ('admin') {
+              <ion-card-header>
+                <ion-card-title>Witaj w Handball League</ion-card-title>
+                <ion-card-subtitle>Poradnik administratora</ion-card-subtitle>
+              </ion-card-header>
+              <ion-card-content>
+                1. Utwórz zespoły, które wezmą udział w Twojej lidze na stronie zespołów i podaj dane ich kapitanów.<br>
+                2. Wygeneruj konta kapitanów na stronie 'Zawodnicy'.<br>
+                3. Wygeneruj sędziów i ich konta na stronie 'Sędziowie'.<br>
+                4. Stwórz nową ligę na stronie 'Zarządzanie ligami'.<br>
+                5. Teraz Ty, sędziowie oraz kapitanowie możecie monitorować swoją ligę, wprowadzać wyniki meczów i wiele więcej! 🔥
+              </ion-card-content>
+            }
+            @case ('captain') {
+              <ion-card-header>
+                <ion-card-title>Witaj w Handball League</ion-card-title>
+                <ion-card-subtitle>Poradnik kapitana</ion-card-subtitle>
+              </ion-card-header>
+              <ion-card-content>
+                1. Uzupełniaj dane swojego zespołu na stronie 'Zespoły'.<br>
+                2. Przejdź do widoku ligi na pomocą zakładki 'Aktywne ligi'.<br>
+                3. Przeglądaj nachodzące spotkania i tabelę ligową.<br>
+                4. Komentuj pracę sędziego po zakończonym meczu.
+              </ion-card-content>
+            }
+            @case ('arbiter') {
+              <ion-card-header>
+                <ion-card-title>Witaj w Handball League</ion-card-title>
+                <ion-card-subtitle>Poradnik sędziego</ion-card-subtitle>
+              </ion-card-header>
+              <ion-card-content>
+                1. Przejdź do widoku ligi na pomocą zakładki 'Aktywne ligi'.<br>
+                2. Zmieniaj harmonogram spotkań.<br>
+                3. Dodawaj wyniki meczów.<br>
+                4. Zawieszaj zawodników na stronie 'Zawodnicy'.
+              </ion-card-content>
+            }
+            @default {
+              <ion-card-header>
+                <ion-card-title>Witaj w Handball League</ion-card-title>
+                <ion-card-subtitle>Poradnik na start</ion-card-subtitle>
+              </ion-card-header>
 
-          <ion-card-content>
-            1. Aktywuj swoje konto na stronie logowania.<br>
-            2. Utwórz zespoły, które wezmą udział w Twojej lidze na stronie zespołów.<br>
-            3. Rozpocznij nową ligę na stronie lig.<br>
-            4. Teraz możesz monitorować swoją ligę, wprowadzać wyniki meczów i wiele więcej! 🔥
-          </ion-card-content>
+              <ion-card-content>
+                1. Aktywuj swoje konto na stronie logowania, używając kodu aktywacyjnego otrzymanego w wiadomości e-mail.<br>
+                2. Po zalogowaniu, przeczytaj zaktualizowany poradnik i korzystaj w pełni z Handball League.<br>
+                3. Dzięki że jesteś z nami 🔥
+              </ion-card-content>
+            }
+          }
         </ion-card>
       </ion-col>
     </ion-row>

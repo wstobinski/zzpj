@@ -42,26 +42,25 @@ public class RefereeController {
     @PostMapping()
     public ResponseEntity<?> registerNewReferee(@Valid @RequestBody Referee referee, @RequestHeader(name = "Authorization") String token) {
         ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
-        ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "captain");
-        if (response.getStatusCode().is2xxSuccessful() || response2.getStatusCode().is2xxSuccessful()) {
+        if (response.getStatusCode().is2xxSuccessful()) {
             Referee newReferee = refereeService.create(referee);
             return ResponseEntity.ok().body(Map.of("message", "Referee created successfully",
                     "response", newReferee,
                     "ok", true));
         } else {
-            return response2;
+            return response;
         }
     }
 
     @DeleteMapping(path = "/{refereeId}")
     public ResponseEntity<?> deleteReferee(@PathVariable("refereeId") Long id, @RequestHeader(name = "Authorization") String token) {
         ResponseEntity<?> response1 = jwtService.handleAuthorization(token, "admin");
-        ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "captain");
-        if (response1.getStatusCode().is2xxSuccessful() || response2.getStatusCode().is2xxSuccessful()) {
+
+        if (response1.getStatusCode().is2xxSuccessful()) {
             boolean deleted = refereeService.delete(id);
             return ResponseEntity.ok(Map.of("ok", deleted));
         } else {
-            return response2;
+            return response1;
         }
     }
 
@@ -74,12 +73,11 @@ public class RefereeController {
     @PutMapping("/{refereeId}")
     public ResponseEntity<?> updateReferee(@Valid @PathVariable Long refereeId, @RequestBody Referee referee, @RequestHeader(name = "Authorization") String token) {
         ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
-        ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "captain");
-        if (response.getStatusCode().is2xxSuccessful() || response2.getStatusCode().is2xxSuccessful()) {
+        if (response.getStatusCode().is2xxSuccessful()) {
             Referee newReferee = refereeService.update(refereeId, referee);
             return ResponseEntity.ok(Map.of("ok", true, "response", newReferee));
         } else {
-            return response2;
+            return response;
         }
     }
 }

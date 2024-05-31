@@ -37,7 +37,7 @@
       </ion-label>
       <ion-button (click)="onCreatePlayer()">Utwórz</ion-button>
     </ion-item>
-    <ion-item>
+    <ion-item [disabled]="user.role === 'captain'">
       <ion-select cancel-text="Anuluj" label-placement="floating" label="Kapitan zespołu" formControlName="captain">
         @for (player of teamFormGroup.controls['players'].value; track $index) {
           <ion-select-option [value]="player">{{player.firstName}} {{player.lastName}}</ion-select-option>

@@ -2,6 +2,7 @@ import {NgModule} from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import {AuthenticatedGuard} from "./guards/authenticated.guard";
 import {NotFoundComponent} from "./components/not-found/not-found.component";
+import {roleGuard} from "./guards/role.guard";
 
 const routes: Routes = [
   {
@@ -25,7 +26,7 @@ const routes: Routes = [
   {
     path: 'players',
     loadChildren: () => import('./pages/players/players.module').then( m => m.PlayersPageModule),
-    canActivate: [AuthenticatedGuard]
+    canActivate: [AuthenticatedGuard, roleGuard(['admin', 'arbiter'])]
   },
   {
     path: 'account',
@@ -35,7 +36,7 @@ const routes: Routes = [
   {
     path: 'leagues',
     loadChildren: () => import('./pages/leagues/leagues.module').then( m => m.LeaguesPageModule),
-    canActivate: [AuthenticatedGuard]
+    canActivate: [AuthenticatedGuard, roleGuard(['admin'])]
   },
   {
     path: 'league-panel/:leagueId',
@@ -45,7 +46,7 @@ const routes: Routes = [
   {
     path: 'referees',
     loadChildren: () => import('./pages/referees/referees.module').then( m => m.RefereesPageModule),
-    canActivate: [AuthenticatedGuard]
+    canActivate: [AuthenticatedGuard, roleGuard(['admin'])]
   },
   { path: '404',
     component: NotFoundComponent },

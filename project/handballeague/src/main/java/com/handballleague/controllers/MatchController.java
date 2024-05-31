@@ -2,9 +2,7 @@ package com.handballleague.controllers;
 
 import com.handballleague.DTO.MatchScoreDTO;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
-import com.handballleague.model.Match;
-import com.handballleague.model.Score;
-import com.handballleague.model.Team;
+import com.handballleague.model.*;
 import com.handballleague.repositories.ScoreRepository;
 import com.handballleague.services.JWTService;
 import com.handballleague.services.LeagueService;
@@ -32,34 +30,74 @@ public class MatchController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllMatches(@RequestHeader(name = "Authorization") String token){
+    public ResponseEntity<?> getAllMatches(@RequestHeader(name = "Authorization") String token) {
         List<Match> matches = matchService.getAll();
         return ResponseEntity.ok().body(Map.of("response", matches,
                 "ok", true));
     }
 
     @PostMapping("/{matchId}/finish-match")
-    public ResponseEntity<?> completeMatch(@PathVariable Long matchId, @RequestBody MatchScoreDTO.MatchResultDto matchResult) {
-        try {
+    public ResponseEntity<?> completeMatch(@PathVariable Long matchId, @RequestBody MatchScoreDTO.MatchResultDto matchResult, @RequestHeader(name = "Authorization") String token) {
+        ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
+        ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "arbiter");
+        if (response.getStatusCode().is2xxSuccessful()) {
             matchService.endMatch(matchId, matchResult);
-            return ResponseEntity.ok().body(Map.of("message", "Match finished successfully","response", matchResult,
+            return ResponseEntity.ok().body(Map.of("message", "Match finished successfully", "response", matchResult,
                     "ok", true));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error completing match: " + e.getMessage());
+        } else if (response2.getStatusCode().is2xxSuccessful()) {
+            Match match = matchService.getById(matchId);
+            Referee modelReferee = (Referee) jwtService.tokenToModel(token);
+            if (match.getReferee().equals(modelReferee)) {
+                matchService.endMatch(matchId, matchResult);
+                return ResponseEntity.ok().body(Map.of("message", "Match finished successfully", "response", matchResult,
+                        "ok", true));
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("ok", false,"message", "This referee is not authorized to perform this operation"));
+            }
         }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of( "ok", false, "message", "Unauthorized action"));
+
     }
 
     @PutMapping("/{matchId}")
     public ResponseEntity<?> updateMatch(@PathVariable Long matchId, @Valid @RequestBody Match match, @RequestHeader(name = "Authorization") String token) {
-        ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
-        ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "captain");
-        if (response.getStatusCode().is2xxSuccessful() || response2.getStatusCode().is2xxSuccessful()) {
+        ResponseEntity<?> responseAdmin = jwtService.handleAuthorization(token, "admin");
+        ResponseEntity<?> responseCaptain = jwtService.handleAuthorization(token, "captain");
+        ResponseEntity<?> responseReferee = jwtService.handleAuthorization(token, "arbiter");
+
+        if (responseAdmin.getStatusCode().is2xxSuccessful()) {
             Match newMatch = matchService.update(matchId, match);
             return ResponseEntity.ok(Map.of("ok", true, "response", newMatch));
-        } else {
-            return response2;
+        } else if (responseCaptain.getStatusCode().is2xxSuccessful()) {
+            Player captain = (Player) jwtService.tokenToModel(token);
+            Match currentMatch = matchService.getById(matchId);
+
+            boolean isCaptainOfHomeTeam = currentMatch.getHomeTeam().getPlayers().stream()
+                    .anyMatch(player -> player.equals(captain) && player.isCaptain());
+
+            boolean isCaptainOfAwayTeam = currentMatch.getAwayTeam().getPlayers().stream()
+                    .anyMatch(player -> player.equals(captain) && player.isCaptain());
+
+            if (isCaptainOfHomeTeam || isCaptainOfAwayTeam) {
+                Match newMatch = matchService.update(matchId, match);
+                return ResponseEntity.ok(Map.of("ok", true, "response", newMatch));
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("ok", false, "message", "This captain is not authorized to perform this operation"));
+            }
+        } else if (responseReferee.getStatusCode().is2xxSuccessful()) {
+            Match existingMatch = matchService.getById(matchId);
+            Referee modelReferee = (Referee) jwtService.tokenToModel(token);
+            if (existingMatch.getReferee().equals(modelReferee)) {
+                Match newMatch = matchService.update(matchId, match);
+                return ResponseEntity.ok(Map.of("ok", true, "response", newMatch));
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("ok", false, "message", "This referee is not authorized to perform this operation"));
+            }
         }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("ok", false, "message", "Unauthorized action"));
     }
+
+
 
     @GetMapping("score/{matchId}")
     public ResponseEntity<?> getMatchScores(@PathVariable Long matchId) {

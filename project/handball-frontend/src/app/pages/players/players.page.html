@@ -9,9 +9,11 @@
       <h3>Lista zawodników</h3>
     </ion-text>
   </ion-item>
-  <div class="ion-text-right">
-    <ion-button (click)="openPlayerDetailsModal(null, 'ADD')">Dodaj nowego zawodnika</ion-button>
-  </div>
+  @if (isAdmin()) {
+    <div class="ion-text-right">
+      <ion-button (click)="openPlayerDetailsModal(null, 'ADD')">Dodaj nowego zawodnika</ion-button>
+    </div>
+  }
   <ion-grid class="table_component">
     <ion-row class="header-row">
       <ion-col>Identyfikator zawodnika</ion-col>
@@ -35,7 +37,9 @@
         <ion-text color="primary">
           <h3>Brak zawodników</h3>
         </ion-text>
-        <ion-button (click)="openPlayerDetailsModal(null, 'ADD')">Dodaj nowego zawodnika</ion-button>
+        @if (isAdmin()) {
+          <ion-button (click)="openPlayerDetailsModal(null, 'ADD')">Dodaj nowego zawodnika</ion-button>
+        }
       </div>
 
     } @else {

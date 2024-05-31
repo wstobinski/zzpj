@@ -81,7 +81,7 @@ public class MatchService implements HandBallService<Match>{
 
         Optional<Match> optionalMatch = matchRepository.findById(id);
         if (optionalMatch.isEmpty())
-            throw new ObjectNotFoundInDataBaseException("Object with given id was not found in the database.");
+            throw new ObjectNotFoundInDataBaseException("Match with given id was not found in the database.");
 
         return optionalMatch.get();
     }

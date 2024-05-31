@@ -78,11 +78,14 @@ public class PlayerController {
     public ResponseEntity<?> updatePlayer(@Valid @PathVariable Long playerId, @RequestBody Player player, @RequestHeader(name = "Authorization") String token) {
         ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
         ResponseEntity<?> response2 = jwtService.handleAuthorization(token, "captain");
-        if (response.getStatusCode().is2xxSuccessful() || response2.getStatusCode().is2xxSuccessful()) {
+        ResponseEntity<?> response3 = jwtService.handleAuthorization(token, "arbiter");
+        if (response.getStatusCode().is2xxSuccessful() ||
+                response2.getStatusCode().is2xxSuccessful() ||
+                response3.getStatusCode().is2xxSuccessful()) {
             Player newPlayer = playerService.update(playerId, player);
             return ResponseEntity.ok(Map.of("ok", true, "response", newPlayer));
         } else {
-            return response2;
+            return response3;
         }
     }
 

@@ -12,7 +12,7 @@ export class AuthenticatedGuard implements CanActivate {
               private utils: Utils,
               private router: Router) {} // Inject AuthService and UtilsService here
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> | Observable<boolean> | boolean {
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
     return this.authService.isAuthenticated.pipe(
       take(1),
       switchMap(async isAuthenticated => {

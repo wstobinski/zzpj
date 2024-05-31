@@ -18,6 +18,14 @@ import {Team} from "../../model/team.model";
 import {MatchEditModalComponent} from "../../components/match-edit-modal/match-edit-modal.component";
 import {MatchService} from "../../services/match.service";
 import {Score} from "../../model/score.model";
+import {User} from "../../model/user.model";
+import {Subscription} from "rxjs";
+import {UserService} from "../../services/user.service";
+import {Referee} from "../../model/referee.model";
+import {RefereeCommentModalComponent} from "../../components/referee-comment-modal/referee-comment-modal.component";
+import {CommentsService} from "../../services/comments.service";
+import {CommentDto} from "../../model/DTO/comment.dto";
+import {AuthCheckService} from "../../services/auth-check.service";
 
 @Component({
   selector: 'app-league-panel',
@@ -30,6 +38,8 @@ export class LeaguePanelPage extends GenericPage implements OnInit {
   rounds: Round[];
   teamContests: TeamContest[];
   matchToFinish: Match;
+  user: User;
+  userSub: Subscription
 
   constructor(private route: ActivatedRoute,
               private leagueService: LeagueService,
@@ -38,6 +48,9 @@ export class LeaguePanelPage extends GenericPage implements OnInit {
               private authService: AuthService,
               private teamContestsService: TeamContestService,
               private modalController: ModalController,
+              private userService: UserService,
+              private commentsService: CommentsService,
+              private authCheckService: AuthCheckService,
               loadingService: LoadingService,
               popoverController: PopoverController) {
     super(loadingService, popoverController);
@@ -45,6 +58,10 @@ export class LeaguePanelPage extends GenericPage implements OnInit {
 
   override ngOnInit() {
     super.ngOnInit();
+    this.userSub = this.userService.getUser().subscribe(u => {
+      this.user = u;
+    });
+
     this.isLoading = true;
     this.route.paramMap.subscribe(
       {
@@ -65,10 +82,16 @@ export class LeaguePanelPage extends GenericPage implements OnInit {
 
                 for (let match of round.matches) {
 
+                  if (!match.finished && this.user.role === 'arbiter') {
+                    match.canEdit = (await this.authCheckService.isRefereeInMatch(match.uuid)).ok;
+                  }
                   if (match.finished) {
                     const matchScores: Score[] = (await this.matchService.getMatchScores(match)).response;
                     match.homeTeamScore = matchScores[0].goals;
                     match.awayTeamScore = matchScores[0].lostGoals;
+                    if (this.user.role === 'captain') {
+                      match.canComment = (await this.authCheckService.isCaptainInMatch(match.uuid)).ok;
+                    }
                   }
 
                 }
@@ -170,5 +193,41 @@ export class LeaguePanelPage extends GenericPage implements OnInit {
     return await modal.present();
 
 
+  }
+
+  async onRefereeCommentEntered(match: Match) {
+    const modal = await this.modalController.create({
+      component: RefereeCommentModalComponent,
+      componentProps: {
+        match,
+        title: `Oceń pracę sędziego`
+      }
+    });
+    modal.onWillDismiss().then(async data => {
+      if (data && data.data && data.role === 'submit') {
+        console.log(data.data);
+        const commentData: CommentDto = {
+          content: data.data,
+          refereeId: match.referee.uuid,
+          matchId: match.uuid,
+          authorId: this.user.modelId
+        }
+        this.commentsService.addComment(commentData).then(r => {
+          if (r.ok) {
+            this.utils.presentInfoToast("Komentarz został dodany");
+          } else {
+            this.utils.presentAlertToast("Wystąpił błąd podczas wystawiania komentarza")
+          }
+        }).catch(e => {
+          if (e.status === 401) {
+            this.utils.presentAlertToast("Wystąpił błąd podczas wystawiania komentarza. Twoja sesja wygasła, zaloguj się ponownie")
+          } else {
+            this.utils.presentAlertToast("Wystąpił błąd podczas wystawiania komentarza")
+
+          }
+        })
+      }
+    });
+    return await modal.present();
   }
 }

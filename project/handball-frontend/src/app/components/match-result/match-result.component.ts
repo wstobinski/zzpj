@@ -29,20 +29,20 @@ export class MatchResultComponent  implements OnInit {
 
     this.scoreFormGroup = this.formBuilder.group({
       homeScore: this.formBuilder.group({
-        goals: ['', [Validators.required, this.utils.oneToHundredValidator]],
-        fouls: ['', this.utils.oneToHundredValidator],
-        ballPossession: ['', this.utils.oneToHundredValidator],
-        yellowCards: ['', this.utils.oneToHundredValidator],
-        redCards: ['', this.utils.oneToHundredValidator],
-        timePenalties: ['', this.utils.oneToHundredValidator]
+        goals: ['', [Validators.required, this.utils.zeroToHundredValidator]],
+        fouls: ['', this.utils.zeroToHundredValidator],
+        ballPossession: ['', this.utils.zeroToHundredValidator],
+        yellowCards: ['', this.utils.zeroToHundredValidator],
+        redCards: ['', this.utils.zeroToHundredValidator],
+        timePenalties: ['', this.utils.zeroToHundredValidator]
       }),
       awayScore: this.formBuilder.group({
-        goals: ['',  [Validators.required, this.utils.oneToHundredValidator]],
-        fouls: ['', this.utils.oneToHundredValidator],
-        ballPossession: ['', this.utils.oneToHundredValidator],
-        yellowCards: ['', this.utils.oneToHundredValidator],
-        redCards: ['', this.utils.oneToHundredValidator],
-        timePenalties: ['', this.utils.oneToHundredValidator]
+        goals: ['',  [Validators.required, this.utils.zeroToHundredValidator]],
+        fouls: ['', this.utils.zeroToHundredValidator],
+        ballPossession: ['', this.utils.zeroToHundredValidator],
+        yellowCards: ['', this.utils.zeroToHundredValidator],
+        redCards: ['', this.utils.zeroToHundredValidator],
+        timePenalties: ['', this.utils.zeroToHundredValidator]
       })
     });
 
@@ -65,17 +65,24 @@ export class MatchResultComponent  implements OnInit {
     team1Score.lostGoals = team2Score.goals;
     team2Score.lostGoals = team1Score.goals;
     const matchScoreDto: MatchScoreDto = {team1Score, team2Score};
-    const matchCompletedResponse = await this.matchService.completeMatch(this.match, matchScoreDto);
-    if (matchCompletedResponse.ok) {
-      this.utils.presentInfoToast("Wyniki meczu zapisano pomyślnie!");
-      this.match.finished = true;
-      this.match.homeTeamScore = team1Score.goals;
-      this.match.awayTeamScore = team2Score.goals;
-      this.matchFinishedEmitter.emit(this.match);
-    } else {
+    try {
+      const matchCompletedResponse = await this.matchService.completeMatch(this.match, matchScoreDto);
+      if (matchCompletedResponse.ok) {
+        this.utils.presentInfoToast("Wyniki meczu zapisano pomyślnie!");
+        this.match.finished = true;
+        this.match.homeTeamScore = team1Score.goals;
+        this.match.awayTeamScore = team2Score.goals;
+        this.matchFinishedEmitter.emit(this.match);
+      } else {
+        this.utils.presentAlertToast("Wystąpił błąd podczas zapisywania wyników meczu");
+        this.cancelMatchFinishEmitter.emit(true);
+      }
+    } catch (e) {
       this.utils.presentAlertToast("Wystąpił błąd podczas zapisywania wyników meczu");
       this.cancelMatchFinishEmitter.emit(true);
     }
+
+
   }
 
   onCancel() {

@@ -11,8 +11,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
+
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
@@ -190,7 +189,7 @@ public class LeagueService implements HandBallService<League>{
 
         Optional<League> optionalLeague = leagueRepository.findById(id);
         if (optionalLeague.isEmpty())
-            throw new ObjectNotFoundInDataBaseException("Object with given id was not found in the database.");
+            throw new ObjectNotFoundInDataBaseException("League with given id was not found in the database.");
 
         return optionalLeague.get();
     }
@@ -268,6 +267,10 @@ public class LeagueService implements HandBallService<League>{
 
             LocalDateTime finishedTime = LocalDateTime.now();
             league.setFinishedDate(finishedTime);
+
+            for (Team team: league.getTeams()) {
+                team.setLeague(null);
+            }
             leagueRepository.save(league);
 
             return finishedTime;

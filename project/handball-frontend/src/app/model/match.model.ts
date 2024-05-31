@@ -10,4 +10,6 @@ export class Match {
   public finished: boolean;
   public homeTeamScore?: number;
   public awayTeamScore?: number;
+  public canComment?: boolean;
+  public canEdit?: boolean;
 }

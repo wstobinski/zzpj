@@ -43,7 +43,7 @@ public class PlayerService implements HandBallService<Player>{
 
         Optional<Player> optionalPlayer = playerRepository.findById(String.valueOf(id));
         if (optionalPlayer.isEmpty())
-            throw new ObjectNotFoundInDataBaseException("Object with given id was not found in the database.");
+            throw new ObjectNotFoundInDataBaseException("Player with given id was not found in the database.");
 
         return optionalPlayer.get();
     }

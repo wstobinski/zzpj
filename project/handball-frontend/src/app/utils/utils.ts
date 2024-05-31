@@ -115,10 +115,10 @@ export class Utils {
       : {hour: true};
   };
 
-  oneToHundredValidator: ValidatorFn = (
+  zeroToHundredValidator: ValidatorFn = (
     control: AbstractControl,
   ): ValidationErrors | null => {
-    const oneToHundredRegex: RegExp = new RegExp('^([1-9][0-9]?|100)$');
+    const oneToHundredRegex: RegExp = new RegExp('^(0|[1-9]|[1-9][0-9]|100)$');
     const value = control.value;
 
     if (!value || value.length === 0) {

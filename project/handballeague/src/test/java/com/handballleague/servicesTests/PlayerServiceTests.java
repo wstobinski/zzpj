@@ -450,7 +450,7 @@ public class PlayerServiceTests {
         //when
         assertThatThrownBy(() -> underTestService.getById(id))
                 .isInstanceOf(ObjectNotFoundInDataBaseException.class)
-                .hasMessageContaining("Object with given id was not found in the database.");
+                .hasMessageContaining("Player with given id was not found in the database.");
     }
 
     /** checkIfEntityExistsInDb */
