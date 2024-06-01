@@ -9,6 +9,7 @@ import com.handballleague.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,13 +22,15 @@ public class MatchService implements HandBallService<Match>{
     private final ScoreRepository scoreRepository;
     private final TeamRepository teamRepository;
     private final TeamContestRepository teamContestRepository;
+    private final PostRepository postRepository;
 
     @Autowired
-    public MatchService(MatchRepository matchRepository, ScoreRepository scoreRepository, TeamRepository teamRepository, TeamContestRepository teamContestRepository) {
+    public MatchService(MatchRepository matchRepository, ScoreRepository scoreRepository, TeamRepository teamRepository, TeamContestRepository teamContestRepository, PostRepository postRepository) {
         this.matchRepository = matchRepository;
         this.scoreRepository = scoreRepository;
         this.teamRepository = teamRepository;
         this.teamContestRepository = teamContestRepository;
+        this.postRepository = postRepository;
     }
     @Override
     public Match create(Match entity) throws InvalidArgumentException, EntityAlreadyExistsException {
@@ -66,12 +69,58 @@ public class MatchService implements HandBallService<Match>{
         Match matchToChange = matchRepository.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundInDataBaseException("Match with given id was not found in the database."));
 
+        generateNewPostAboutUpdatedMatch(entity, matchToChange);
+
         matchToChange.setGameDate(entity.getGameDate());
         matchToChange.setHomeTeam(entity.getHomeTeam());
         matchToChange.setAwayTeam(entity.getAwayTeam());
         matchToChange.setReferee(entity.getReferee());
 
         return matchRepository.save(matchToChange);
+    }
+
+    private void generateNewPostAboutUpdatedMatch(Match newMatch, Match oldMatch) {
+        StringBuilder contentBuilder = new StringBuilder();
+
+        // Check if the referee has changed
+        if (!newMatch.getReferee().equals(oldMatch.getReferee())) {
+            contentBuilder.append("Sędzia zmieniony z ")
+                    .append(oldMatch.getReferee().getFirstName())
+                    .append(" ")
+                    .append(oldMatch.getReferee().getLastName())
+                    .append(" na ")
+                    .append(newMatch.getReferee().getFirstName())
+                    .append(" ")
+                    .append(newMatch.getReferee().getLastName())
+                    .append("\n");
+        } else {
+            contentBuilder.append("Sędzia ")
+                    .append(oldMatch.getReferee().getFirstName())
+                    .append(" ")
+                    .append(oldMatch.getReferee().getLastName())
+                    .append(" bez zmian\n");
+        }
+
+        // Check if the game date has changed
+        if (!newMatch.getGameDate().equals(oldMatch.getGameDate())) {
+            contentBuilder.append("Data zmieniona z ")
+                    .append(oldMatch.getGameDate())
+                    .append(" na ")
+                    .append(newMatch.getGameDate())
+                    .append("\n");
+        } else {
+            contentBuilder.append("Data ")
+                    .append(oldMatch.getGameDate())
+                    .append(" bez zmian\n");
+        }
+
+        Post post = Post.builder()
+                .title("Zmiany w meczu " + newMatch.getHomeTeam().getTeamName() + " : " + newMatch.getAwayTeam().getTeamName())
+                .content(contentBuilder.toString())
+                .postedDate(LocalDateTime.now())
+                .build();
+
+        postRepository.save(post);
     }
 
     @Override
