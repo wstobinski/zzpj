@@ -172,14 +172,9 @@ export class LeaguePanelPage extends GenericPage implements OnInit {
     const matchCopy = {...match};
     modal.onWillDismiss().then(async data => {
       if (data && data.data && data.role === 'submit') {
-        console.log(data.data);
-        const createPost = data.data.createPost;
-        this.matchService.updateMatch(data.data.match as Match).then(r => {
+        this.matchService.updateMatch(data.data as Match).then(r => {
           if (r.ok) {
             this.utils.presentInfoToast("Edycja meczu zakończona sukcesem!");
-            if (createPost) {
-              // todo make a request to generate Post with match changes
-            }
           } else {
             this.utils.presentAlertToast("Wystąpił błąd podczas edycji meczu");
             match = matchCopy;

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -81,10 +82,10 @@ public class MatchService implements HandBallService<Match>{
 
     private void generateNewPostAboutUpdatedMatch(Match newMatch, Match oldMatch) {
         StringBuilder contentBuilder = new StringBuilder();
-
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM y, HH:mm");
         // Check if the referee has changed
         if (!newMatch.getReferee().equals(oldMatch.getReferee())) {
-            contentBuilder.append("Sędzia zmieniony z ")
+            contentBuilder.append("<p>Sędzia zmieniony z ")
                     .append(oldMatch.getReferee().getFirstName())
                     .append(" ")
                     .append(oldMatch.getReferee().getLastName())
@@ -92,26 +93,16 @@ public class MatchService implements HandBallService<Match>{
                     .append(newMatch.getReferee().getFirstName())
                     .append(" ")
                     .append(newMatch.getReferee().getLastName())
-                    .append("\n");
-        } else {
-            contentBuilder.append("Sędzia ")
-                    .append(oldMatch.getReferee().getFirstName())
-                    .append(" ")
-                    .append(oldMatch.getReferee().getLastName())
-                    .append(" bez zmian\n");
+                    .append(".</p>");
         }
 
         // Check if the game date has changed
         if (!newMatch.getGameDate().equals(oldMatch.getGameDate())) {
-            contentBuilder.append("Data zmieniona z ")
-                    .append(oldMatch.getGameDate())
+            contentBuilder.append("<p>Data zmieniona z ")
+                    .append(oldMatch.getGameDate().format(formatter))
                     .append(" na ")
-                    .append(newMatch.getGameDate())
-                    .append("\n");
-        } else {
-            contentBuilder.append("Data ")
-                    .append(oldMatch.getGameDate())
-                    .append(" bez zmian\n");
+                    .append(newMatch.getGameDate().format(formatter))
+                    .append(".</p>");
         }
 
         Post post = Post.builder()
@@ -180,7 +171,6 @@ public class MatchService implements HandBallService<Match>{
         scoreRepository.save(score);
     }
 
-    //TODO: Przy tworzeniu zespołów powinno automatycznie generowac sie TeamContest
 
     public void updateTeamContestStats(Match match, MatchScoreDTO.TeamScoreDto team1Score, MatchScoreDTO.TeamScoreDto team2Score) {
         Contest contest = match.getRound().getContest();  // Assuming Round has a reference to Contest

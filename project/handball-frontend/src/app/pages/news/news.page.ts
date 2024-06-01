@@ -109,4 +109,27 @@ export class NewsPage extends GenericPage implements OnInit {
     });
     return await modal.present();
   }
+
+  deletePost(postToDelete: Post) {
+
+    this.utils.presentYesNoActionSheet("Czy na pewno chcesz usunąć to ogłoszenie?", "Tak", "Nie", async () => {
+      try {
+        const response = await this.postService.deletePost(postToDelete.uuid);
+        if (response.ok) {
+          this.utils.presentInfoToast("Ogłoszenie zostało usunięte")
+          this.posts = this.posts.filter(post => post.uuid !== postToDelete.uuid);
+        } else {
+          this.utils.presentAlertToast("Wystąpił błąd podczas usuwania ogłoszenia");
+        }
+      } catch (e) {
+        if (e.status === 401) {
+          this.utils.presentAlertToast("Wystąpił błąd podczas usuwania ogłoszenia. Twoja sesja wygasła, zaloguj się ponownie");
+        } else {
+          this.utils.presentAlertToast("Wystąpił błąd podczas usuwania ogłoszenia");
+        }
+      }
+
+    }, () => {})
+
+  }
 }

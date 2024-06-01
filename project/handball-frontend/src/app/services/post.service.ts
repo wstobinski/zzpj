@@ -25,4 +25,7 @@ export class PostService {
     return await this.apiService.put<ApiResponse>(`/posts/${postData.uuid}`, postData);
   }
 
+  async deletePost(postId: number): Promise<ApiResponse> {
+    return await this.apiService.delete<ApiResponse>(`/posts/${postId}`);
+  }
 }
