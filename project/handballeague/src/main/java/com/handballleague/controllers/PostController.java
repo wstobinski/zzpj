@@ -27,7 +27,7 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllPosts(@RequestHeader(name = "Authorization") String token){
+    public ResponseEntity<?> getAllPosts(){
         List<Post> posts = postService.getAll();
         return ResponseEntity.ok().body(Map.of("response", posts,
                 "ok", true));

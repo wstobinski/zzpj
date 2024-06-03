@@ -3,6 +3,7 @@ package com.handballleague.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
 @Table(name = "post")
 public class Post {
@@ -41,8 +43,7 @@ public class Post {
     private String content;
 
     @Column(
-            name = "posted_date",
-            nullable = false
+            name = "posted_date"
     )
     private LocalDateTime postedDate;
 

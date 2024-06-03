@@ -2,12 +2,13 @@ package com.handballleague.controllers;
 
 import com.handballleague.DTO.MatchScoreDTO;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
-import com.handballleague.model.*;
+import com.handballleague.model.Match;
+import com.handballleague.model.Player;
+import com.handballleague.model.Referee;
+import com.handballleague.model.Score;
 import com.handballleague.repositories.ScoreRepository;
 import com.handballleague.services.JWTService;
-import com.handballleague.services.LeagueService;
 import com.handballleague.services.MatchService;
-import com.handballleague.services.RoundService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
