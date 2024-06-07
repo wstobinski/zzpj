@@ -1,7 +1,10 @@
 package com.handballleague.InitializersTests;
 
+import com.handballleague.initialization.PlayersInitializer;
 import com.handballleague.initialization.TeamsInitializer;
+import com.handballleague.model.Player;
 import com.handballleague.model.Team;
+import com.handballleague.repositories.PlayerRepository;
 import com.handballleague.repositories.TeamRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +18,8 @@ import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -22,28 +27,27 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class TeamsInitializerTest {
+public class PlayersInitializerTest {
 
     @Mock
-    private TeamRepository teamRepository;
+    private PlayerRepository playerRepository;
 
     @Mock
     private HttpClient httpClient;
 
     @InjectMocks
-    private TeamsInitializer teamsInitializer;
-
-        @Test
-    public void addTeamsToDatabase_ValidJsonData_AddsTeamsToDatabase() throws IOException {
-        String jsonData = "{\"response\": [{\"id\": 1, \"name\": \"Team A\"}, {\"id\": 2, \"name\": \"Team B\"}]}";
-        teamsInitializer.addTeamsToDatabase(jsonData);
-        verify(teamRepository, times(2)).save(any(Team.class));
-    }
+    private PlayersInitializer playersInitializer;
 
     @Test
-    public void addTeamsToDatabase_InvalidJsonData_ThrowsIOException() {
-        String jsonData = "{\"invalid\": \"data\"}";
-        assertThrows(IOException.class, () -> teamsInitializer.addTeamsToDatabase(jsonData));
+    public void testAddPlayersToDatabase() throws Exception {
+        List<String> players = Arrays.asList(
+                "John,Doe,john.doe@example.com,123456789,10,yes",
+                "Jane,Doe,jane.doe@example.com,987654321,20,no"
+        );
+
+        playersInitializer.addPlayersToDatabase(players);
+
+        verify(playerRepository, times(2)).save(any(Player.class));
     }
 
 
