@@ -16,12 +16,12 @@ import java.net.http.HttpResponse;
 
 @Service
 public class TeamsInitializer {
-    @Value("${hanbdall.api.key}")
     private String apiKey;
 
     private final TeamRepository teamRepository;
     @Autowired
     public TeamsInitializer(TeamRepository teamRepository) {
+        apiKey = System.getenv("HANDBALL_API_KEY");
         this.teamRepository = teamRepository;
     }
 
