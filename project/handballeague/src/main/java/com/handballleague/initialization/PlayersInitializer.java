@@ -16,7 +16,6 @@ import java.util.List;
 @Service
 public class PlayersInitializer {
 
-    private final VertexAI vertexAi;
     private final PlayerRepository playerRepository;
 
     private String API_KEY;
@@ -24,7 +23,6 @@ public class PlayersInitializer {
     //    @Autowired
     public PlayersInitializer(PlayerRepository playerRepository) {
         this.playerRepository = playerRepository;
-        this.vertexAi = new VertexAI("handball-app-425321", "us-central1");
         Dotenv dotenv = Dotenv.load();
         this.API_KEY = dotenv.get("API_KEY");
     }
