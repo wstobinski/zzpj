@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class PlayersInitializer {
@@ -67,8 +69,20 @@ public class PlayersInitializer {
         in.close();
         con.disconnect();
         System.out.println("Response Content : " + content.toString());
-        String textContent = content.toString().split("\"text\": \"")[1];
-        List<String> players = new ArrayList<>(Arrays.asList(textContent.split("\n")));
+//        String textContent = content.toString().split("\"text\": \"")[1];
+
+        String regex = "\"text\": \"([^\"]*)\"";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(content.toString());
+        if (!matcher.find()) {
+            throw new IllegalArgumentException("Invalid response format: 'text' part not found");
+        }
+        String textContent = matcher.group(1);
+
+        System.out.println("Text content: " + textContent);
+
+        List<String> players = new ArrayList<>(Arrays.asList(textContent.split("\\\\n")));
+        System.out.println("size: " + players.size());
 
 
         addPlayersToDatabase(players, Optional.empty());
@@ -76,10 +90,10 @@ public class PlayersInitializer {
     }
 
     private static String getString(String nationality, int numberOfPlayers) {
-        var text = String.format("come up with data for %d handball players with %s names. For each of them give" +
-                " separated by comma first name,last name,email,phone number (9 digits without country code),pitch number (any number between 0 and 99)," +
-                "is capitan (yes or no - only 1 player can be capitan). List this players in separate lines, numerate" +
-                " them, don't write anything else", numberOfPlayers, nationality);
+        var text = String.format("come up with data for %d  man handball players with %s names. For each of them give" +
+                "separated by comma first name, last name, email, phone number (9 digits without country code), pitch number (any number between 0 and 99)," +
+                "is capitan (yes or no - only 1 player can be capitan). List this players in separate lines," +
+                "don't write anything else", numberOfPlayers, nationality);
 
         return String.format("{ \"contents\":[ { \"parts\":[{\"text\": \"%s\"}]} ]}", text);
     }
@@ -87,6 +101,7 @@ public class PlayersInitializer {
     public void addPlayersToDatabase(List<String> players, Optional<Long> teamId) {
 
         for (String player : players) {
+            System.out.println("Player: " + player);
             String[] playerData = player.split(",");
             String firstName = playerData[0];
             String lastName = playerData[1];
@@ -98,6 +113,7 @@ public class PlayersInitializer {
             System.out.println(Arrays.toString(playerData));
 
             Player newPlayer = new Player(firstName, lastName, phoneNumber, pitchNumber, isCaptain, false);
+            newPlayer.setEmail(email);
 
 
             Player newPlayer1 = playerService.create(newPlayer);
