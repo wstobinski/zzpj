@@ -10,6 +10,7 @@ import {EditPlayerModalComponent} from "../../components/edit-player-modal/edit-
 import {User} from "../../model/user.model";
 import {UserService} from "../../services/user.service";
 import {Subscription} from "rxjs";
+import {GeneratePlayersModalComponent} from "../../components/generate-players-modal/generate-players-modal.component";
 
 @Component({
   selector: 'app-players',
@@ -175,6 +176,35 @@ export class PlayersPage extends GenericPage implements OnInit, OnDestroy {
     return await modal.present();
   }
 
+  async openGeneratePlayersModal() {
+    const modal = await this.modalController.create({
+      component: GeneratePlayersModalComponent,
+      componentProps: {
+        title: "Automatyczne generowania zawodników",
+      }
+    });
+    modal.onWillDismiss().then(async data => {
+      if (data && data.data) {
+        this.playersService.generatePlayers(data.data).then(async r => {
+          if (r.ok) {
+            this.players = (await this.playersService.getAllPlayers()).response
+            this.utils.presentInfoToast("Zawodnicy wygenerowani pomyślnie!");
+          } else {
+            this.utils.presentAlertToast("Wystąpił błąd podczas generowania zawodników");
+          }
+        }).catch(e => {
+          if (e.status === 401) {
+            this.utils.presentAlertToast("Wystąpił błąd podczas generowania zawodników. Twoja sesja wygasła, zaloguj się ponownie")
+          } else {
+            this.utils.presentAlertToast("Wystąpił błąd podczas generowania zawodników")
+
+          }
+        })
+      }
+    });
+    return await modal.present();
+  }
+
   deletePlayer(player: Player) {
 
     this.utils.presentYesNoActionSheet(`Czy na pewno chcesz usunąć zawodnika ${player.firstName} ${player.lastName}? Ta akcja jest nieodwracalna`, 'Tak, usuwam zawodnika', 'Nie',
@@ -195,7 +225,7 @@ export class PlayersPage extends GenericPage implements OnInit, OnDestroy {
 
   }
 
-  generatePlayerAccount(player:Player) {
+  generatePlayerAccount(player: Player) {
 
     const newUser = new User();
     newUser.role = "captain";
@@ -245,4 +275,6 @@ export class PlayersPage extends GenericPage implements OnInit, OnDestroy {
   private isReferee() {
     return this.user.role === 'arbiter';
   }
+
+
 }

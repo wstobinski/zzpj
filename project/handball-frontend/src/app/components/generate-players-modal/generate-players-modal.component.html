@@ -1,0 +1,55 @@
+<ion-content>
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="end">
+        <ion-icon size="large" (click)="onClose()" name="close-outline"></ion-icon>
+      </ion-buttons>
+      <ion-title>{{title}}</ion-title>
+
+    </ion-toolbar>
+  </ion-header>
+  <form [formGroup]="generateFormGroup" (keyup)="markUnsavedChanges()" (ngSubmit)="onSubmit()">
+    <ion-list>
+      <ion-item>
+        <ion-select cancel-text="Anuluj" label-placement="floating" label="Kraj pochodzenia zawodników" formControlName="nationality">
+          @for (nationality of nationalities; track $index) {
+            <ion-select-option [value]="nationality.translate">{{nationality.name}}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+      @if (formHasError('nationality', 'required')) {
+        <ion-item lines="none">
+          <ion-label class="error-label">
+            Kraj pochodzenia jest wymagany
+          </ion-label>
+        </ion-item>
+      }
+      <ion-item>
+        <ion-label position="floating">Liczba zawodników <small>*</small></ion-label>
+        <ion-input formControlName="numberOfPlayers"></ion-input>
+      </ion-item>
+      @if (formHasError('lastName', 'required')) {
+        <ion-item lines="none">
+          <ion-label class="error-label">
+            Liczba zawodników jest wymagana
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+    <ion-row class="ion-padding">
+      <ion-col size-lg="3" offset-lg="3">
+        <ion-button type="submit" color="primary" expand="block" [disabled]="!generateFormGroup.valid">
+          <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
+          Zapisz
+        </ion-button>
+      </ion-col>
+      <ion-col size-lg="3">
+        <ion-button color="medium" expand="block" fill="outline" (click)="onClose()">
+          Anuluj
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </form>
+
+
+</ion-content>

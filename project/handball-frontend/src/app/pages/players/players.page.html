@@ -11,6 +11,7 @@
   </ion-item>
   @if (isAdmin()) {
     <div class="ion-text-right">
+      <ion-button style="margin-right: 20px" (click)="openGeneratePlayersModal()">Wygeneruj zawodników</ion-button>
       <ion-button (click)="openPlayerDetailsModal(null, 'ADD')">Dodaj nowego zawodnika</ion-button>
     </div>
   }

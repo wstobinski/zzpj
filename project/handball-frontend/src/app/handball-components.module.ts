@@ -16,18 +16,19 @@ import {MatchEditModalComponent} from "./components/match-edit-modal/match-edit-
 import {EditRefereeModalComponent} from "./components/edit-referee-modal/edit-referee-modal.component";
 import {RefereeCommentModalComponent} from "./components/referee-comment-modal/referee-comment-modal.component";
 import {PostModalComponent} from "./components/post-modal/post-modal.component";
+import {GeneratePlayersModalComponent} from "./components/generate-players-modal/generate-players-modal.component";
 
 @NgModule({
   declarations: [MainMenuComponent, TopToolbarComponent, EditTeamModalComponent,
     EditPlayerModalComponent, ActionMenuPopoverComponent, TeamManagementComponent,
     LeagueManagementComponent, GenerateScheduleModalComponent, NotFoundComponent,
     MatchResultComponent, MatchEditModalComponent, EditRefereeModalComponent,
-    RefereeCommentModalComponent, PostModalComponent],
+    RefereeCommentModalComponent, PostModalComponent, GeneratePlayersModalComponent],
   exports: [MainMenuComponent, TopToolbarComponent, EditTeamModalComponent,
     EditPlayerModalComponent, ActionMenuPopoverComponent, TeamManagementComponent,
     LeagueManagementComponent, GenerateScheduleModalComponent, NotFoundComponent,
     MatchResultComponent, MatchEditModalComponent, EditRefereeModalComponent,
-    RefereeCommentModalComponent, PostModalComponent],
+    RefereeCommentModalComponent, PostModalComponent, GeneratePlayersModalComponent],
   imports: [
     CommonModule,
     IonicModule,
