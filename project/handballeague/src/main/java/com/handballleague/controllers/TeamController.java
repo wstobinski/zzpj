@@ -1,6 +1,7 @@
 package com.handballleague.controllers;
 
 import com.handballleague.DTO.GenerateTeamsDTO;
+import com.handballleague.initialization.PlayersInitializer;
 import com.handballleague.initialization.TeamsInitializer;
 import com.handballleague.model.Team;
 import com.handballleague.services.JWTService;
@@ -22,11 +23,14 @@ public class TeamController {
 
     private final TeamsInitializer teamsInitializer;
 
+    private final PlayersInitializer playersInitializer;
+
     @Autowired
-    public TeamController(TeamService teamService, JWTService jwtService, TeamsInitializer teamsInitializer) {
+    public TeamController(TeamService teamService, JWTService jwtService, TeamsInitializer teamsInitializer, PlayersInitializer playersInitializer) {
         this.teamService = teamService;
         this.jwtService = jwtService;
         this.teamsInitializer = teamsInitializer;
+        this.playersInitializer = playersInitializer;
     }
 
     @GetMapping
@@ -145,6 +149,8 @@ public class TeamController {
             }
 
             teamsInitializer.fetchAndFillData(leagueId, season);
+
+
             return ResponseEntity.ok(Map.of("ok", true, "message", "Teams generated successfully"));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("ok", false, "error", "An error occurred while generating teams"));

@@ -55,9 +55,8 @@ public class TeamService implements HandBallService<Team>{
         if(checkIfEntityExistsInDb(team)) throw new EntityAlreadyExistsException("Team with given data already exists in the database");
         if(team.getTeamName().isEmpty()) throw new InvalidArgumentException("At least one of team parameters is invalid.");
 
-        teamRepository.save(team);
 
-        return team;
+        return teamRepository.save(team);
     }
 
     @Override
