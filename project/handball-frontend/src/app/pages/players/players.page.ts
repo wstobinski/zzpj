@@ -39,6 +39,7 @@ export class PlayersPage extends GenericPage implements OnInit, OnDestroy {
       console.log('got user', u)
       this.user = u;
     });
+    console.log("Making request")
     const playersResponse = await this.playersService.getAllPlayers()
     console.log(playersResponse)
     this.players = playersResponse.response;
