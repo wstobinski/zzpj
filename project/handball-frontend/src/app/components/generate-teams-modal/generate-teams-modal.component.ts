@@ -35,7 +35,8 @@ export class GenerateTeamsModalComponent  implements OnInit {
 
     this.generateFormGroup = this.formBuilder.group({
       leagueId: [null, [Validators.required]],
-      season: [null, [Validators.required]]
+      season: [null, [Validators.required]],
+      generatePlayers: [true, [Validators.required]],
 
     });
   }
