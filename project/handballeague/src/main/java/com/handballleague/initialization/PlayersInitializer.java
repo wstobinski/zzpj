@@ -38,7 +38,20 @@ public class PlayersInitializer {
 
     }
 
-    public void generatePlayersData(String nationality, int numberOfPlayers) throws Exception {
+    public void generatePlayersData(String nationality, int numberOfPlayers, Optional<List<String>> teamIDs) throws Exception {
+        if (teamIDs.isPresent()) {
+            for (String teamID : teamIDs.get()) {
+                List<String> players = getPromptResult(nationality, numberOfPlayers);
+                addPlayersToDatabase(players, Optional.of(Long.parseLong(teamID)));
+            }
+        } else {
+            List<String> players = getPromptResult(nationality, numberOfPlayers);
+            addPlayersToDatabase(players, Optional.empty());
+        }
+
+    }
+
+    private List<String> getPromptResult(String nationality, int numberOfPlayers) throws Exception {
         String url = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=" + apiKey;
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -83,11 +96,10 @@ public class PlayersInitializer {
 
         List<String> players = new ArrayList<>(Arrays.asList(textContent.split("\\\\n")));
         System.out.println("size: " + players.size());
-
-
-        addPlayersToDatabase(players, Optional.empty());
+        return players;
 
     }
+
 
     private static String getString(String nationality, int numberOfPlayers) {
         var text = String.format("come up with data for %d  man handball players with %s names. For each of them give" +

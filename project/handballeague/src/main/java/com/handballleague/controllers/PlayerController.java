@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "api/v1/players")
@@ -108,7 +109,7 @@ public class PlayerController {
                 return ResponseEntity.badRequest().body(Map.of("ok", false, "error", "Invalid input"));
             }
 
-            playersInitializer.generatePlayersData(nationality, numberOfPlayers);
+            playersInitializer.generatePlayersData(nationality, numberOfPlayers, Optional.empty());
             return ResponseEntity.ok(Map.of("ok", true, "message", "Players generated successfully"));
         } catch (Exception e) {
             e.printStackTrace();
@@ -130,7 +131,7 @@ public class PlayerController {
                 return ResponseEntity.badRequest().body(Map.of("ok", false, "error", "Invalid input"));
             }
             // TODO add new method to PlayersInitializer to generate players for teams
-//            playersInitializer.generatePlayersData(nationality, numberOfPlayers);
+            playersInitializer.generatePlayersData(nationality, numberOfPlayers, Optional.of(teamsIDs));
             return ResponseEntity.ok(Map.of("ok", true, "message", "Players generated successfully"));
 
         } catch (Exception e) {
