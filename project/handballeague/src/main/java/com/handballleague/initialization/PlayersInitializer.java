@@ -38,11 +38,18 @@ public class PlayersInitializer {
 
     }
 
-    public void generatePlayersData(String nationality, int numberOfPlayers, Optional<List<String>> teamIDs) throws Exception {
+    public void generatePlayersData(String nationality, int numberOfPlayers, Optional<List<Long>> teamIDs) throws Exception {
+
+        System.out.println("Generating players data");
+        for (Long teamID : teamIDs.orElse(new ArrayList<>())) {
+            System.out.println("TeamID: " + teamID);
+        }
+
+
         if (teamIDs.isPresent()) {
-            for (String teamID : teamIDs.get()) {
+            for (Long teamID : teamIDs.get()) {
                 List<String> players = getPromptResult(nationality, numberOfPlayers);
-                addPlayersToDatabase(players, Optional.of(Long.parseLong(teamID)));
+                addPlayersToDatabase(players, Optional.of(teamID));
             }
         } else {
             List<String> players = getPromptResult(nationality, numberOfPlayers);
@@ -82,7 +89,6 @@ public class PlayersInitializer {
         in.close();
         con.disconnect();
         System.out.println("Response Content : " + content.toString());
-//        String textContent = content.toString().split("\"text\": \"")[1];
 
         String regex = "\"text\": \"([^\"]*)\"";
         Pattern pattern = Pattern.compile(regex);
@@ -111,6 +117,8 @@ public class PlayersInitializer {
     }
 
     public void addPlayersToDatabase(List<String> players, Optional<Long> teamId) {
+        System.out.println("Adding players to database");
+        System.out.println("teamId: " + teamId);
 
         for (String player : players) {
             System.out.println("Player: " + player);
@@ -130,7 +138,12 @@ public class PlayersInitializer {
 
             Player newPlayer1 = playerService.create(newPlayer);
 
+            System.out.println("teamId: " + teamId.get());
+
             if (teamId.isPresent()) {
+                System.out.println("Adding player to team");
+                System.out.println("teamId: " + teamId.get());
+                System.out.println("playerId: " + newPlayer1.getUuid());
                 teamService.addPlayerToTeam(teamId.get(), newPlayer1.getUuid());
             }
         }

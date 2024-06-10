@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "api/v1/teams")
@@ -143,13 +144,25 @@ public class TeamController {
             String leagueId = body.getLeagueId();
             String season = body.getSeason();
             boolean generatePlayers = body.isGeneratePlayers();
+            generatePlayers = true;
+
+            System.out.println("generatePlayers: " + generatePlayers);
 
             if (leagueId == null || season == null) {
                 return ResponseEntity.badRequest().body(Map.of("ok", false, "error", "Invalid input"));
             }
 
-            teamsInitializer.fetchAndFillData(leagueId, season);
+            List<Long> teamsIDs =  teamsInitializer.fetchAndFillData(leagueId, season);
 
+            System.out.println("Teams IDs");
+            for (Long teamId : teamsIDs) {
+                System.out.println("Team ID: " + teamId);
+            }
+
+            if (generatePlayers) {
+                System.out.println("Generating players");
+                playersInitializer.generatePlayersData("Polish", 10, Optional.of(teamsIDs));
+            }
 
             return ResponseEntity.ok(Map.of("ok", true, "message", "Teams generated successfully"));
         } catch (Exception e) {
