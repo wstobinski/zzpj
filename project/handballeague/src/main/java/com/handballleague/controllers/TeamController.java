@@ -134,8 +134,8 @@ public class TeamController {
     }
 
     @PostMapping("/generate-teams")
-    public ResponseEntity<?> generateTeams(@RequestBody GenerateTeamsDTO body, @RequestHeader(name = "Authorization") String token) {
-        try {
+    public ResponseEntity<?> generateTeams(@RequestBody GenerateTeamsDTO body, @RequestHeader(name = "Authorization") String token) throws Exception {
+
             ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
             if (!response.getStatusCode().is2xxSuccessful()) {
                 return response;
@@ -144,8 +144,6 @@ public class TeamController {
             String leagueId = body.getLeagueId();
             String season = body.getSeason();
             boolean generatePlayers = body.isGeneratePlayers();
-            generatePlayers = true;
-
             System.out.println("generatePlayers: " + generatePlayers);
 
             if (leagueId == null || season == null) {
@@ -165,9 +163,6 @@ public class TeamController {
             }
 
             return ResponseEntity.ok(Map.of("ok", true, "message", "Teams generated successfully"));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("ok", false, "error", "An error occurred while generating teams"));
         }
     }
-}
 
