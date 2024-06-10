@@ -55,9 +55,8 @@ public class PlayerService implements HandBallService<Player>{
         if(player.getFirstName().isEmpty() ||
                 player.getLastName().isEmpty() ||
                 player.getPitchNumber() <= 0) throw new InvalidArgumentException("At least one of players parameters is invalid.");
-        playerRepository.save(player);
 
-        return player;
+        return playerRepository.save(player);
     }
 
     @Override

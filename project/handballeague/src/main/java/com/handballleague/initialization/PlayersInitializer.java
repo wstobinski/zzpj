@@ -1,9 +1,15 @@
 package com.handballleague.initialization;
 
+import com.handballleague.exceptions.EntityAlreadyExistsException;
+import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.model.Player;
 import com.handballleague.repositories.PlayerRepository;
+import com.handballleague.services.PlayerService;
+import com.handballleague.services.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -12,18 +18,21 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PlayersInitializer {
 
-    private final PlayerRepository playerRepository;
 
     @Value("${gemini.api.key}")
     private String apiKey;
+    private PlayerService playerService;
+    private TeamService teamService;
 
     @Autowired
-    public PlayersInitializer(PlayerRepository playerRepository) {
-        this.playerRepository = playerRepository;
+    public PlayersInitializer(PlayerService playerService, TeamService teamService) {
+        this.playerService = playerService;
+        this.teamService = teamService;
 
     }
 
@@ -77,7 +86,8 @@ public class PlayersInitializer {
         return String.format("{ \"contents\":[ { \"parts\":[{\"text\": \"%s\"}]} ]}", text);
     }
 
-    public void addPlayersToDatabase(List<String> players) throws IOException {
+    public void addPlayersToDatabase(List<String> players, Optional<Long> teamId) throws Exception {
+
         for (String player : players) {
             String[] playerData = player.split(",");
             String firstName = playerData[0];
@@ -87,12 +97,12 @@ public class PlayersInitializer {
             int pitchNumber = Integer.parseInt(playerData[4]);
             boolean isCaptain = playerData[5].equals("yes");
 
-            if (playerRepository.findByEmail(email) == null) {
-                Player newPlayer = new Player(firstName, lastName, phoneNumber, pitchNumber, isCaptain, false);
-                playerRepository.save(newPlayer);
+            Player newPlayer = new Player(firstName, lastName, phoneNumber, pitchNumber, isCaptain, false);
+            Player newPlayer1 = playerService.create(newPlayer);
+
+            if (teamId.isPresent()) {
+                teamService.addPlayerToTeam(teamId.get(), newPlayer1.getUuid());
             }
         }
-
-
     }
 }

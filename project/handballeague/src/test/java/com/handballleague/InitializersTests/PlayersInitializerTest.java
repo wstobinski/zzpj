@@ -21,6 +21,7 @@ import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -46,7 +47,7 @@ public class PlayersInitializerTest {
                 "Jane,Doe,jane.doe@example.com,987654321,20,no"
         );
 
-        playersInitializer.addPlayersToDatabase(players);
+        playersInitializer.addPlayersToDatabase(players, Optional.empty());
 
         verify(playerRepository, times(2)).save(any(Player.class));
     }
