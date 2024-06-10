@@ -1,5 +1,6 @@
 package com.handballleague.controllers;
 
+import com.handballleague.DTO.GenerateTeamsDTO;
 import com.handballleague.initialization.TeamsInitializer;
 import com.handballleague.model.Team;
 import com.handballleague.services.JWTService;
@@ -128,15 +129,16 @@ public class TeamController {
     }
 
     @PostMapping("/generate-teams")
-    public ResponseEntity<?> generateTeams(@Valid @RequestBody Map<String, String> body, @RequestHeader(name = "Authorization") String token) {
+    public ResponseEntity<?> generateTeams(@RequestBody GenerateTeamsDTO body, @RequestHeader(name = "Authorization") String token) {
         try {
             ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
             if (!response.getStatusCode().is2xxSuccessful()) {
                 return response;
             }
 
-            String leagueId = body.get("leagueId");
-            String season = body.get("season");
+            String leagueId = body.getLeagueId();
+            String season = body.getSeason();
+            boolean generatePlayers = body.isGeneratePlayers();
 
             if (leagueId == null || season == null) {
                 return ResponseEntity.badRequest().body(Map.of("ok", false, "error", "Invalid input"));

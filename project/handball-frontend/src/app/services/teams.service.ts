@@ -47,4 +47,8 @@ export class TeamsService {
     });
 
   }
+
+  async generateTeams(body: {leagueId: number, season: string}): Promise<ApiResponse> {
+    return await this.apiService.post('/teams/generate-teams', body);
+  }
 }

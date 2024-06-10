@@ -11,6 +11,8 @@ import {AuthCheckService} from "../../services/auth-check.service";
 import {User} from "../../model/user.model";
 import {UserService} from "../../services/user.service";
 import {Subscription} from "rxjs";
+import {GeneratePlayersModalComponent} from "../../components/generate-players-modal/generate-players-modal.component";
+import {GenerateTeamsModalComponent} from "../../components/generate-teams-modal/generate-teams-modal.component";
 
 @Component({
   selector: 'app-teams',
@@ -129,5 +131,34 @@ export class TeamsPage extends GenericPage implements OnInit, OnDestroy {
 
   isAdmin() {
     return this.user.role === 'admin';
+  }
+
+  async openGenerateTeamsModal() {
+    const modal = await this.modalController.create({
+      component: GenerateTeamsModalComponent,
+      componentProps: {
+        title: "Automatyczne generowania zespołów",
+      }
+    });
+    modal.onWillDismiss().then(async data => {
+      if (data && data.data) {
+        this.teamsService.generateTeams(data.data).then(async r => {
+          if (r.ok) {
+            this.teams = (await this.teamsService.getAllTeams()).response
+            this.utils.presentInfoToast("Zespoły wygenerowane pomyślnie!");
+          } else {
+            this.utils.presentAlertToast("Wystąpił błąd podczas generowania zespołów");
+          }
+        }).catch(e => {
+          if (e.status === 401) {
+            this.utils.presentAlertToast("Wystąpił błąd podczas generowania zespołów. Twoja sesja wygasła, zaloguj się ponownie")
+          } else {
+            this.utils.presentAlertToast("Wystąpił błąd podczas generowania zespołów")
+
+          }
+        })
+      }
+    });
+    return await modal.present();
   }
 }
