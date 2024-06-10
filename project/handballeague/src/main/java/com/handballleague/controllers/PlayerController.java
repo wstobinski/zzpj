@@ -1,5 +1,6 @@
 package com.handballleague.controllers;
 
+import com.handballleague.DTO.GeneratePlayersDTO;
 import com.handballleague.initialization.PlayersInitializer;
 import com.handballleague.model.Player;
 import com.handballleague.services.JWTService;
@@ -94,14 +95,14 @@ public class PlayerController {
     }
 
     @PostMapping("/generate-players")
-    public ResponseEntity<?> generatePlayers(@Valid @RequestBody Map<String, Integer> body, @RequestHeader(name = "Authorization") String token) {
+    public ResponseEntity<?> generatePlayers(@RequestBody GeneratePlayersDTO body, @RequestHeader(name = "Authorization") String token) {
         try {
             ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
             if (!response.getStatusCode().is2xxSuccessful()) {
                 return response;
             }
-            String nationality = String.valueOf(body.get("nationality"));
-            Integer numberOfPlayers = body.get("numberOfPlayers");
+            String nationality = body.getNationality();
+            Integer numberOfPlayers = body.getNumberOfPlayers();
 
             if (nationality == null || numberOfPlayers == null) {
                 return ResponseEntity.badRequest().body(Map.of("ok", false, "error", "Invalid input"));
@@ -110,6 +111,7 @@ public class PlayerController {
             playersInitializer.generatePlayersData(nationality, numberOfPlayers);
             return ResponseEntity.ok(Map.of("ok", true, "message", "Players generated successfully"));
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(500).body(Map.of("ok", false, "error", "An error occurred while generating players"));
         }
     }

@@ -67,14 +67,12 @@ public class PlayersInitializer {
         in.close();
         con.disconnect();
         System.out.println("Response Content : " + content.toString());
+        String textContent = content.toString().split("\"text\": \"")[1];
+        List<String> players = new ArrayList<>(Arrays.asList(textContent.split("\n")));
 
-        List<String> players = new ArrayList<>(Arrays.asList(content.toString().split("\n")));
 
-        try {
-            addPlayersToDatabase(players);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        addPlayersToDatabase(players, Optional.empty());
+
     }
 
     private static String getString(String nationality, int numberOfPlayers) {
@@ -86,7 +84,7 @@ public class PlayersInitializer {
         return String.format("{ \"contents\":[ { \"parts\":[{\"text\": \"%s\"}]} ]}", text);
     }
 
-    public void addPlayersToDatabase(List<String> players, Optional<Long> teamId) throws Exception {
+    public void addPlayersToDatabase(List<String> players, Optional<Long> teamId) {
 
         for (String player : players) {
             String[] playerData = player.split(",");
@@ -94,10 +92,14 @@ public class PlayersInitializer {
             String lastName = playerData[1];
             String email = playerData[2];
             String phoneNumber = playerData[3];
-            int pitchNumber = Integer.parseInt(playerData[4]);
+            int pitchNumber = Integer.parseInt(playerData[4].trim());
             boolean isCaptain = playerData[5].equals("yes");
+            System.out.println("Player data");
+            System.out.println(Arrays.toString(playerData));
 
             Player newPlayer = new Player(firstName, lastName, phoneNumber, pitchNumber, isCaptain, false);
+
+
             Player newPlayer1 = playerService.create(newPlayer);
 
             if (teamId.isPresent()) {
