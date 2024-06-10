@@ -103,17 +103,36 @@ public class PlayerController {
             String nationality = String.valueOf(body.get("nationality"));
             Integer numberOfPlayers = body.get("numberOfPlayers");
 
-            if (nationality== null || numberOfPlayers == null) {
+            if (nationality == null || numberOfPlayers == null) {
                 return ResponseEntity.badRequest().body(Map.of("ok", false, "error", "Invalid input"));
             }
 
             playersInitializer.generatePlayersData(nationality, numberOfPlayers);
             return ResponseEntity.ok(Map.of("ok", true, "message", "Players generated successfully"));
         } catch (Exception e) {
-            System.err.println("Error generating players: " + e.getMessage());
             return ResponseEntity.status(500).body(Map.of("ok", false, "error", "An error occurred while generating players"));
         }
     }
 
+    @PostMapping("/generate-players-teams")
+    public ResponseEntity<?> generatePlayersTeams(@Valid @RequestBody Map<String, List<String>> body, @RequestHeader(name = "Authorization") String token) {
+        try {
+            ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                return response;
+            }
+            String nationality = String.valueOf(body.get("nationality"));
+            List<String> teamsIDs = body.get("teamsIDs");
 
+            if (nationality == null || teamsIDs == null) {
+                return ResponseEntity.badRequest().body(Map.of("ok", false, "error", "Invalid input"));
+            }
+            // TODO add new method to PlayersInitializer to generate players for teams
+//            playersInitializer.generatePlayersData(nationality, numberOfPlayers);
+            return ResponseEntity.ok(Map.of("ok", true, "message", "Players generated successfully"));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("ok", false, "error", "An error occurred while generating players"));
+        }
+    }
 }

@@ -145,7 +145,6 @@ public class TeamController {
             teamsInitializer.fetchAndFillData(leagueId, season);
             return ResponseEntity.ok(Map.of("ok", true, "message", "Teams generated successfully"));
         } catch (Exception e) {
-            System.err.println("Error generating teams: " + e.getMessage());
             return ResponseEntity.status(500).body(Map.of("ok", false, "error", "An error occurred while generating teams"));
         }
     }

@@ -1,9 +1,9 @@
 package com.handballleague.initialization;
 
-import com.google.cloud.vertexai.VertexAI;
 import com.handballleague.model.Player;
 import com.handballleague.repositories.PlayerRepository;
-import io.github.cdimascio.dotenv.Dotenv;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -18,17 +18,17 @@ public class PlayersInitializer {
 
     private final PlayerRepository playerRepository;
 
-    private String API_KEY;
+    @Value("${gemini.api.key}")
+    private String apiKey;
 
-    //    @Autowired
+    @Autowired
     public PlayersInitializer(PlayerRepository playerRepository) {
         this.playerRepository = playerRepository;
-        Dotenv dotenv = Dotenv.load();
-        this.API_KEY = dotenv.get("API_KEY");
+
     }
 
     public void generatePlayersData(String nationality, int numberOfPlayers) throws Exception {
-        String url = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=" + API_KEY;
+        String url = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=" + apiKey;
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
