@@ -97,7 +97,6 @@ public class PlayerController {
 
     @PostMapping("/generate-players")
     public ResponseEntity<?> generatePlayers(@RequestBody GeneratePlayersDTO body, @RequestHeader(name = "Authorization") String token) {
-        try {
             ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
             if (!response.getStatusCode().is2xxSuccessful()) {
                 return response;
@@ -109,12 +108,12 @@ public class PlayerController {
                 return ResponseEntity.badRequest().body(Map.of("ok", false, "error", "Invalid input"));
             }
 
+        try {
             playersInitializer.generatePlayersData(nationality, numberOfPlayers, Optional.empty());
-            return ResponseEntity.ok(Map.of("ok", true, "message", "Players generated successfully"));
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body(Map.of("ok", false, "error", "An error occurred while generating players"));
+            throw new RuntimeException(e);
         }
+        return ResponseEntity.ok(Map.of("ok", true, "message", "Players generated successfully"));
     }
 
 }

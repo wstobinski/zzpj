@@ -1,15 +1,10 @@
 package com.handballleague.initialization;
 
-import com.handballleague.exceptions.EntityAlreadyExistsException;
-import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.model.Player;
-import com.handballleague.repositories.PlayerRepository;
 import com.handballleague.services.PlayerService;
 import com.handballleague.services.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -66,7 +61,7 @@ public class PlayersInitializer {
         con.setRequestMethod("POST");
         con.setRequestProperty("Content-Type", "application/json");
 
-        String jsonInputString = getString(nationality, numberOfPlayers);
+        String jsonInputString = getFormattedStringPlayers(nationality, numberOfPlayers);
 
 
         con.setDoOutput(true);
@@ -107,30 +102,40 @@ public class PlayersInitializer {
     }
 
 
-    private static String getString(String nationality, int numberOfPlayers) {
+    private static String getFormattedStringPlayers(String nationality, int numberOfPlayers) {
         var text = String.format("come up with data for %d  man handball players with %s names. For each of them give" +
-                "separated by comma first name, last name, email, phone number (9 digits without country code), pitch number (any number between 0 and 99)," +
-                "is capitan (yes or no - only 1 player can be capitan). List this players in separate lines," +
-                "don't write anything else", numberOfPlayers, nationality);
+                "separated by comma first name, last name, email, phone number (9 digits without country code), pitch number (any number between 0 and 99)." +
+                "List this players in separate lines, don't write anything else", numberOfPlayers, nationality);
+
+        return String.format("{ \"contents\":[ { \"parts\":[{\"text\": \"%s\"}]} ]}", text);
+    }
+
+
+    private static String getFormattedStringPlayersTeams(String nationality, int numberOfPlayers, int numberOfTeams) {
+        var text = String.format("come up with data for %d man handball players with %s names for each of the %d teams. For each of them give" +
+                " separated by comma first name, last name, email, phone number (9 digits without country code), pitch number (any number between 0 and 99)." +
+                " Within the same team players can't have same pitch number, but players from two different teams can have." +
+                " List these players in separate lines, don't write anything else", numberOfPlayers, nationality, numberOfTeams);
 
         return String.format("{ \"contents\":[ { \"parts\":[{\"text\": \"%s\"}]} ]}", text);
     }
 
     public void addPlayersToDatabase(List<String> players, Optional<Long> teamId) {
-        System.out.println("Adding players to database");
-        System.out.println("teamId: " + teamId);
 
-        for (String player : players) {
-            System.out.println("Player: " + player);
-            String[] playerData = player.split(",");
+        int captainIndex = -1;
+
+        if (teamId.isPresent()) {
+            captainIndex = (int) (Math.random() * players.size());
+        }
+
+        for (int i = 0; i < players.size(); i++) {
+            String[] playerData = players.get(i).split(",");
             String firstName = playerData[0];
             String lastName = playerData[1];
             String email = playerData[2];
             String phoneNumber = playerData[3];
             int pitchNumber = Integer.parseInt(playerData[4].trim());
-            boolean isCaptain = playerData[5].equals("yes");
-            System.out.println("Player data");
-            System.out.println(Arrays.toString(playerData));
+            boolean isCaptain = (captainIndex == i);
 
             Player newPlayer = new Player(firstName, lastName, phoneNumber, pitchNumber, isCaptain, false);
             newPlayer.setEmail(email);
@@ -138,14 +143,8 @@ public class PlayersInitializer {
 
             Player newPlayer1 = playerService.create(newPlayer);
 
-            System.out.println("teamId: " + teamId.get());
 
-            if (teamId.isPresent()) {
-                System.out.println("Adding player to team");
-                System.out.println("teamId: " + teamId.get());
-                System.out.println("playerId: " + newPlayer1.getUuid());
-                teamService.addPlayerToTeam(teamId.get(), newPlayer1.getUuid());
-            }
+            teamId.ifPresent(aLong -> teamService.addPlayerToTeam(aLong, newPlayer1.getUuid()));
         }
     }
 }
