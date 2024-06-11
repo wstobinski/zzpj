@@ -17,6 +17,7 @@ import {of, Subject} from "rxjs";
 import {UserService} from "../../services/user.service";
 import {UserAuthData} from "../../model/UserAuthData";
 import {MockApiService} from "../../services/tests/mock-api-service";
+import {ApiResponse} from "../../model/ApiResponse";
 
 describe('PlayersPage', () => {
   let component: PlayersPage;
@@ -60,7 +61,6 @@ describe('PlayersPage', () => {
     playersService = TestBed.inject(PlayersService);
     httpMock = TestBed.inject(HttpTestingController);
     debugElement = fixture.debugElement;
-    fixture.detectChanges();
   });
 
   afterEach(() => {
@@ -71,33 +71,21 @@ describe('PlayersPage', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should fetch and display players', fakeAsync(() => {
-    spyOn(console, 'log');
-    const mockPlayers: Player[] = [
-      { uuid: 1, firstName: 'Player', lastName: "One", pitchNumber: 1, suspended: false, captain: false},
-      { uuid: 2, firstName: 'Player', lastName: "Two", pitchNumber: 2, suspended: false, captain: false},
-    ];
+  it('should fetch players on initialization', async () => {
+    const playersResponse: ApiResponse = { response: [
+        { uuid: 1, firstName: 'Player', lastName: "One", pitchNumber: 1, suspended: false, captain: false},
+        { uuid: 2, firstName: 'Player', lastName: "Two", pitchNumber: 2, suspended: false, captain: false},
+      ], ok: true };
+    spyOn(playersService, 'getAllPlayers').and.returnValue(Promise.resolve(playersResponse)); // Mocking the playersService
 
-    // Trigger component initialization
+    await component.ngOnInit()
+
+    expect(component.players).toEqual(playersResponse.response); // Check if players are set correctly
+    await fixture.whenStable();
     fixture.detectChanges();
-
-    // Expect an HTTP request to the specified URL
-    const req = httpMock.expectOne(`${environment.API_URL}/players`);
-    expect(req.request.method).toBe('GET');
-
-    // Respond to the HTTP request with mock data
-    req.flush({ response: mockPlayers });
-
-    // Advance the virtual clock to simulate completion of asynchronous operations
-    tick();
-
-    // Trigger change detection to update the view with new data
-    fixture.detectChanges();
-
-    // Verify that players are displayed in the view
     const playerElements = debugElement.queryAll(By.css('.data-row'));
     expect(playerElements.length).toBe(2);
     expect(playerElements[0].nativeElement.textContent).toContain('Player One');
     expect(playerElements[1].nativeElement.textContent).toContain('Player Two');
-  }));
+  });
 });
