@@ -8,6 +8,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ public class JWTService {
     private final PlayerRepository playerRepository;
     private final PlayerService playerService;
     private final RefereeService refereeService;
+    @Setter
     @Value("${jwt.secret}")
     private String secretKey;
     private static final long EXPIRATION_TIME = 3600000;
