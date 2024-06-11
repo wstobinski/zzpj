@@ -159,7 +159,7 @@ public class TeamController {
 
             if (generatePlayers) {
                 System.out.println("Generating players");
-                playersInitializer.generatePlayersData("Polish", 2, Optional.of(teamsIDs));
+                playersInitializer.generatePlayersData("Polish", 6, Optional.of(teamsIDs));
             }
 
             return ResponseEntity.ok(Map.of("ok", true, "message", "Teams generated successfully"));

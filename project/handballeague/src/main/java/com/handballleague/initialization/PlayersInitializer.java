@@ -38,8 +38,15 @@ public class PlayersInitializer {
 
         if (teamIDs.isPresent()) {
             int size = teamIDs.get().size();
+            int totalPlayers = size * numberOfPlayers;
+            int callsNeeded = (int) Math.ceil((double) totalPlayers / 36);
+
             System.out.println("size: " + size);
-            List<String> players = getPromptResult(nationality, numberOfPlayers, Optional.of(size));
+            List<String> players = new ArrayList<>();
+            for (int call = 0; call < callsNeeded; call++) {
+                int playersToGenerate = Math.min(36, totalPlayers - call * 36);
+                players.addAll(getPromptResult(nationality, playersToGenerate, Optional.of(size)));
+            }
             System.out.println("players: " + players);
             System.out.println("--------------------");
             for (String player : players) {
