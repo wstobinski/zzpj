@@ -88,10 +88,11 @@ public class Player {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Player player = (Player) o;
-        return pitchNumber == player.pitchNumber &&
+        return  Objects.equals(uuid, player.uuid) &&
                 Objects.equals(firstName, player.firstName) &&
                 Objects.equals(lastName, player.lastName) &&
-                Objects.equals(phoneNumber, player.phoneNumber);
+                Objects.equals(phoneNumber, player.phoneNumber) &&
+                Objects.equals(pitchNumber, player.pitchNumber);
     }
 
     @Override
