@@ -7,4 +7,5 @@ public class GenerateTeamsDTO {
     String leagueId;
     String season;
     boolean generatePlayers;
+    String nationality;
 }

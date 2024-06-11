@@ -142,7 +142,6 @@ export class TeamsPage extends GenericPage implements OnInit, OnDestroy {
     });
     modal.onWillDismiss().then(async data => {
       if (data && data.data) {
-        console.log(data.data)
         this.teamsService.generateTeams(data.data).then(async r => {
           if (r.ok) {
             this.teams = (await this.teamsService.getAllTeams()).response

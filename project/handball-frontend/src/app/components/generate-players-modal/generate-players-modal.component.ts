@@ -28,10 +28,8 @@ export class GeneratePlayersModalComponent implements OnInit {
 
     this.nationalities = [
       {name: 'Polska', translate: 'polish'},
-      {name: 'Słowacja', translate: 'slovakian'},
       {name: 'Czechy', translate: 'czech'},
-      {name: 'Wielka Brytania', translate: 'british'},
-      {name: 'Stany Zjednoczone', translate: 'american'}];
+      {name: 'Dania', translate: 'danish'}];
 
     this.generateFormGroup = this.formBuilder.group({
       nationality: ['', [Validators.required]],

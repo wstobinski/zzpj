@@ -12,9 +12,9 @@
     <ion-list>
       <ion-item>
         <ion-select cancel-text="Anuluj" label-placement="floating" label="Odwzorowywana liga"
-                    formControlName="leagueId">
+                    formControlName="league">
           @for (league of leagues; track $index) {
-            <ion-select-option [value]="league.id">{{ league.name }}</ion-select-option>
+            <ion-select-option [value]="league">{{ league.name }}</ion-select-option>
           }
         </ion-select>
       </ion-item>

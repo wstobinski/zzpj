@@ -144,6 +144,7 @@ public class TeamController {
             String leagueId = body.getLeagueId();
             String season = body.getSeason();
             boolean generatePlayers = body.isGeneratePlayers();
+            String nationality = body.getNationality();
             System.out.println("generatePlayers: " + generatePlayers);
 
             if (leagueId == null || season == null) {
@@ -159,7 +160,7 @@ public class TeamController {
 
             if (generatePlayers) {
                 System.out.println("Generating players");
-                playersInitializer.generatePlayersData("Polish", 6, Optional.of(teamsIDs));
+                playersInitializer.generatePlayersData(nationality, 6, Optional.of(teamsIDs));
             }
 
             return ResponseEntity.ok(Map.of("ok", true, "message", "Teams generated successfully"));

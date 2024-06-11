@@ -19,7 +19,7 @@ export class GenerateTeamsModalComponent  implements OnInit {
   @Input() title: string;
   hasUnsavedChanges: boolean = false;
   generateFormGroup: FormGroup;
-  leagues: { name: string, id: number }[];
+  leagues: { name: string, id: number, nationality: string }[];
   seasons: number[];
 
   ngOnInit() {
@@ -28,13 +28,13 @@ export class GenerateTeamsModalComponent  implements OnInit {
 
 
     this.leagues = [
-      {name: "Superliga (Polska)", id: 78},
-      {name: "Opcja 2 (KRAJ)", id: 100},
-      {name: "Opcja 3 (KRAJ)", id: 100},
+      {name: "Superliga (Polska)", id: 78, nationality: 'polish'},
+      {name: "Extraliga (Czechy)", id: 12, nationality: 'czech'},
+      {name: "1. Division (Dania)", id: 15, nationality: 'danish'},
     ]
 
     this.generateFormGroup = this.formBuilder.group({
-      leagueId: [null, [Validators.required]],
+      league: [null, [Validators.required]],
       season: [null, [Validators.required]],
       generatePlayers: [true, [Validators.required]],
 
@@ -44,7 +44,7 @@ export class GenerateTeamsModalComponent  implements OnInit {
 
   onClose() {
     if (this.hasUnsavedChanges) {
-      this.utils.presentYesNoActionSheet(`Czy na pewno chcesz anulować generowanie zawodników? Masz niezapisane zmiany`, 'Tak', 'Nie',
+      this.utils.presentYesNoActionSheet(`Czy na pewno chcesz anulować generowanie zespołów? Masz niezapisane zmiany`, 'Tak', 'Nie',
         () => {
           this.modalController.dismiss(null);
         }, () => {
@@ -75,6 +75,9 @@ export class GenerateTeamsModalComponent  implements OnInit {
   onSubmit() {
 
     const rawValue = this.generateFormGroup.getRawValue();
+    rawValue.nationality = rawValue.league.nationality;
+    rawValue.leagueId = rawValue.league.id;
+    delete rawValue.league;
     this.modalController.dismiss(rawValue);
   }
 }
