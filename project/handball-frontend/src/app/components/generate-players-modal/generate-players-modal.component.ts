@@ -33,7 +33,7 @@ export class GeneratePlayersModalComponent implements OnInit {
 
     this.generateFormGroup = this.formBuilder.group({
       nationality: ['', [Validators.required]],
-      numberOfPlayers: ['', [Validators.required, this.utils.zeroToHundredValidator, Validators.min(1)]],
+      numberOfPlayers: ['', [Validators.required, this.utils.zeroToHundredValidator, Validators.min(1), Validators.max(36)]],
 
     });
   }
