@@ -35,25 +35,33 @@ public class PlayersInitializer {
 
     public void generatePlayersData(String nationality, int numberOfPlayers, Optional<List<Long>> teamIDs) throws Exception {
 
-        System.out.println("Generating players data");
-        for (Long teamID : teamIDs.orElse(new ArrayList<>())) {
-            System.out.println("TeamID: " + teamID);
-        }
-
 
         if (teamIDs.isPresent()) {
-            for (Long teamID : teamIDs.get()) {
-                List<String> players = getPromptResult(nationality, numberOfPlayers);
-                addPlayersToDatabase(players, Optional.of(teamID));
+            int size = teamIDs.get().size();
+            System.out.println("size: " + size);
+            List<String> players = getPromptResult(nationality, numberOfPlayers, Optional.of(size));
+            System.out.println("players: " + players);
+            System.out.println("--------------------");
+            for (String player : players) {
+                System.out.println("player" + player);
             }
+            for (int i = 0; i < size; i++) {
+                int start = i * numberOfPlayers;
+                int end = Math.min(start + numberOfPlayers, players.size());
+                List<String> playersForTeam = players.subList(start, end);
+                System.out.println("Id of team: " + teamIDs.get().get(i) + " players: " + playersForTeam);
+                addPlayersToDatabase(playersForTeam, Optional.of(teamIDs.get().get(i)));
+            }
+
+
         } else {
-            List<String> players = getPromptResult(nationality, numberOfPlayers);
+            List<String> players = getPromptResult(nationality, numberOfPlayers, Optional.empty());
             addPlayersToDatabase(players, Optional.empty());
         }
 
     }
 
-    private List<String> getPromptResult(String nationality, int numberOfPlayers) throws Exception {
+    private List<String> getPromptResult(String nationality, int numberOfPlayers, Optional<Integer> numberOfTeams) throws Exception {
         String url = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=" + apiKey;
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -61,7 +69,13 @@ public class PlayersInitializer {
         con.setRequestMethod("POST");
         con.setRequestProperty("Content-Type", "application/json");
 
-        String jsonInputString = getFormattedStringPlayers(nationality, numberOfPlayers);
+        String jsonInputString;
+
+        if (numberOfTeams.isPresent()) {
+            jsonInputString = getFormattedStringPlayersTeams(nationality, numberOfPlayers, numberOfTeams.get());
+        } else {
+            jsonInputString = getFormattedStringPlayers(nationality, numberOfPlayers);
+        }
 
 
         con.setDoOutput(true);
@@ -69,9 +83,6 @@ public class PlayersInitializer {
         os.write(jsonInputString.getBytes());
         os.flush();
         os.close();
-
-        int responseCode = con.getResponseCode();
-        System.out.println("Response Code : " + responseCode);
 
 
         BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
@@ -83,8 +94,13 @@ public class PlayersInitializer {
 
         in.close();
         con.disconnect();
-        System.out.println("Response Content : " + content.toString());
 
+        System.out.println("content: " + content.toString());
+        return getPlayersFromResponse(content.toString());
+
+    }
+
+    private List<String> getPlayersFromResponse(String content) {
         String regex = "\"text\": \"([^\"]*)\"";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(content.toString());
@@ -93,12 +109,14 @@ public class PlayersInitializer {
         }
         String textContent = matcher.group(1);
 
-        System.out.println("Text content: " + textContent);
+//        textContent = textContent.replaceAll("\n\n", "\n");
+//
+//        System.out.println("new text: " + textContent);
 
         List<String> players = new ArrayList<>(Arrays.asList(textContent.split("\\\\n")));
-        System.out.println("size: " + players.size());
-        return players;
+        players.removeIf(String::isEmpty);
 
+        return players;
     }
 
 
@@ -128,6 +146,7 @@ public class PlayersInitializer {
             captainIndex = (int) (Math.random() * players.size());
         }
 
+        System.out.println("player size: " + players.size());
         for (int i = 0; i < players.size(); i++) {
             String[] playerData = players.get(i).split(",");
             String firstName = playerData[0];
@@ -137,14 +156,19 @@ public class PlayersInitializer {
             int pitchNumber = Integer.parseInt(playerData[4].trim());
             boolean isCaptain = (captainIndex == i);
 
+            System.out.println("player: " + Arrays.toString(playerData));
+
             Player newPlayer = new Player(firstName, lastName, phoneNumber, pitchNumber, isCaptain, false);
             newPlayer.setEmail(email);
 
 
             Player newPlayer1 = playerService.create(newPlayer);
 
+            if (teamId.isPresent()) {
+                System.out.println("id: " + teamId.get() + " player: " + newPlayer1.getUuid());
+                teamService.addPlayerToTeam(teamId.get(), newPlayer1.getUuid());
+            }
 
-            teamId.ifPresent(aLong -> teamService.addPlayerToTeam(aLong, newPlayer1.getUuid()));
         }
     }
 }
