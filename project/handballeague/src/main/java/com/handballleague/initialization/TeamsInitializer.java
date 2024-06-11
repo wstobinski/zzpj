@@ -3,6 +3,7 @@ package com.handballleague.initialization;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.handballleague.model.Team;
+import com.handballleague.repositories.TeamRepository;
 import com.handballleague.services.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,10 +26,11 @@ public class TeamsInitializer {
 
     private final TeamService teamService;
 
+    private TeamRepository teamRepository;
+
     @Autowired
-    public TeamsInitializer(TeamService teamService) {
-
-
+    public TeamsInitializer(TeamService teamService, TeamRepository teamRepository) {
+        this.teamRepository = teamRepository;
         this.teamService = teamService;
     }
 
@@ -45,15 +47,18 @@ public class TeamsInitializer {
         List<Long> addedTeamIds = new ArrayList<>();
 
         for (JsonNode teamNode : teamsNode) {
-            Long teamId = teamNode.get("id").asLong();
+            if (addedTeamIds.size() >= 6) {
+                break;
+            }
             String teamName = teamNode.get("name").asText();
-            // TODO add check if team already exists in the database
 
-
+            Team existingTeam = teamRepository.findByTeamName(teamName);
+            if (existingTeam == null) {
                 Team team = new Team(teamName);
                 team = teamService.create(team);
                 addedTeamIds.add(team.getUuid());
             }
+        }
 
         return addedTeamIds;
     }
