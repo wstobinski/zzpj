@@ -17,6 +17,11 @@ on:
   - cron: "0 3 * * 1-5"
   workflow_dispatch:
 
+permissions:
+  contents: read         # Read-only access to repository contents
+  pull-requests: write   # Write access to pull requests
+  actions: write         # Write access to actions
+
 jobs:
   build:
 
