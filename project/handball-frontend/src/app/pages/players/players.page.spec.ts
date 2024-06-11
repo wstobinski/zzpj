@@ -1,10 +1,8 @@
-import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {PlayersPage} from './players.page';
 import {PlayersService} from "../../services/players.service";
 import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
 import {DebugElement} from "@angular/core";
-import {Player} from "../../model/player.model";
-import {environment} from "../../../environments/environment";
 import {By} from "@angular/platform-browser";
 import {AuthService} from "../../services/auth.service";
 import {ApiService} from "../../services/api.service";
@@ -76,11 +74,11 @@ describe('PlayersPage', () => {
         { uuid: 1, firstName: 'Player', lastName: "One", pitchNumber: 1, suspended: false, captain: false},
         { uuid: 2, firstName: 'Player', lastName: "Two", pitchNumber: 2, suspended: false, captain: false},
       ], ok: true };
-    spyOn(playersService, 'getAllPlayers').and.returnValue(Promise.resolve(playersResponse)); // Mocking the playersService
+    spyOn(playersService, 'getAllPlayers').and.returnValue(Promise.resolve(playersResponse));
 
     await component.ngOnInit()
 
-    expect(component.players).toEqual(playersResponse.response); // Check if players are set correctly
+    expect(component.players).toEqual(playersResponse.response);
     await fixture.whenStable();
     fixture.detectChanges();
     const playerElements = debugElement.queryAll(By.css('.data-row'));
