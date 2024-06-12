@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.handballleague.util.UUIDGenerator.generateRandomIntegerUUID;
@@ -227,22 +226,6 @@ public class MatchService implements HandBallService<Match>{
             if(m.isFinished()) finishedMatches.add(m);
         }
         return finishedMatches;
-    }
-
-
-    public Map<Long, Integer> getMatchesAndWinners(Long team1Id, Long team2Id) {
-        List<Match> matches = matchRepository.findByHomeTeamUuidAndAwayTeamUuid(team1Id, team2Id);
-        matches.addAll(matchRepository.findByHomeTeamUuidAndAwayTeamUuid(team2Id, team1Id));
-        Map<Long, Integer> matchResults = Map.of(team1Id, 0, team2Id, 0);
-
-        for (Match match : matches) {
-
-            // if the match is not finished, skip it
-            // if team1 won, increment team1's score by 1 otherwise increment team2's score by 1
-
-        }
-
-        return matchResults;
     }
 
 }
