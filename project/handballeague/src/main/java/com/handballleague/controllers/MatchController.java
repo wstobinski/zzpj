@@ -11,6 +11,7 @@ import com.handballleague.repositories.ScoreRepository;
 import com.handballleague.repositories.TeamRepository;
 import com.handballleague.services.JWTService;
 import com.handballleague.services.MatchService;
+import com.handballleague.services.ScoreService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,11 +27,14 @@ public class MatchController {
     private final JWTService jwtService;
     private final ScoreRepository scoreRepository;
 
+    private final ScoreService scoreService;
 
-    public MatchController(MatchService matchService, JWTService jwtService, ScoreRepository scoreRepository) {
+
+    public MatchController(MatchService matchService, JWTService jwtService, ScoreRepository scoreRepository, ScoreService scoreService) {
         this.matchService = matchService;
         this.jwtService = jwtService;
         this.scoreRepository = scoreRepository;
+        this.scoreService = scoreService;
     }
 
     @GetMapping
@@ -113,7 +117,7 @@ public class MatchController {
 
     @GetMapping("/chances/{team1Id}/{team2Id}")
     public ResponseEntity<?> calculateWinningChances(@PathVariable Long team1Id, @PathVariable Long team2Id) {
-        Map<Long, Integer> chances = matchService.getMatchesAndWinners(team1Id, team2Id);
+        Map<Long, Integer> chances = scoreService.getMatchesAndWinners(team1Id, team2Id);
         return ResponseEntity.ok(chances);
     }
 
