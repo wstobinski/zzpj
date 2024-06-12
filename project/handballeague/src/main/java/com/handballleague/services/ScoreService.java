@@ -5,11 +5,13 @@ import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
 import com.handballleague.model.Match;
 import com.handballleague.model.Score;
+import com.handballleague.model.Team;
 import com.handballleague.repositories.ScoreRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -108,12 +110,12 @@ public class ScoreService implements HandBallService<Score> {
     }
 
 
-    public Map<Long, Integer> getMatchesAndWinners(Long team1Id, Long team2Id) {
+    private Map<Long, Integer> getMatchesAndWinners(Long team1Id, Long team2Id) {
         // TODO some exception handling
 
         List<Score> scores = scoreRepository.findScoresByTeams(team1Id, team2Id);
 
-        Map<Long, Integer> matchResults = new java.util.HashMap<>(Map.of(team1Id, 0, team2Id, 0));
+        Map<Long, Integer> matchResults = new HashMap<>(Map.of(team1Id, 0, team2Id, 0));
 
         for (Score score : scores) {
             if (score.getGoals() > score.getLostGoals()) {
@@ -125,5 +127,15 @@ public class ScoreService implements HandBallService<Score> {
 
 
         return matchResults;
+    }
+
+    public Map<String, Double> getWinningChances(Team team1, Team team2) {
+
+        Map<Long, Integer> matchResults = getMatchesAndWinners(team1.getUuid(), team2.getUuid());
+        int summed = matchResults.values().stream().mapToInt(Integer::intValue).sum();
+        if (summed == 0) {
+            return Map.of(team1.getTeamName(), 0.5, team2.getTeamName(), 0.5);
+        }
+        return Map.of(team1.getTeamName(), (double) matchResults.get(team1.getUuid()) / summed, team2.getTeamName(), (double) matchResults.get(team2.getUuid()) / summed);
     }
 }

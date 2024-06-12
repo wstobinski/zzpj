@@ -115,10 +115,11 @@ public class MatchController {
 
     }
 
-    @GetMapping("/chances/{team1Id}/{team2Id}")
-    public ResponseEntity<?> calculateWinningChances(@PathVariable Long team1Id, @PathVariable Long team2Id) {
-        Map<Long, Integer> chances = scoreService.getMatchesAndWinners(team1Id, team2Id);
-        return ResponseEntity.ok(chances);
+    @GetMapping("/chances/{matchId}")
+    public ResponseEntity<?> calculateWinningChances(@PathVariable Long matchId) {
+        Match match = matchService.getById(matchId);
+        Map<String, Double> chances = scoreService.getWinningChances(match.getHomeTeam(), match.getAwayTeam());
+        return ResponseEntity.ok(Map.of("ok", true, "response", chances));
     }
 
 

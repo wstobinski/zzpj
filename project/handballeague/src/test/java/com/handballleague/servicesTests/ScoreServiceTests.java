@@ -1,6 +1,7 @@
 package com.handballleague.servicesTests;
 
 import com.handballleague.model.Score;
+import com.handballleague.model.Team;
 import com.handballleague.repositories.ScoreRepository;
 import com.handballleague.services.ScoreService;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,15 +25,20 @@ public class ScoreServiceTests {
     @Mock
     private ScoreRepository scoreRepository;
 
+    private Team team1;
+    private Team team2;
+
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
+        team1 = new Team("Team 1");
+        team1.setUuid(1L);
+        team2 = new Team("Team 2");
+        team2.setUuid(2L);
     }
 
     @Test
     public void testGetMatchesAndWinners_Team1WinsAll() {
-        Long team1Id = 1L;
-        Long team2Id = 2L;
         Score score1 = new Score();
         score1.setGoals(3);
         score1.setLostGoals(1);
@@ -42,19 +48,16 @@ public class ScoreServiceTests {
 
         List<Score> scores = Arrays.asList(score1, score2);
 
-        when(scoreRepository.findScoresByTeams(team1Id, team2Id)).thenReturn(scores);
+        when(scoreRepository.findScoresByTeams(team1.getUuid(), team2.getUuid())).thenReturn(scores);
 
 
-        Map<Long, Integer> matchResults = scoreService.getMatchesAndWinners(team1Id, team2Id);
-        assertEquals(2, matchResults.get(team1Id));
-        assertEquals(0, matchResults.get(team2Id));
+        Map<String, Double> matchResults = scoreService.getWinningChances(team1, team2);
+        assertEquals(1.0, matchResults.get(team1.getTeamName()));
+        assertEquals(0.0, matchResults.get(team2.getTeamName()));
     }
 
     @Test
     public void testGetMatchesAndWinners_Team2WinsAll() {
-
-        Long team1Id = 1L;
-        Long team2Id = 2L;
         Score score1 = new Score();
         score1.setGoals(1);
         score1.setLostGoals(3);
@@ -63,19 +66,16 @@ public class ScoreServiceTests {
         score2.setLostGoals(4);
         List<Score> scores = Arrays.asList(score1, score2);
 
-        when(scoreRepository.findScoresByTeams(team1Id, team2Id)).thenReturn(scores);
+        when(scoreRepository.findScoresByTeams(team1.getUuid(), team2.getUuid())).thenReturn(scores);
 
 
-        Map<Long, Integer> matchResults = scoreService.getMatchesAndWinners(team1Id, team2Id);
-        assertEquals(0, matchResults.get(team1Id));
-        assertEquals(2, matchResults.get(team2Id));
+        Map<String, Double> matchResults = scoreService.getWinningChances(team1, team2);
+        assertEquals(0.0, matchResults.get(team1.getTeamName()));
+        assertEquals(1.0, matchResults.get(team2.getTeamName()));
     }
 
     @Test
     public void testGetMatchesAndWinners_AllMatchesDraw() {
-
-        Long team1Id = 1L;
-        Long team2Id = 2L;
         Score score1 = new Score();
         score1.setGoals(2);
         score1.setLostGoals(2);
@@ -84,10 +84,11 @@ public class ScoreServiceTests {
         score2.setLostGoals(3);
         List<Score> scores = Arrays.asList(score1, score2);
 
-        when(scoreRepository.findScoresByTeams(team1Id, team2Id)).thenReturn(scores);
+        when(scoreRepository.findScoresByTeams(team1.getUuid(), team2.getUuid())).thenReturn(scores);
 
-        Map<Long, Integer> matchResults = scoreService.getMatchesAndWinners(team1Id, team2Id);
-        assertEquals(0, matchResults.get(team1Id));
-        assertEquals(0, matchResults.get(team2Id));
+
+        Map<String, Double> matchResults = scoreService.getWinningChances(team1, team2);
+        assertEquals(0.5, matchResults.get(team1.getTeamName()));
+        assertEquals(0.5, matchResults.get(team2.getTeamName()));
     }
 }
