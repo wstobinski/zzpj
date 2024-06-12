@@ -6,7 +6,9 @@ import com.handballleague.model.Match;
 import com.handballleague.model.Player;
 import com.handballleague.model.Referee;
 import com.handballleague.model.Score;
+import com.handballleague.repositories.MatchRepository;
 import com.handballleague.repositories.ScoreRepository;
+import com.handballleague.repositories.TeamRepository;
 import com.handballleague.services.JWTService;
 import com.handballleague.services.MatchService;
 import jakarta.validation.Valid;
@@ -23,6 +25,7 @@ public class MatchController {
     private final MatchService matchService;
     private final JWTService jwtService;
     private final ScoreRepository scoreRepository;
+
 
     public MatchController(MatchService matchService, JWTService jwtService, ScoreRepository scoreRepository) {
         this.matchService = matchService;
@@ -107,4 +110,12 @@ public class MatchController {
         return ResponseEntity.ok(Map.of("ok", true, "response", scores));
 
     }
+
+    @GetMapping("/chances/{team1Id}/{team2Id}")
+    public ResponseEntity<?> calculateWinningChances(@PathVariable Long team1Id, @PathVariable Long team2Id) {
+        Map<Long, Integer> chances = matchService.getMatchesAndWinners(team1Id, team2Id);
+        return ResponseEntity.ok(chances);
+    }
+
+
 }
