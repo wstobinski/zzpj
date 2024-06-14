@@ -1,15 +1,18 @@
 package com.handballleague.DTO;
 
+import lombok.Builder;
 import lombok.Data;
 
 public class MatchScoreDTO {
     @Data
+    @Builder
     public static class MatchResultDto {
         private TeamScoreDto team1Score;
         private TeamScoreDto team2Score;
     }
 
     @Data
+    @Builder
     public static class TeamScoreDto {
         private Long teamId;
         private int goals;
