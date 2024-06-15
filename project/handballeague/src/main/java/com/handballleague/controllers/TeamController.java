@@ -145,7 +145,6 @@ public class TeamController {
             String season = body.getSeason();
             boolean generatePlayers = body.isGeneratePlayers();
             String nationality = body.getNationality();
-            System.out.println("generatePlayers: " + generatePlayers);
 
             if (leagueId == null || season == null) {
                 return ResponseEntity.badRequest().body(Map.of("ok", false, "error", "Invalid input"));
@@ -153,13 +152,8 @@ public class TeamController {
 
             List<Long> teamsIDs =  teamsInitializer.fetchAndFillData(leagueId, season);
 
-            System.out.println("Teams IDs");
-            for (Long teamId : teamsIDs) {
-                System.out.println("Team ID: " + teamId);
-            }
 
             if (generatePlayers) {
-                System.out.println("Generating players");
                 playersInitializer.generatePlayersData(nationality, 6, Optional.of(teamsIDs));
             }
 

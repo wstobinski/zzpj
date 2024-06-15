@@ -41,22 +41,16 @@ public class PlayersInitializer {
             int totalPlayers = size * numberOfPlayers;
             int callsNeeded = (int) Math.ceil((double) totalPlayers / 36);
 
-            System.out.println("size: " + size);
             List<String> players = new ArrayList<>();
             for (int call = 0; call < callsNeeded; call++) {
                 int playersToGenerate = Math.min(36, totalPlayers - call * 36);
                 players.addAll(getPromptResult(nationality, playersToGenerate, Optional.of(size)));
             }
-            System.out.println("players: " + players);
-            System.out.println("--------------------");
-            for (String player : players) {
-                System.out.println("player" + player);
-            }
+
             for (int i = 0; i < size; i++) {
                 int start = i * numberOfPlayers;
                 int end = Math.min(start + numberOfPlayers, players.size());
                 List<String> playersForTeam = players.subList(start, end);
-                System.out.println("Id of team: " + teamIDs.get().get(i) + " players: " + playersForTeam);
                 addPlayersToDatabase(playersForTeam, Optional.of(teamIDs.get().get(i)));
             }
 
@@ -102,7 +96,6 @@ public class PlayersInitializer {
         in.close();
         con.disconnect();
 
-        System.out.println("content: " + content.toString());
         return getPlayersFromResponse(content.toString());
 
     }
@@ -115,10 +108,6 @@ public class PlayersInitializer {
             throw new IllegalArgumentException("Invalid response format: 'text' part not found");
         }
         String textContent = matcher.group(1);
-
-//        textContent = textContent.replaceAll("\n\n", "\n");
-//
-//        System.out.println("new text: " + textContent);
 
         List<String> players = new ArrayList<>(Arrays.asList(textContent.split("\\\\n")));
         players.removeIf(String::isEmpty);
@@ -153,7 +142,6 @@ public class PlayersInitializer {
             captainIndex = (int) (Math.random() * players.size());
         }
 
-        System.out.println("player size: " + players.size());
         for (int i = 0; i < players.size(); i++) {
             String[] playerData = players.get(i).split(",");
             String firstName = playerData[0];
@@ -163,16 +151,12 @@ public class PlayersInitializer {
             int pitchNumber = Integer.parseInt(playerData[4].trim());
             boolean isCaptain = (captainIndex == i);
 
-            System.out.println("player: " + Arrays.toString(playerData));
-
             Player newPlayer = new Player(firstName, lastName, phoneNumber, pitchNumber, isCaptain, false);
             newPlayer.setEmail(email);
-
 
             Player newPlayer1 = playerService.create(newPlayer);
 
             if (teamId.isPresent()) {
-                System.out.println("id: " + teamId.get() + " player: " + newPlayer1.getUuid());
                 teamService.addPlayerToTeam(teamId.get(), newPlayer1.getUuid());
             }
 

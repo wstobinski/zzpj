@@ -110,9 +110,9 @@ public class PlayerController {
 
         try {
             playersInitializer.generatePlayersData(nationality, numberOfPlayers, Optional.empty());
-        } catch (Exception e) {
+            } catch (Exception e) {
             throw new RuntimeException(e);
-        }
+            }
         return ResponseEntity.ok(Map.of("ok", true, "message", "Players generated successfully"));
     }
 

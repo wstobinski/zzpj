@@ -8,7 +8,6 @@ import com.handballleague.services.EmailService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mindrot.jbcrypt.BCrypt;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -22,7 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-class EmailServiceTest {
+class EmailServiceTests {
     @Mock
     private UserRepository userRepository;
 

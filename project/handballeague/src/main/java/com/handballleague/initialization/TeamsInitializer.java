@@ -25,15 +25,13 @@ public class TeamsInitializer {
     private String apiKey;
 
     private final TeamService teamService;
-
-    private TeamRepository teamRepository;
+    private final TeamRepository teamRepository;
 
     @Autowired
     public TeamsInitializer(TeamService teamService, TeamRepository teamRepository) {
         this.teamRepository = teamRepository;
         this.teamService = teamService;
     }
-
 
     public List<Long> addTeamsToDatabase(String jsonData) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -63,9 +61,10 @@ public class TeamsInitializer {
         return addedTeamIds;
     }
 
+
+
     public List<Long> fetchAndFillData(String leagueId, String season) {
         HttpClient client = HttpClient.newHttpClient();
-
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://v1.handball.api-sports.io/teams?league=" + leagueId + "&season=" + season))
                 .header("x-apisports-key", apiKey)
@@ -79,13 +78,10 @@ public class TeamsInitializer {
             }
 
             String responseBody = response.body();
-            return  addTeamsToDatabase(responseBody);
+            return addTeamsToDatabase(responseBody);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
         return Collections.emptyList();
     }
-
-
-
 }
