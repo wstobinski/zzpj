@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 public class PlayersInitializer {
 
 
-    @Value("${gemini.api.key}")
+    @Value("${google.api.key}")
     private String apiKey;
     private PlayerService playerService;
     private TeamService teamService;
