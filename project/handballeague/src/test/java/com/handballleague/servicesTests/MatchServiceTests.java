@@ -9,6 +9,7 @@ import com.handballleague.repositories.*;
 import com.handballleague.services.MatchService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -103,23 +104,8 @@ class MatchServiceTest {
     }
 
 
-    @Test
-    void testUpdateMatchWithInvalidId() {
-        assertThrows(InvalidArgumentException.class, () -> matchService.update(-1L, new Match()));
-    }
 
-    @Test
-    void testUpdateMatchThatDoesNotExist() {
-        Long matchId = 1L;
-        Match updatedMatch = new Match();
-        updatedMatch.setHomeTeam(new Team());
-        updatedMatch.setAwayTeam(new Team());
-        updatedMatch.setGameDate(LocalDateTime.now());
 
-        when(matchRepository.findById(matchId)).thenReturn(Optional.empty());
-
-        assertThrows(ObjectNotFoundInDataBaseException.class, () -> matchService.update(matchId, updatedMatch));
-    }
 
     @Test
     void testGetById() throws InvalidArgumentException, ObjectNotFoundInDataBaseException {
@@ -219,6 +205,85 @@ class MatchServiceTest {
 
 
         assertFalse(match.isFinished());
+    }
+
+  @Test
+    void testUpdateMatch() throws InvalidArgumentException, ObjectNotFoundInDataBaseException {
+        Long matchId = 1L;
+        Match existingMatch = new Match();
+        existingMatch.setHomeTeam(new Team("HomeTeam"));
+        existingMatch.setAwayTeam(new Team("AwayTeam"));
+        existingMatch.setGameDate(LocalDateTime.now());
+        existingMatch.setReferee(new Referee(1L, "John", "Doe", "123456789", "john.doe@example.com", 4.5));
+
+        Match updatedMatch = new Match();
+        updatedMatch.setHomeTeam(new Team("UpdatedHomeTeam"));
+        updatedMatch.setAwayTeam(new Team("UpdatedAwayTeam"));
+        updatedMatch.setGameDate(LocalDateTime.now().plusDays(1));
+        updatedMatch.setReferee(new Referee(2L, "Jane", "Smith", "987654321", "jane.smith@example.com", 4.8));
+
+        when(matchRepository.findById(matchId)).thenReturn(Optional.of(existingMatch));
+        when(matchRepository.save(any(Match.class))).thenReturn(updatedMatch);
+
+        Match result = matchService.update(matchId, updatedMatch);
+
+        assertNotNull(result);
+        assertEquals(updatedMatch.getHomeTeam(), result.getHomeTeam());
+        assertEquals(updatedMatch.getAwayTeam(), result.getAwayTeam());
+        assertEquals(updatedMatch.getGameDate(), result.getGameDate());
+        assertEquals(updatedMatch.getReferee(), result.getReferee());
+        verify(matchRepository, times(1)).save(existingMatch);
+    }
+
+    @Test
+    void testUpdateMatchWithInvalidId() {
+        assertThrows(InvalidArgumentException.class, () -> matchService.update(-1L, new Match()));
+    }
+
+    @Test
+    void testUpdateMatchWithNullEntity() {
+        assertThrows(InvalidArgumentException.class, () -> matchService.update(1L, null));
+    }
+
+    @Test
+    void testUpdateMatchWithInvalidArguments() {
+        Match match = new Match();
+        assertThrows(InvalidArgumentException.class, () -> matchService.update(1L, match));
+    }
+
+    @Test
+    void testUpdateMatchThatDoesNotExist() {
+        Long matchId = 1L;
+        Match updatedMatch = new Match();
+        updatedMatch.setHomeTeam(new Team());
+        updatedMatch.setAwayTeam(new Team());
+        updatedMatch.setGameDate(LocalDateTime.now());
+
+        when(matchRepository.findById(matchId)).thenReturn(Optional.empty());
+
+        assertThrows(ObjectNotFoundInDataBaseException.class, () -> matchService.update(matchId, updatedMatch));
+    }
+
+        @Test
+    void testGenerateNewPostAboutUpdatedMatch() {
+        Match oldMatch = new Match();
+        oldMatch.setReferee(new Referee(1L, "John", "Doe", "123456789", "john.doe@example.com", 4.5));
+        oldMatch.setGameDate(LocalDateTime.of(2023, 1, 1, 12, 0));
+        oldMatch.setHomeTeam(new Team("HomeTeam"));
+        oldMatch.setAwayTeam(new Team("AwayTeam"));
+
+        Match newMatch = new Match();
+        newMatch.setReferee(new Referee(2L, "Jane", "Smith", "987654321", "jane.smith@example.com", 4.8));
+        newMatch.setGameDate(LocalDateTime.of(2023, 1, 2, 14, 0));
+        newMatch.setHomeTeam(new Team("HomeTeam"));
+        newMatch.setAwayTeam(new Team("AwayTeam"));
+
+
+
+        ArgumentCaptor<Post> postCaptor = ArgumentCaptor.forClass(Post.class);
+
+            when(matchRepository.findById(anyLong())).thenReturn(Optional.of(oldMatch));
+            when(postRepository.save(postCaptor.capture())).thenReturn(new Post());
     }
 
 
