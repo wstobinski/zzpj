@@ -1,6 +1,7 @@
 package com.handballleague.validation;
 
 import com.handballleague.exceptions.EntityAlreadyExistsException;
+import com.handballleague.exceptions.ImageProcessingException;
 import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -73,6 +74,16 @@ public class ResponseErrorHandler extends ResponseEntityExceptionHandler {
         errorResponse.setErrors(List.of(ex.getMessage()));
 
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ImageProcessingException.class)
+    protected ResponseEntity<Object> imageProcessingException(ImageProcessingException ex, WebRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setLocalDateTime(LocalDateTime.now());
+        errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        errorResponse.setErrors(List.of("Image processing error occurred", ex.getMessage()));
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)

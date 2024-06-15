@@ -1,9 +1,12 @@
 package com.handballleague.DTO;
 
+
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
 public class MatchScoreDTO {
+    @AllArgsConstructor
     @Data
     @Builder
     public static class MatchResultDto {
@@ -11,6 +14,7 @@ public class MatchScoreDTO {
         private TeamScoreDto team2Score;
     }
 
+    @AllArgsConstructor
     @Data
     @Builder
     public static class TeamScoreDto {
