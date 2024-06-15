@@ -80,4 +80,11 @@ public class RefereeController {
             return response;
         }
     }
+
+    @GetMapping("/rating/{refereeId}")
+    public ResponseEntity<?> getRefereeRating(@PathVariable Long refereeId) {
+        Referee referee = refereeService.getById(refereeId);
+        //TODO: Implement calculating sentiment for referee
+        return ResponseEntity.ok(Map.of("ok", true, "referee", referee, "rating", referee.getRating()));
+    }
 }

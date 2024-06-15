@@ -5,7 +5,22 @@
       <h3>Uzupełnij wyniki meczu</h3>
     </ion-text>
   </ion-item>
+
   <div style="width: 50%; margin: auto">
+    <h2>Prześlij zdjęcie z wynikiem</h2>
+    <ion-item>
+      @if (!selectedFile) {
+        <ion-label>Wybierz plik:</ion-label>
+      } @else {
+        <ion-label>Wybierz inny plik:</ion-label>
+      }
+
+      <input type="file" (change)="onFileSelected($event)"/>
+    </ion-item>
+    <ion-button expand="block" (click)="uploadFile()" [disabled]="!base64FileString">
+      Prześlij
+    </ion-button>
+    <h2 style="margin-top: 30px">Wpisz wyniki ręcznie</h2>
   <div formGroupName="homeScore">
     <ion-text color="primary">
       <h4>Wynik drużyny {{match.homeTeam.teamName}}</h4>

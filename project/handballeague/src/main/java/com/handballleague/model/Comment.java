@@ -36,6 +36,9 @@ public class Comment {
     @Column
     private boolean isEdited = false;
 
+    @Column
+    private float sentimentScore;
+
     public Comment(String content, Match match, Referee referee, Player author) {
         this.content = content;
         this.match = match;

@@ -24,7 +24,7 @@
         <ion-row class="data-row">
           <ion-col>{{referee.uuid}}</ion-col>
           <ion-col>{{referee.firstName}} {{referee.lastName}}</ion-col>
-          <ion-col>{{referee.rating}}</ion-col>
+          <ion-col>{{referee.rating | refereeRating}}</ion-col>
           <ion-col>
             <ion-icon style="cursor: pointer" (click)="openPopover($event, referee, actionButtons)" name="ellipsis-vertical-outline"></ion-icon>
           </ion-col>
