@@ -85,6 +85,9 @@ export class LeaguesPage extends GenericPage implements OnInit {
         this.leaguesService.generateSchedule(league.uuid, data.data).then(async r => {
           if (r.ok) {
             league.scheduleGenerated = true;
+            let activeLeagues: League[] = this.leaguesService.activeLeagues.value;
+            activeLeagues.push(league);
+            this.leaguesService.activeLeagues.next(activeLeagues);
             this.utils.presentInfoToast("Generowanie harmonogramu przebiegło pomyślnie");
           } else {
             this.utils.presentAlertToast("Wystąpił błąd podczas generowania harmonogramu");
@@ -115,6 +118,7 @@ export class LeaguesPage extends GenericPage implements OnInit {
         this.leaguesService.deleteLeague(league.uuid).then(r => {
           if (r.ok) {
             this.leagues = this.leagues.filter(l => l.uuid !== league.uuid);
+            this.leaguesService.activeLeagues.next(this.leaguesService.activeLeagues.value.filter(l => l.uuid !== league.uuid));
             this.utils.presentInfoToast(`Liga ${league.name} usunięta pomyślnie`);
           } else {
             this.utils.presentAlertToast(`Wystąpił błąd przy usuwaniu ligi`);
@@ -138,6 +142,7 @@ export class LeaguesPage extends GenericPage implements OnInit {
           if (r.ok) {
             league.finishedDate = r.response;
             console.log("FINISHED league ", league);
+            this.leaguesService.activeLeagues.next(this.leaguesService.activeLeagues.value.filter(l => l.uuid !== league.uuid));
             this.utils.presentInfoToast(`Liga ${league.name} zakończona pomyślnie`);
           } else {
             this.utils.presentAlertToast(`Wystąpił błąd przy kończeniu rozgrywek ligowych`);
