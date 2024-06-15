@@ -1,5 +1,6 @@
 package com.handballleague.servicesTests;
 
+import com.handballleague.exceptions.EntityAlreadyExistsException;
 import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
 import com.handballleague.model.Match;
@@ -174,17 +175,68 @@ public class ScoreServiceTests {
         assertEquals(scores, result);
     }
 
+
     @Test
-    public void testCheckIfEntityExistsInDb_WithValidInput_ReturnsTrue() {
+    public void testCheckIfEntityExistsInDb_WithExistingEntity_ReturnsTrue() {
         Score score = new Score();
         score.setGoals(3);
         score.setLostGoals(1);
+
+        Match match = new Match();
+        Team team = new Team("Team 1");
+        score.setMatch(match);
+        score.setTeam(team);
+
         when(scoreRepository.findAll()).thenReturn(List.of(score));
 
         boolean result = scoreService.checkIfEntityExistsInDb(score);
 
         assertTrue(result);
     }
+
+    @Test
+    public void testCheckIfEntityExistsInDb_WithExistingId_ReturnsTrue() {
+        Long id = 1L;
+        Score score = new Score();
+        score.setUuid(id);
+        score.setGoals(3);
+        score.setLostGoals(1);
+        when(scoreRepository.findAll()).thenReturn(List.of(score));
+
+        boolean result = scoreService.checkIfEntityExistsInDb(id);
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void testCheckIfEntityExistsInDb_WithNonExistingId_ReturnsFalse() {
+        Long id = 2L;
+        Score score = new Score();
+        score.setUuid(1L);
+        score.setGoals(3);
+        score.setLostGoals(1);
+        when(scoreRepository.findAll()).thenReturn(List.of(score));
+
+        boolean result = scoreService.checkIfEntityExistsInDb(id);
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void testGetById_WithInvalidId_ThrowsInvalidArgumentException() {
+        Long id = -1L;
+
+        assertThrows(InvalidArgumentException.class, () -> scoreService.getById(id));
+    }
+
+    @Test
+    public void testGetById_WithNonExistingId_ThrowsObjectNotFoundInDataBaseException() {
+        Long id = 1L;
+        when(scoreRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(ObjectNotFoundInDataBaseException.class, () -> scoreService.getById(id));
+    }
+
 
     @Test
     public void testCreateScore_WithNullInput_ThrowsException() {
@@ -234,14 +286,60 @@ public class ScoreServiceTests {
         assertThrows(ObjectNotFoundInDataBaseException.class, () -> scoreService.delete(id));
     }
 
+    @Test
+    public void testCreateScore_WithExistingScore_ThrowsEntityAlreadyExistsException() {
+        Score score = new Score();
+        score.setGoals(3);
+        score.setLostGoals(1);
+
+        Match match = new Match();
+        Team team = new Team("Team 1");
+        score.setMatch(match);
+        score.setTeam(team);
+
+        when(scoreRepository.findAll()).thenReturn(List.of(score));
+
+        // Act and Assert
+        assertThrows(EntityAlreadyExistsException.class, () -> scoreService.create(score));
+    }
+
+    @Test
+    public void testCreateScore_WithInvalidScore_ThrowsInvalidArgumentException() {
+        Score score = new Score();
+        score.setGoals(3);
+        score.setLostGoals(1);
+
+        assertThrows(InvalidArgumentException.class, () -> scoreService.create(score));
+    }
 
 
+    @Test
+    public void testUpdateScore_WithExistingScore_ThrowsEntityAlreadyExistsException() {
+        Long id = 1L;
+        Score score = new Score();
+        score.setGoals(3);
+        score.setLostGoals(1);
 
+        Match match = new Match();
+        Team team = new Team("Team 1");
+        score.setMatch(match);
+        score.setTeam(team);
 
+        when(scoreRepository.findById(id)).thenReturn(Optional.of(score));
+        when(scoreRepository.findAll()).thenReturn(List.of(score));
 
+        assertThrows(EntityAlreadyExistsException.class, () -> scoreService.update(id, score));
+    }
 
+    @Test
+    public void testUpdateScore_WithInvalidScore_ThrowsInvalidArgumentException() {
+        Long id = 1L;
+        Score score = new Score();
+        score.setGoals(3);
+        score.setLostGoals(1);
 
-
+        assertThrows(InvalidArgumentException.class, () -> scoreService.update(id, score));
+    }
 
 
 }
