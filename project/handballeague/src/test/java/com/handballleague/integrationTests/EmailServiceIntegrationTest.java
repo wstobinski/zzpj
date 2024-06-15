@@ -1,6 +1,5 @@
-package com.handballleague.servicesTests;
+package com.handballleague.integrationTests;
 
-import com.handballleague.HandballeagueApplication;
 import com.handballleague.exceptions.InvalidArgumentException;
 import  com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
 import  com.handballleague.model.User;

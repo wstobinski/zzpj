@@ -8,6 +8,7 @@ import { RefereesPageRoutingModule } from './referees-routing.module';
 
 import { RefereesPage } from './referees.page';
 import {HandballComponentsModule} from "../../handball-components.module";
+import {RefereeRatingPipe} from "../../pipes/referee-rating.pipe";
 
 @NgModule({
     imports: [
@@ -15,7 +16,8 @@ import {HandballComponentsModule} from "../../handball-components.module";
         FormsModule,
         IonicModule,
         RefereesPageRoutingModule,
-        HandballComponentsModule
+        HandballComponentsModule,
+        RefereeRatingPipe
     ],
   declarations: [RefereesPage]
 })

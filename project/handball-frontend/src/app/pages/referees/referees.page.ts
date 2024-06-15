@@ -9,7 +9,6 @@ import {Referee} from "../../model/referee.model";
 import {EditRefereeModalComponent} from "../../components/edit-referee-modal/edit-referee-modal.component";
 import {User} from "../../model/user.model";
 import {UserService} from "../../services/user.service";
-import {error} from "@angular/compiler-cli/src/transformers/util";
 
 @Component({
   selector: 'app-referees',

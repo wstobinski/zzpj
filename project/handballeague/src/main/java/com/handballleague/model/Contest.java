@@ -1,12 +1,14 @@
 package com.handballleague.model;
 
 import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 @MappedSuperclass
 @NoArgsConstructor
@@ -46,5 +48,17 @@ public abstract class Contest {
     @Override
     public int hashCode() {
         return Objects.hash(getName(), getStartDate(), getFinishedDate());
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", Contest.class.getSimpleName() + "[", "]")
+                .add("uuid=" + uuid)
+                .add("name='" + name + "'")
+                .add("startDate=" + startDate)
+                .add("lastModifiedDate=" + lastModifiedDate)
+                .add("finishedDate=" + finishedDate)
+                .add("isScheduleGenerated=" + isScheduleGenerated)
+                .toString();
     }
 }
