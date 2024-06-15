@@ -15,7 +15,8 @@
         </ion-text>
       </ion-item>
   <div class="ion-text-right">
-    @if (user.role === 'admin') {
+    @if (user?.role === 'admin') {
+      <ion-button style="margin-right: 20px" (click)="openGenerateTeamsModal()">Wygeneruj zespoły</ion-button>
       <ion-button (click)="onAddNewTeam()">Dodaj nowy zespół</ion-button>
     }
   </div>

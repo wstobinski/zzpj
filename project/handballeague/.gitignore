@@ -31,3 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+service_account_key.json
+
+
+
+

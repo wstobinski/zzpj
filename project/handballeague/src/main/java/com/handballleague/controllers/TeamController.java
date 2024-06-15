@@ -1,5 +1,7 @@
 package com.handballleague.controllers;
 
+import com.handballleague.DTO.GenerateTeamsDTO;
+import com.handballleague.initialization.PlayersInitializer;
 import com.handballleague.initialization.TeamsInitializer;
 import com.handballleague.model.Team;
 import com.handballleague.services.JWTService;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "api/v1/teams")
@@ -21,11 +24,14 @@ public class TeamController {
 
     private final TeamsInitializer teamsInitializer;
 
+    private final PlayersInitializer playersInitializer;
+
     @Autowired
-    public TeamController(TeamService teamService, JWTService jwtService, TeamsInitializer teamsInitializer) {
+    public TeamController(TeamService teamService, JWTService jwtService, TeamsInitializer teamsInitializer, PlayersInitializer playersInitializer) {
         this.teamService = teamService;
         this.jwtService = jwtService;
         this.teamsInitializer = teamsInitializer;
+        this.playersInitializer = playersInitializer;
     }
 
     @GetMapping
@@ -128,26 +134,36 @@ public class TeamController {
     }
 
     @PostMapping("/generate-teams")
-    public ResponseEntity<?> generateTeams(@Valid @RequestBody Map<String, String> body, @RequestHeader(name = "Authorization") String token) {
-        try {
+    public ResponseEntity<?> generateTeams(@RequestBody GenerateTeamsDTO body, @RequestHeader(name = "Authorization") String token) throws Exception {
+
             ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
             if (!response.getStatusCode().is2xxSuccessful()) {
                 return response;
             }
 
-            String leagueId = body.get("leagueId");
-            String season = body.get("season");
+            String leagueId = body.getLeagueId();
+            String season = body.getSeason();
+            boolean generatePlayers = body.isGeneratePlayers();
+            String nationality = body.getNationality();
+            System.out.println("generatePlayers: " + generatePlayers);
 
             if (leagueId == null || season == null) {
                 return ResponseEntity.badRequest().body(Map.of("ok", false, "error", "Invalid input"));
             }
 
-            teamsInitializer.fetchAndFillData(leagueId, season);
+            List<Long> teamsIDs =  teamsInitializer.fetchAndFillData(leagueId, season);
+
+            System.out.println("Teams IDs");
+            for (Long teamId : teamsIDs) {
+                System.out.println("Team ID: " + teamId);
+            }
+
+            if (generatePlayers) {
+                System.out.println("Generating players");
+                playersInitializer.generatePlayersData(nationality, 6, Optional.of(teamsIDs));
+            }
+
             return ResponseEntity.ok(Map.of("ok", true, "message", "Teams generated successfully"));
-        } catch (Exception e) {
-            System.err.println("Error generating teams: " + e.getMessage());
-            return ResponseEntity.status(500).body(Map.of("ok", false, "error", "An error occurred while generating teams"));
         }
     }
-}
 

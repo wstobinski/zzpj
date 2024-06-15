@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,9 +56,8 @@ public class TeamService implements HandBallService<Team>{
         if(checkIfEntityExistsInDb(team)) throw new EntityAlreadyExistsException("Team with given data already exists in the database");
         if(team.getTeamName().isEmpty()) throw new InvalidArgumentException("At least one of team parameters is invalid.");
 
-        teamRepository.save(team);
 
-        return team;
+        return teamRepository.save(team);
     }
 
     @Override
@@ -122,8 +122,13 @@ public class TeamService implements HandBallService<Team>{
         Player player = playerRepository.findById(String.valueOf(playerId))
                 .orElseThrow(() -> new ObjectNotFoundInDataBaseException("Player not found"));
 
-        team.getPlayers().add(player);
-
+        if (team.getPlayers() != null) {
+            team.getPlayers().add(player);
+        } else {
+            ArrayList<Player> players = new ArrayList<>();
+            players.add(player);
+            team.setPlayers(players);
+        }
         teamRepository.save(team);
 
         return team;

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.handballleague.model.Team;
 import com.handballleague.repositories.TeamRepository;
+import com.handballleague.services.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -13,22 +14,29 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 public class TeamsInitializer {
-    @Value("${hanbdall.api.key}")
+
+    @Value("${handball.api.key}")
     private String apiKey;
 
-    private final TeamRepository teamRepository;
+    private final TeamService teamService;
+
+    private TeamRepository teamRepository;
+
     @Autowired
-    public TeamsInitializer(TeamRepository teamRepository) {
+    public TeamsInitializer(TeamService teamService, TeamRepository teamRepository) {
         this.teamRepository = teamRepository;
+        this.teamService = teamService;
     }
 
 
-    public void addTeamsToDatabase(String jsonData) throws IOException {
+    public List<Long> addTeamsToDatabase(String jsonData) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
-
         JsonNode rootNode = objectMapper.readTree(jsonData);
         JsonNode teamsNode = rootNode.get("response");
 
@@ -36,18 +44,26 @@ public class TeamsInitializer {
             throw new IOException("Invalid JSON format: response node not found");
         }
 
+        List<Long> addedTeamIds = new ArrayList<>();
+
         for (JsonNode teamNode : teamsNode) {
-            Long teamId = teamNode.get("id").asLong();
+            if (addedTeamIds.size() >= 6) {
+                break;
+            }
             String teamName = teamNode.get("name").asText();
 
-            if (!teamRepository.existsById(teamId) && teamRepository.findByTeamName(teamName) == null) {
+            Team existingTeam = teamRepository.findByTeamName(teamName);
+            if (existingTeam == null) {
                 Team team = new Team(teamName);
-                teamRepository.save(team);
+                team = teamService.create(team);
+                addedTeamIds.add(team.getUuid());
             }
         }
+
+        return addedTeamIds;
     }
 
-    public void fetchAndFillData(String leagueId, String season) {
+    public List<Long> fetchAndFillData(String leagueId, String season) {
         HttpClient client = HttpClient.newHttpClient();
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -63,10 +79,13 @@ public class TeamsInitializer {
             }
 
             String responseBody = response.body();
-            addTeamsToDatabase(responseBody);
+            return  addTeamsToDatabase(responseBody);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
-}
+        return Collections.emptyList();
+    }
+
+
 
 }

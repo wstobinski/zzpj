@@ -37,4 +37,8 @@ export class PlayersService {
     return await this.apiService.post('/players', player);
 
   }
+
+  async generatePlayers(body: {nationality: string, numberOfPlayers: number}): Promise<ApiResponse> {
+    return await this.apiService.post('/players/generate-players', body);
+  }
 }
