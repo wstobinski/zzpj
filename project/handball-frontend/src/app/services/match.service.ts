@@ -39,5 +39,11 @@ export class MatchService {
 
   }
 
+  async getMatchChances(matchId: number): Promise<ApiResponse> {
+
+    return await this.apiService.get<ApiResponse>(`/matches/chances/${matchId}`);
+
+  }
+
 
 }

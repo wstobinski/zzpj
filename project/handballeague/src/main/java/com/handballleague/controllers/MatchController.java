@@ -7,9 +7,12 @@ import com.handballleague.model.Match;
 import com.handballleague.model.Player;
 import com.handballleague.model.Referee;
 import com.handballleague.model.Score;
+import com.handballleague.repositories.MatchRepository;
 import com.handballleague.repositories.ScoreRepository;
+import com.handballleague.repositories.TeamRepository;
 import com.handballleague.services.JWTService;
 import com.handballleague.services.MatchService;
+import com.handballleague.services.ScoreService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,10 +28,14 @@ public class MatchController {
     private final JWTService jwtService;
     private final ScoreRepository scoreRepository;
 
-    public MatchController(MatchService matchService, JWTService jwtService, ScoreRepository scoreRepository) {
+    private final ScoreService scoreService;
+
+
+    public MatchController(MatchService matchService, JWTService jwtService, ScoreRepository scoreRepository, ScoreService scoreService) {
         this.matchService = matchService;
         this.jwtService = jwtService;
         this.scoreRepository = scoreRepository;
+        this.scoreService = scoreService;
     }
 
     @GetMapping
@@ -131,4 +138,13 @@ public class MatchController {
         return ResponseEntity.ok(Map.of("ok", true, "response", scores));
 
     }
+
+    @GetMapping("/chances/{matchId}")
+    public ResponseEntity<?> calculateWinningChances(@PathVariable Long matchId) {
+        Match match = matchService.getById(matchId);
+        Map<String, Double> chances = scoreService.getWinningChances(match.getHomeTeam(), match.getAwayTeam());
+        return ResponseEntity.ok(Map.of("ok", true, "response", chances));
+    }
+
+
 }
