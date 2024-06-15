@@ -1,5 +1,6 @@
 package com.handballleague.servicesTests;
 
+import com.handballleague.DTO.MatchScoreDTO;
 import com.handballleague.exceptions.EntityAlreadyExistsException;
 import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
@@ -187,5 +188,43 @@ class MatchServiceTest {
 
 
 
+    @Test
+    void testCheckIfEntityExistsInDbById() {
+        Long matchId = 1L;
+        Match match = new Match();
+        match.setUuid(matchId);
+
+        when(matchRepository.findAll()).thenReturn(List.of(match));
+
+        boolean exists = matchService.checkIfEntityExistsInDb(matchId);
+
+        assertTrue(exists);
+    }
+
+
+    @Test
+    void testEndMatch() {
+        Long matchId = 1L;
+        Match match = new Match();
+        match.setRound(new Round());
+        match.setHomeTeam(new Team());
+        match.setAwayTeam(new Team());
+
+
+
+        when(matchRepository.findById(matchId)).thenReturn(Optional.of(match));
+        when(teamRepository.findById(anyLong())).thenReturn(Optional.of(new Team()));
+
+
+
+
+        assertFalse(match.isFinished());
+    }
+
 
 }
+
+
+
+
+
