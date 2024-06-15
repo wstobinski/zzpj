@@ -3,7 +3,7 @@ import {ApiService} from "./api.service";
 import {ApiResponse} from "../model/ApiResponse";
 import {League} from "../model/league.model";
 import {GenerateScheduleDto} from "../model/DTO/generate-schedule.dto";
-import {from, Observable} from "rxjs";
+import {BehaviorSubject, from, Observable, tap} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -12,8 +12,16 @@ export class LeagueService {
 
   constructor(private apiService: ApiService) { }
 
+  activeLeagues: BehaviorSubject<League[]> = new BehaviorSubject<League[]>(null);
+
   getAllLeagues(): Observable<ApiResponse> {
-    return from(this.apiService.get<ApiResponse>("/leagues"));
+    return from(this.apiService.get<ApiResponse>('/leagues')).pipe(
+      tap((response: ApiResponse) => {
+        this.activeLeagues.next(response.response.filter(league => {
+          return league.scheduleGenerated && !league.finishedDate
+        }));
+      })
+    );
   }
   async getLeagueById(leagueId: string): Promise<ApiResponse> {
     return await this.apiService.get<ApiResponse>(`/leagues/${leagueId}`);

@@ -32,13 +32,10 @@ export class MainMenuComponent  implements OnInit, OnDestroy {
     this.userSub = this.userService.getUser().subscribe(user => {
     this.user = user;
     });
-    this.leaguesSub = this.leagueService.getAllLeagues().subscribe(r => {
-      if (r.ok) {
-        const allLeagues = r.response as League[];
-        this.leagues = allLeagues.filter(l => {
-          return l.scheduleGenerated && !l.finishedDate
-        });
-      }
+    this.leagueService.getAllLeagues().subscribe();
+
+    this.leagueService.activeLeagues.subscribe((leagues) => {
+      this.leagues = leagues;
     });
   }
 

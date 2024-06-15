@@ -19,7 +19,7 @@ import java.util.*;
 import static com.handballleague.util.UUIDGenerator.generateRandomIntegerUUID;
 
 @Service
-public class LeagueService implements HandBallService<League>{
+public class LeagueService implements HandBallService<League> {
     private final LeagueRepository leagueRepository;
     private final TeamRepository teamRepository;
     private final RoundRepository roundRepository;
@@ -43,8 +43,9 @@ public class LeagueService implements HandBallService<League>{
 
 
     @Transactional
-    public void generateSchedule(League league, GenerateScheduleDTO generateScheduleDTO) throws EntityAlreadyExistsException{
-        if(league.isScheduleGenerated()) throw new EntityAlreadyExistsException("This league already has a schedule generated.");
+    public void generateSchedule(League league, GenerateScheduleDTO generateScheduleDTO) throws EntityAlreadyExistsException {
+        if (league.isScheduleGenerated())
+            throw new EntityAlreadyExistsException("This league already has a schedule generated.");
         List<Team> teams = new ArrayList<>(league.getTeams());
         int numTeams = teams.size();
 
@@ -60,16 +61,18 @@ public class LeagueService implements HandBallService<League>{
                 .getStartDate()
                 .with(TemporalAdjusters.nextOrSame(generateScheduleDTO.getDefaultDay()));
 
-        for (int round = 0; round < numTeams - 1; round++) {
-            LocalDateTime matchDate = firstRoundStartDate
-                    .plusWeeks(round)
+        while (!DateManager.isDateValid(firstRoundStartDate)) {
+            firstRoundStartDate = firstRoundStartDate
+                    .plusWeeks(1)
                     .withHour(defaultHour)
                     .withMinute(defaultMinute)
                     .withSecond(0)
                     .withNano(0);
+        }
 
-            while(!DateManager.isDateValid(matchDate))  matchDate = firstRoundStartDate
-                    .plusWeeks(1)
+        for (int round = 0; round < numTeams - 1; round++) {
+            LocalDateTime matchDate = firstRoundStartDate
+                    .plusWeeks(round)
                     .withHour(defaultHour)
                     .withMinute(defaultMinute)
                     .withSecond(0)
@@ -110,7 +113,7 @@ public class LeagueService implements HandBallService<League>{
     }
 
     private void populateTeamContest(League league) {
-        for (Team team: league.getTeams()) {
+        for (Team team : league.getTeams()) {
             teamContestService.create(league.getUuid(), team.getUuid());
         }
     }
@@ -134,19 +137,21 @@ public class LeagueService implements HandBallService<League>{
     @Override
     @Transactional
     public League create(League league) throws InvalidArgumentException, EntityAlreadyExistsException {
-        if(league == null) throw new InvalidArgumentException("Passed parameter is invalid");
-        if(checkIfEntityExistsInDb(league)) throw new EntityAlreadyExistsException("League with given data already exists in the database");
-        if(league.getName().isEmpty() ||
-            league.getStartDate() == null) throw new InvalidArgumentException("At least one of league parameters is invalid.");
-        if(league.getTeams().size() > 12 || league.getTeams().size() < 3)
+        if (league == null) throw new InvalidArgumentException("Passed parameter is invalid");
+        if (checkIfEntityExistsInDb(league))
+            throw new EntityAlreadyExistsException("League with given data already exists in the database");
+        if (league.getName().isEmpty() ||
+                league.getStartDate() == null)
+            throw new InvalidArgumentException("At least one of league parameters is invalid.");
+        if (league.getTeams().size() > 12 || league.getTeams().size() < 3)
             throw new InvalidArgumentException("League needs to have at least 3 teams, and no more than 12 teams.");
 
         return leagueRepository.save(league);
     }
 
     @Override
-    public boolean delete(Long id) throws InvalidArgumentException, ObjectNotFoundInDataBaseException{
-        if(id <= 0) throw new InvalidArgumentException("Passed id is invalid.");
+    public boolean delete(Long id) throws InvalidArgumentException, ObjectNotFoundInDataBaseException {
+        if (id <= 0) throw new InvalidArgumentException("Passed id is invalid.");
         League league = leagueRepository.findById(id).orElseThrow(() -> new ObjectNotFoundInDataBaseException("League not found"));
         List<Round> relevantRounds = league.getRounds();
         for (Round round : relevantRounds) {
@@ -203,8 +208,8 @@ public class LeagueService implements HandBallService<League>{
     public boolean checkIfEntityExistsInDb(League league) {
         Iterable<League> allLeagues = leagueRepository.findAll();
 
-        for(League l : allLeagues) {
-            if(league.equals(l)) {
+        for (League l : allLeagues) {
+            if (league.equals(l)) {
                 return true;
             }
         }
@@ -250,8 +255,8 @@ public class LeagueService implements HandBallService<League>{
     public List<Match> getAllMatchesInLeague(Long leagueId) {
         List<Match> leagueMatches = new ArrayList<>();
 
-        for(Match m : matchRepository.findAll())
-            if(m.getRound().getContest().equals(getById(leagueId)))
+        for (Match m : matchRepository.findAll())
+            if (m.getRound().getContest().equals(getById(leagueId)))
                 leagueMatches.add(m);
 
         return leagueMatches;
@@ -262,13 +267,13 @@ public class LeagueService implements HandBallService<League>{
             League league = leagueRepository.findById(leagueId)
                     .orElseThrow(() -> new ObjectNotFoundInDataBaseException("League not found"));
 
-            if(league.getFinishedDate() != null)
+            if (league.getFinishedDate() != null)
                 throw new RuntimeException("League is already finished");
 
             LocalDateTime finishedTime = LocalDateTime.now();
             league.setFinishedDate(finishedTime);
 
-            for (Team team: league.getTeams()) {
+            for (Team team : league.getTeams()) {
                 team.setLeague(null);
             }
             leagueRepository.save(league);
