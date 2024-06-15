@@ -110,6 +110,8 @@ public class ScoreService implements HandBallService<Score> {
     }
 
 
+
+
     private Map<Long, Integer> getMatchesAndWinners(Long team1Id, Long team2Id) {
         // TODO some exception handling
 
