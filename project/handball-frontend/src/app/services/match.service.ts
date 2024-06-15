@@ -29,9 +29,19 @@ export class MatchService {
     return await this.apiService.post<ApiResponse>(`/matches/${match.uuid}/finish-match`, matchScoreDto);
   }
 
+  async completeMatchViaImage(match: Match, base64Image: string): Promise<ApiResponse> {
+    return await this.apiService.post<ApiResponse>(`/matches/${match.uuid}/finish-match/image`, base64Image);
+  }
+
   async getMatchScores(match:Match): Promise<ApiResponse> {
 
     return await this.apiService.get<ApiResponse>(`/matches/score/${match.uuid}`);
+
+  }
+
+  async getMatchChances(matchId: number): Promise<ApiResponse> {
+
+    return await this.apiService.get<ApiResponse>(`/matches/chances/${matchId}`);
 
   }
 

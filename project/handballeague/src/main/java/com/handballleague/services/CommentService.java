@@ -5,8 +5,13 @@ import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.InvalidCommentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
 import com.handballleague.model.Comment;
+import com.handballleague.model.Referee;
 import com.handballleague.repositories.CommentRepository;
+import com.handballleague.repositories.RefereeRepository;
+import com.handballleague.util.Translator;
+import com.handballleague.util.SentimentProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.context.ConfigurationPropertiesAutoConfiguration;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -16,10 +21,18 @@ import java.util.Optional;
 @Service
 public class CommentService implements HandBallService<Comment> {
     private final CommentRepository commentRepository;
+    private final ConfigurationPropertiesAutoConfiguration configurationPropertiesAutoConfiguration;
+    private final RefereeRepository refereeRepository;
+    private final Translator translator;
+    private final SentimentProvider sentimentProvider;
 
     @Autowired
-    public CommentService(CommentRepository commentRepository) {
+    public CommentService(CommentRepository commentRepository, ConfigurationPropertiesAutoConfiguration configurationPropertiesAutoConfiguration, RefereeRepository refereeRepository, Translator translator, SentimentProvider sentimentProvider) {
         this.commentRepository = commentRepository;
+        this.configurationPropertiesAutoConfiguration = configurationPropertiesAutoConfiguration;
+        this.refereeRepository = refereeRepository;
+        this.translator = translator;
+        this.sentimentProvider = sentimentProvider;
     }
 
     @Override
@@ -33,7 +46,24 @@ public class CommentService implements HandBallService<Comment> {
 
         if(!isCommentValid(entity)) throw new InvalidCommentException("Comment can not be created.");
 
+        try {
+
+            String translatedCommentContent = translator.translate(entity.getContent());
+            if (translatedCommentContent == null || translatedCommentContent.isEmpty()) {
+                throw new InvalidArgumentException("Translation failed or resulted in empty content.");
+            }
+            System.out.println("After translate2");
+            List<Float> sentiment = sentimentProvider.getSentiment(translatedCommentContent);
+            entity.setSentimentScore(sentiment.get(0));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new InvalidCommentException("Sentiment analysis failed");
+        }
+
         commentRepository.save(entity);
+
+        updateRefereeScore(entity);
+
         return entity;
     }
 
@@ -49,6 +79,21 @@ public class CommentService implements HandBallService<Comment> {
             throw new InvalidCommentException("Author is not a captain of any team playing in this match.");
 
         return true;
+    }
+
+    private void updateRefereeScore(Comment entity) {
+        Referee referee = entity.getReferee();
+        List<Comment> allComments = commentRepository.findByRefereeUuid(referee.getUuid());
+
+        float sentiment = 0f;
+
+        for (Comment comment : allComments) {
+            sentiment += comment.getSentimentScore();
+        }
+        float score = sentiment/allComments.size();
+
+        referee.setRating(score);
+        refereeRepository.save(referee);
     }
 
     @Override

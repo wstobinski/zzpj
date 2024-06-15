@@ -229,4 +229,25 @@ export class LeaguePanelPage extends GenericPage implements OnInit {
     });
     return await modal.present();
   }
+
+  async onMatchChances(match: Match) {
+
+    try {
+      const chancesResponse = (await this.matchService.getMatchChances(match.uuid)).response;
+      if (chancesResponse[match.homeTeam.teamName] > chancesResponse[match.awayTeam.teamName]) {
+        const homePercentage = chancesResponse[match.homeTeam.teamName] * 100;
+        this.utils.presentInfoToast(`Zespół ${match.homeTeam.teamName} jest faworytem. Ma ${homePercentage}% szans na zwycięstwo`, 10000);
+
+      } else if (chancesResponse[match.homeTeam.teamName] < chancesResponse[match.awayTeam.teamName]) {
+        const awayPercentage = chancesResponse[match.awayTeam.teamName] * 100;
+        this.utils.presentInfoToast(`Zespół ${match.awayTeam.teamName} jest faworytem. Ma ${awayPercentage}% szans na zwycięstwo`, 10000);
+
+      } else {
+        this.utils.presentInfoToast("Szanse są wyrównane. Zespoły jeszcze nigdy ze sobą nie grały", 6000);
+
+      }
+    } catch (e) {
+      this.utils.presentAlertToast("Wystąpił błąd podczas sprawdzania szans na zwycięstwo");
+    }
+  }
 }

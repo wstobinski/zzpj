@@ -20,6 +20,8 @@ export class MatchResultComponent  implements OnInit {
   @Output() hasUnsavedChangesEmitter: EventEmitter<boolean> = new EventEmitter<boolean>();
   ballPossessionRegex: RegExp = new RegExp('^([1-9][0-9]?|100)$');
   scoreFormGroup: FormGroup;
+  selectedFile: File;
+  base64FileString: string;
 
   constructor(private formBuilder: FormBuilder,
               private utils: Utils,
@@ -105,5 +107,44 @@ export class MatchResultComponent  implements OnInit {
 
   formHasError(formName: string, fieldName: string, errorType: string) {
     return this.utils.formHasError(this.scoreFormGroup.get(formName) as FormGroup, fieldName, errorType)
+  }
+
+  onFileSelected($event: Event) {
+    this.selectedFile = ($event.target as HTMLInputElement).files[0];
+    this.convertFileToBase64(this.selectedFile);
+  }
+
+  async uploadFile() {
+    try {
+      const matchCompletedResponse = await this.matchService.completeMatchViaImage(this.match, this.base64FileString);
+      if (matchCompletedResponse.ok) {
+        const matchScoreDto = matchCompletedResponse.response as MatchScoreDto;
+        this.utils.presentInfoToast("Wyniki meczu zapisano pomyślnie!");
+        this.match.finished = true;
+        this.match.homeTeamScore = matchScoreDto.team1Score.goals;
+        this.match.awayTeamScore = matchScoreDto.team2Score.goals;
+        this.matchFinishedEmitter.emit(this.match);
+      } else {
+        this.utils.presentAlertToast("Wystąpił błąd podczas zapisywania wyników meczu");
+        this.cancelMatchFinishEmitter.emit(true);
+      }
+    } catch (e) {
+      this.utils.presentAlertToast("Wystąpił błąd podczas zapisywania wyników meczu");
+      this.cancelMatchFinishEmitter.emit(true);
+    }
+  }
+
+  convertFileToBase64(file: File) {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+
+    reader.onload = () => {
+      this.base64FileString = (reader.result as string).split(',')[1]; // Extract base64 content
+      console.log('Base64:', this.base64FileString);
+    };
+
+    reader.onerror = (error) => {
+      console.error('Error: ', error);
+    };
   }
 }

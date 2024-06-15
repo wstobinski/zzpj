@@ -2,13 +2,16 @@ package com.handballleague.services;
 
 import com.handballleague.DTO.MatchScoreDTO;
 import com.handballleague.exceptions.EntityAlreadyExistsException;
+import com.handballleague.exceptions.ImageProcessingException;
 import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
 import com.handballleague.model.*;
 import com.handballleague.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -24,14 +27,21 @@ public class MatchService implements HandBallService<Match>{
     private final TeamRepository teamRepository;
     private final TeamContestRepository teamContestRepository;
     private final PostRepository postRepository;
+    private final VisionService visionService;
 
     @Autowired
-    public MatchService(MatchRepository matchRepository, ScoreRepository scoreRepository, TeamRepository teamRepository, TeamContestRepository teamContestRepository, PostRepository postRepository) {
+    public MatchService(MatchRepository matchRepository,
+                        ScoreRepository scoreRepository,
+                        TeamRepository teamRepository,
+                        TeamContestRepository teamContestRepository,
+                        PostRepository postRepository,
+                        VisionService visionService) {
         this.matchRepository = matchRepository;
         this.scoreRepository = scoreRepository;
         this.teamRepository = teamRepository;
         this.teamContestRepository = teamContestRepository;
         this.postRepository = postRepository;
+        this.visionService = visionService;
     }
     @Override
     public Match create(Match entity) throws InvalidArgumentException, EntityAlreadyExistsException {
@@ -159,6 +169,34 @@ public class MatchService implements HandBallService<Match>{
         matchRepository.save(match);
     }
 
+    public MatchScoreDTO.MatchResultDto endMatchViaImage(Long matchId, String base64Image) throws ImageProcessingException {
+        Match match = matchRepository.findById(matchId)
+                .orElseThrow(() -> new RuntimeException("Match not found"));
+
+        String scoreString;
+        try {
+            scoreString = visionService.detectText(base64Image);
+        } catch (IOException e) {
+            throw new ImageProcessingException(e.getMessage());
+        }
+        String[] split = scoreString.split("[-:]");
+        if (split.length != 2) {
+            throw new ImageProcessingException("Uploaded file text format is wrong. Use format: HOME_TEAM_SCORE : AWAY_TEAM_SCORE");
+        }
+        int homeTeamGoals = Integer.parseInt(split[0]);
+        int awayTeamGoals = Integer.parseInt(split[1]);
+
+        MatchScoreDTO.TeamScoreDto homeTeamScoreDto = new MatchScoreDTO.TeamScoreDto(match.getHomeTeam().getUuid(), homeTeamGoals, awayTeamGoals, 0, 0, 0, 0, 0);
+        MatchScoreDTO.TeamScoreDto awayTeamScoreDto = new MatchScoreDTO.TeamScoreDto(match.getAwayTeam().getUuid(), awayTeamGoals, homeTeamGoals, 0, 0, 0, 0, 0);
+        MatchScoreDTO.MatchResultDto matchResultDto = new MatchScoreDTO.MatchResultDto(homeTeamScoreDto, awayTeamScoreDto);
+        createScore(match, homeTeamScoreDto);
+        createScore(match, awayTeamScoreDto);
+        updateTeamContestStats(match, homeTeamScoreDto, awayTeamScoreDto);
+        match.setFinished(true);
+        matchRepository.save(match);
+        return matchResultDto;
+    }
+
     private void createScore(Match match, MatchScoreDTO.TeamScoreDto teamScore) {
         Team team = teamRepository.findById(teamScore.getTeamId())
                 .orElseThrow(() -> new RuntimeException("Team not found"));
@@ -173,8 +211,6 @@ public class MatchService implements HandBallService<Match>{
 
 
     public void updateTeamContestStats(Match match, MatchScoreDTO.TeamScoreDto team1Score, MatchScoreDTO.TeamScoreDto team2Score) {
-        Contest contest = match.getRound().getContest();  // Assuming Round has a reference to Contest
-        System.out.println("TEAM CONTEST");
         // Retrieve Team_Contest records
         TeamContest team1Contest = teamContestRepository.findByTeamAndLeague(match.getHomeTeam(),
                                                                                 match.getRound().getContest());
@@ -227,5 +263,6 @@ public class MatchService implements HandBallService<Match>{
         }
         return finishedMatches;
     }
+
 
 }
