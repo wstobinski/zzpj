@@ -186,6 +186,54 @@ public class ScoreServiceTests {
         assertTrue(result);
     }
 
+    @Test
+    public void testCreateScore_WithNullInput_ThrowsException() {
+
+        assertThrows(InvalidArgumentException.class, () -> scoreService.create(null));
+    }
+
+    @Test
+    public void testUpdateScore_WithNullInput_ThrowsException() {
+
+        Long id = 1L;
+
+        assertThrows(InvalidArgumentException.class, () -> scoreService.update(id, null));
+    }
+
+    @Test
+    public void testDeleteScore_WithInvalidId_ThrowsException() {
+
+        Long id = -1L;
+
+
+        assertThrows(InvalidArgumentException.class, () -> scoreService.delete(id));
+    }
+
+    @Test
+    public void testUpdateScore_WithNonExistingId_ThrowsException() {
+
+        Long id = 1L;
+        Score score = new Score();
+        score.setGoals(3);
+        score.setLostGoals(1);
+
+        Match match = new Match();
+        Team team = new Team("Team 1");
+        score.setMatch(match);
+        score.setTeam(team);
+
+        when(scoreRepository.findById(id)).thenReturn(Optional.empty());
+        assertThrows(ObjectNotFoundInDataBaseException.class, () -> scoreService.update(id, score));
+    }
+
+    @Test
+    public void testDeleteScore_WithNonExistingId_ThrowsException() {
+        Long id = 1L;
+        when(scoreRepository.existsById(id)).thenReturn(false);
+
+        assertThrows(ObjectNotFoundInDataBaseException.class, () -> scoreService.delete(id));
+    }
+
 
 
 
