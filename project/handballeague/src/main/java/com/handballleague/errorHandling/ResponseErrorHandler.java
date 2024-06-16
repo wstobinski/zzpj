@@ -1,4 +1,4 @@
-package com.handballleague.validation;
+package com.handballleague.errorHandling;
 
 import com.handballleague.exceptions.EntityAlreadyExistsException;
 import com.handballleague.exceptions.ImageProcessingException;
@@ -16,7 +16,6 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
 @ControllerAdvice

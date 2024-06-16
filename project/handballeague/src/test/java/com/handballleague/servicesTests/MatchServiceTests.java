@@ -1,6 +1,5 @@
 package com.handballleague.servicesTests;
 
-import com.handballleague.DTO.MatchScoreDTO;
 import com.handballleague.exceptions.EntityAlreadyExistsException;
 import com.handballleague.exceptions.InvalidArgumentException;
 import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
@@ -22,19 +21,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-class MatchServiceTest {
+class MatchServiceTests {
 
     @Mock
     private MatchRepository matchRepository;
 
     @Mock
-    private ScoreRepository scoreRepository;
-
-    @Mock
     private TeamRepository teamRepository;
-
-    @Mock
-    private TeamContestRepository teamContestRepository;
 
     @Mock
     private PostRepository postRepository;
@@ -104,9 +97,6 @@ class MatchServiceTest {
     }
 
 
-
-
-
     @Test
     void testGetById() throws InvalidArgumentException, ObjectNotFoundInDataBaseException {
         Long matchId = 1L;
@@ -133,7 +123,6 @@ class MatchServiceTest {
 
         assertThrows(ObjectNotFoundInDataBaseException.class, () -> matchService.getById(matchId));
     }
-
 
 
     @Test
@@ -171,9 +160,6 @@ class MatchServiceTest {
     }
 
 
-
-
-
     @Test
     void testCheckIfEntityExistsInDbById() {
         Long matchId = 1L;
@@ -197,17 +183,14 @@ class MatchServiceTest {
         match.setAwayTeam(new Team());
 
 
-
         when(matchRepository.findById(matchId)).thenReturn(Optional.of(match));
         when(teamRepository.findById(anyLong())).thenReturn(Optional.of(new Team()));
-
-
 
 
         assertFalse(match.isFinished());
     }
 
-  @Test
+    @Test
     void testUpdateMatch() throws InvalidArgumentException, ObjectNotFoundInDataBaseException {
         Long matchId = 1L;
         Match existingMatch = new Match();
@@ -264,7 +247,7 @@ class MatchServiceTest {
         assertThrows(ObjectNotFoundInDataBaseException.class, () -> matchService.update(matchId, updatedMatch));
     }
 
-        @Test
+    @Test
     void testGenerateNewPostAboutUpdatedMatch() {
         Match oldMatch = new Match();
         oldMatch.setReferee(new Referee(1L, "John", "Doe", "123456789", "john.doe@example.com", 4.5));
@@ -279,11 +262,10 @@ class MatchServiceTest {
         newMatch.setAwayTeam(new Team("AwayTeam"));
 
 
-
         ArgumentCaptor<Post> postCaptor = ArgumentCaptor.forClass(Post.class);
 
-            when(matchRepository.findById(anyLong())).thenReturn(Optional.of(oldMatch));
-            when(postRepository.save(postCaptor.capture())).thenReturn(new Post());
+        when(matchRepository.findById(anyLong())).thenReturn(Optional.of(oldMatch));
+        when(postRepository.save(postCaptor.capture())).thenReturn(new Post());
     }
 
 

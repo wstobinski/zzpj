@@ -1,4 +1,4 @@
-package com.handballleague.validation;
+package com.handballleague.errorHandling;
 
 import lombok.Data;
 

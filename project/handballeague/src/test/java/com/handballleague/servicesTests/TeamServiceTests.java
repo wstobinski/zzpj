@@ -185,7 +185,7 @@ public class TeamServiceTests {
     }
 
     @Test
-    void deleteTeamWhenPatientNotFound_ThrowingExc(){
+    void deleteTeamWhenTeamNotFound_ThrowingExc(){
         //given
         long id = 10;
         given(teamRepository.existsById(id)).willReturn(false);
