@@ -118,7 +118,7 @@ class TeamsInitializerTests {
 //        when(teamRepository.findByTeamName(anyString())).thenReturn(null);
 //        when(teamService.create(any(Team.class))).thenAnswer(invocation -> {
 //            Team team = invocation.getArgument(0);
-//            team.setUuid(1L); // Zakładając, że uuid to 1
+//            team.setUuid(1L);
 //            return team;
 //        });
 //

@@ -97,22 +97,22 @@ public class PlayerController {
 
     @PostMapping("/generate-players")
     public ResponseEntity<?> generatePlayers(@RequestBody GeneratePlayersDTO body, @RequestHeader(name = "Authorization") String token) {
-            ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                return response;
-            }
-            String nationality = body.getNationality();
-            Integer numberOfPlayers = body.getNumberOfPlayers();
+        ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            return response;
+        }
+        String nationality = body.getNationality();
+        Integer numberOfPlayers = body.getNumberOfPlayers();
 
-            if (nationality == null || numberOfPlayers == null) {
-                return ResponseEntity.badRequest().body(Map.of("ok", false, "error", "Invalid input"));
-            }
+        if (nationality == null || numberOfPlayers == null) {
+            return ResponseEntity.badRequest().body(Map.of("ok", false, "error", "Invalid input"));
+        }
 
         try {
             playersInitializer.generatePlayersData(nationality, numberOfPlayers, Optional.empty());
-            } catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
-            }
+        }
         return ResponseEntity.ok(Map.of("ok", true, "message", "Players generated successfully"));
     }
 

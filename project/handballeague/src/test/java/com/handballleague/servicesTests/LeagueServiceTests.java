@@ -137,7 +137,6 @@ public class LeagueServiceTests {
 
     @Test
     void createLeagueWithLessThanThreeTeams_ThrowsException() {
-        // given
         League league = new League();
         league.setName("Premier League");
         league.setStartDate(LocalDateTime.now());
@@ -424,7 +423,6 @@ public class LeagueServiceTests {
 
     @Test
     void finishLeague_WithValidInput_SetsLeagueOfEachTeamToNull() {
-        // Arrange
         Long leagueId = 1L;
         League league = new League();
         league.setUuid(leagueId);

@@ -9,7 +9,11 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -63,42 +67,30 @@ public class PlayersInitializer {
     }
 
     private List<String> getPromptResult(String nationality, int numberOfPlayers, Optional<Integer> numberOfTeams) throws Exception {
-        String url = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=" + apiKey;
-        URL obj = new URL(url);
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-        con.setRequestMethod("POST");
-        con.setRequestProperty("Content-Type", "application/json");
-
         String jsonInputString;
-
         if (numberOfTeams.isPresent()) {
             jsonInputString = getFormattedStringPlayersTeams(nationality, numberOfPlayers, numberOfTeams.get());
         } else {
             jsonInputString = getFormattedStringPlayers(nationality, numberOfPlayers);
         }
 
+        String url = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=" + apiKey;
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonInputString))
+                .build();
 
-        con.setDoOutput(true);
-        OutputStream os = con.getOutputStream();
-        os.write(jsonInputString.getBytes());
-        os.flush();
-        os.close();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-
-        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        String inputLine;
-        StringBuilder content = new StringBuilder();
-        while ((inputLine = in.readLine()) != null) {
-            content.append(inputLine);
+        if (response.statusCode() != 200) {
+            throw new IOException("HTTP request failed with status code: " + response.statusCode());
         }
 
-        in.close();
-        con.disconnect();
-
-        return getPlayersFromResponse(content.toString());
-
+        return getPlayersFromResponse(response.body());
     }
+
 
     private List<String> getPlayersFromResponse(String content) {
         String regex = "\"text\": \"([^\"]*)\"";
@@ -134,7 +126,7 @@ public class PlayersInitializer {
         return String.format("{ \"contents\":[ { \"parts\":[{\"text\": \"%s\"}]} ]}", text);
     }
 
-    public void addPlayersToDatabase(List<String> players, Optional<Long> teamId) {
+    private void addPlayersToDatabase(List<String> players, Optional<Long> teamId) {
 
         int captainIndex = -1;
 
