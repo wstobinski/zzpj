@@ -8,7 +8,6 @@ import com.handballleague.model.Team;
 import com.handballleague.model.TeamContest;
 import com.handballleague.repositories.TeamContestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -129,7 +128,4 @@ public class TeamContestService implements HandBallService<TeamContest>{
               .stream().filter(teamContest -> teamContest.getLeague().getUuid().equals(leagueId)).toList();
     }
 
-    public List<TeamContest> findTeamContestsForTeam(Long teamId) {
-        return teamContestRepository.findAll().stream().filter(teamContest -> teamContest.getTeam().getUuid().equals(teamId)).toList();
-    }
 }

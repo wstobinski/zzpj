@@ -3,14 +3,12 @@ package com.handballleague.model;
 import com.handballleague.model.ids.TeamContestID;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @NoArgsConstructor
-
-@Getter
-@Setter
+@AllArgsConstructor
+@Builder
+@Data
 @Entity
 @IdClass(TeamContestID.class)
 @Table(name = "team_contest")
