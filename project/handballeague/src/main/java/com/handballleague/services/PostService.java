@@ -48,6 +48,7 @@ public class PostService implements HandBallService<Post>{
     public Post update(Long id, Post entity) throws InvalidArgumentException {
         if (id <= 0) throw new InvalidArgumentException("Passed id is invalid.");
         if (entity == null) throw new InvalidArgumentException("New post is null.");
+        if (entity.getContent() == null) throw new InvalidArgumentException("New posts content is null.");
         if (entity.getContent().isEmpty()) throw new InvalidArgumentException("Post content cannot be empty.");
 
         Post postToUpdate = postRepository.findById(id)

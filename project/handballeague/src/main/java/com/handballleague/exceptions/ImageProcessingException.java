@@ -7,7 +7,4 @@ public class ImageProcessingException extends IOException {
         super(message);
     }
 
-    public ImageProcessingException(String message, Throwable cause) {
-        super(message, cause);
-    }
 }

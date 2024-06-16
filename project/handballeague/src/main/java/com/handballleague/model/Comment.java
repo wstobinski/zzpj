@@ -1,6 +1,10 @@
 package com.handballleague.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,7 +19,7 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 4000) // Adjust length according to expected comment size
+    @Column(length = 4000, nullable = false)
     private String content;
 
     @ManyToOne
@@ -37,13 +41,8 @@ public class Comment {
     private boolean isEdited = false;
 
     @Column
-    private float sentimentScore;
+    @DecimalMin("-1.0")
+    @DecimalMax("1.0")
+    private double sentimentScore;
 
-    public Comment(String content, Match match, Referee referee, Player author) {
-        this.content = content;
-        this.match = match;
-        this.referee = referee;
-        this.author = author;
-        this.createdDate = LocalDateTime.now();
-    }
 }
