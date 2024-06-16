@@ -217,7 +217,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Wojciech Stobiński - [@linkedin](https://www.linkedin.com/in/wojciech-stobi%C5%84ski-9ba6a091/) - 242538@edu.p.lodz.pl\
+Wojciech Stobiński - [@linkedin](https://www.linkedin.com/in/wojtek-stobiński-3124b5217) - 242538@edu.p.lodz.pl\
 Artur Włodarczyk - [@linkedin](https://www.linkedin.com/in/artur-w%C5%82odarczyk/) - 242564@edu.p.lodz.pl
 
 Project Link: [HandBy](https://github.com/wstobinski/zzpj)
