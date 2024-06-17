@@ -23,6 +23,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.TestPropertySource;
 
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -332,6 +334,103 @@ public class UserServiceTests {
                 .isInstanceOf(ObjectNotFoundInDataBaseException.class)
                 .hasMessageContaining("User with id: " + id + " not found in database.");
         verify(userRepository, never()).deleteById(id);
+    }
+
+    @Test
+    void getById_WithValidId_ReturnsUser() {
+        // Given
+        Long id = 1L;
+        User user = new User("john.doe@example.com", "password123", "user");
+        user.setUuid(id);
+
+        when(userRepository.findById(id)).thenReturn(Optional.of(user));
+
+        // When
+        User foundUser = userService.getById(id);
+
+        // Then
+        assertThat(foundUser).isNotNull();
+        assertThat(foundUser.getUuid()).isEqualTo(id);
+    }
+
+    @Test
+    void getById_WithInvalidId_ThrowsException() {
+        // Given
+        Long invalidId = 0L;
+
+        // When & Then
+        assertThatThrownBy(() -> userService.getById(invalidId))
+                .isInstanceOf(InvalidArgumentException.class)
+                .hasMessageContaining("Passed id is invalid.");
+    }
+
+    @Test
+    void getById_NonExistingUser_ThrowsException() {
+        // Given
+        Long id = 1L;
+        when(userRepository.findById(id)).thenReturn(Optional.empty());
+
+        // When & Then
+        assertThatThrownBy(() -> userService.getById(id))
+                .isInstanceOf(ObjectNotFoundInDataBaseException.class)
+                .hasMessageContaining("Object with given id was not found in database.");
+    }
+
+    @Test
+    void getByEmail_WithValidEmail_ReturnsUser() {
+        // Given
+        String email = "john.doe@example.com";
+        User user = new User(email, "password123", "user");
+
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+
+        // When
+        User foundUser = userService.getByEmail(email);
+
+        // Then
+        assertThat(foundUser).isNotNull();
+        assertThat(foundUser.getEmail()).isEqualTo(email);
+    }
+
+    @Test
+    void getByEmail_WithInvalidEmail_ThrowsException() {
+        // Given
+        String invalidEmail = "";
+
+        // When & Then
+        assertThatThrownBy(() -> userService.getByEmail(invalidEmail))
+                .isInstanceOf(InvalidArgumentException.class)
+                .hasMessageContaining("Passed email is invalid.");
+    }
+
+    @Test
+    void getByEmail_NonExistingUser_ThrowsException() {
+        // Given
+        String email = "nonexisting@example.com";
+        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+
+        // When & Then
+        assertThatThrownBy(() -> userService.getByEmail(email))
+                .isInstanceOf(ObjectNotFoundInDataBaseException.class)
+                .hasMessageContaining("Object with given id was not found in database.");
+    }
+
+    @Test
+    void getAll_ReturnsListOfUsers() {
+        // Given
+        User user1 = new User("john.doe@example.com", "password123", "user");
+        User user2 = new User("jane.doe@example.com", "password456", "admin");
+
+        when(userRepository.findAll()).thenReturn(Arrays.asList(user1, user2));
+
+        // When
+        List<User> users = userService.getAll();
+
+        // Then
+        assertThat(users).isNotNull();
+        assertThat(users.size()).isEqualTo(2);
+        assertThat(users.contains(user1));
+        assertThat(users.contains(user2));
     }
 
 }
