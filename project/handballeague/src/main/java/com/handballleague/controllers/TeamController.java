@@ -136,34 +136,28 @@ public class TeamController {
     @PostMapping("/generate-teams")
     public ResponseEntity<?> generateTeams(@RequestBody GenerateTeamsDTO body, @RequestHeader(name = "Authorization") String token) throws Exception {
 
-            ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                return response;
-            }
-
-            String leagueId = body.getLeagueId();
-            String season = body.getSeason();
-            boolean generatePlayers = body.isGeneratePlayers();
-            String nationality = body.getNationality();
-            System.out.println("generatePlayers: " + generatePlayers);
-
-            if (leagueId == null || season == null) {
-                return ResponseEntity.badRequest().body(Map.of("ok", false, "error", "Invalid input"));
-            }
-
-            List<Long> teamsIDs =  teamsInitializer.fetchAndFillData(leagueId, season);
-
-            System.out.println("Teams IDs");
-            for (Long teamId : teamsIDs) {
-                System.out.println("Team ID: " + teamId);
-            }
-
-            if (generatePlayers) {
-                System.out.println("Generating players");
-                playersInitializer.generatePlayersData(nationality, 6, Optional.of(teamsIDs));
-            }
-
-            return ResponseEntity.ok(Map.of("ok", true, "message", "Teams generated successfully"));
+        ResponseEntity<?> response = jwtService.handleAuthorization(token, "admin");
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            return response;
         }
+
+        String leagueId = body.getLeagueId();
+        String season = body.getSeason();
+        boolean generatePlayers = body.isGeneratePlayers();
+        String nationality = body.getNationality();
+
+        if (leagueId == null || season == null) {
+            return ResponseEntity.badRequest().body(Map.of("ok", false, "error", "Invalid input"));
+        }
+
+        List<Long> teamsIDs = teamsInitializer.fetchAndFillData(leagueId, season);
+
+
+        if (generatePlayers) {
+            playersInitializer.generatePlayersData(nationality, 6, Optional.of(teamsIDs));
+        }
+
+        return ResponseEntity.ok(Map.of("ok", true, "message", "Teams generated successfully"));
     }
+}
 
