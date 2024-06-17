@@ -33,6 +33,7 @@
     "localforage": "^1.10.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
+    "ws": "^8.17.1",
     "zone.js": "~0.14.2"
   },
   "devDependencies": {
@@ -64,10 +65,12 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "npm-force-resolutions": "^0.0.10",
-    "typescript": "~5.2.2"
+    "typescript": "~5.2.2",
+    "ws": "^8.17.1"
   },
   "resolutions": {
-    "braces": "^3.0.2"
+    "braces": "^3.0.2",
+    "ws": "^8.17.1"
   },
   "description": "An Ionic project"
 }
