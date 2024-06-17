@@ -26,6 +26,8 @@ public class UserController {
         this.emailService = emailService;
     }
 
+
+
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestHeader(name = "Authorization") String token, @RequestBody User entity) {
 

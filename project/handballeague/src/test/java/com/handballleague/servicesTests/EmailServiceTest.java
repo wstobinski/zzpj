@@ -5,11 +5,15 @@ import com.handballleague.exceptions.ObjectNotFoundInDataBaseException;
 import com.handballleague.model.User;
 import com.handballleague.repositories.UserRepository;
 import com.handballleague.services.EmailService;
+import jakarta.mail.*;
+import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mindrot.jbcrypt.BCrypt;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -20,6 +24,7 @@ import static org.mockito.Mockito.*;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.util.Optional;
+import java.util.Properties;
 
 @ExtendWith(MockitoExtension.class)
 class EmailServiceTest {
@@ -105,5 +110,55 @@ class EmailServiceTest {
         assertThatThrownBy(() -> emailService.activateAcc(invalidCode, password))
                 .isInstanceOf(ObjectNotFoundInDataBaseException.class)
                 .hasMessageContaining("User with given code was not found in database.");
+    }
+
+    @Test
+    void sendEmail_WithValidEmailAndRole_ReturnsMessage() throws MessagingException {
+        // Given
+        String email = "john.doe@example.com";
+        String role = "captain";
+        User user = new User(email, "password123", role);
+        user.setCode(123456);
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+
+        // Mock Session for sending email
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.ssl.enable", "true");
+        props.put("mail.smtp.host", "smtp.example.com");
+        props.put("mail.smtp.port", "587");
+
+        Session session = Session.getInstance(props, new Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication("username", "password");
+            }
+        });
+
+//        Transport transport = session.getTransport("smtp");
+//        transport.connect("smtp.example.com", "username", "password");
+
+        when(userRepository.save(user)).thenReturn(user);
+        Message message = new MimeMessage(session);
+
+        try (MockedStatic<Transport> transport = Mockito.mockStatic(Transport.class)) {
+            transport.when(() -> Transport.send(message)).thenAnswer(invocation -> null);
+
+            //test
+            Message sentMessage = emailService.sendEmail(email, role);
+
+            assertThat(sentMessage).isNotNull();
+            assertThat(sentMessage.getRecipients(Message.RecipientType.TO)[0].toString()).isEqualTo(email);
+            assertThat(sentMessage.getSubject()).isEqualTo("Witamy w HandBallLeague!");
+            verify(userRepository).save(user);
+        }
+
+        // When
+//        Message sentMessage = emailService.sendEmail(email, role);
+//
+//        // Then
+//        assertThat(sentMessage).isNotNull();
+//        assertThat(sentMessage.getRecipients(Message.RecipientType.TO)[0].toString()).isEqualTo(email);
+//        assertThat(sentMessage.getSubject()).isEqualTo("Witamy w HandBallLeague!");
+//        verify(userRepository).save(user);
     }
 }
