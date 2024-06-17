@@ -1,5 +1,6 @@
 package com.handballleague.servicesTests;
 
+import com.handballleague.model.Player;
 import com.handballleague.model.User;
 import com.handballleague.repositories.PlayerRepository;
 import com.handballleague.repositories.UserRepository;
@@ -158,5 +159,46 @@ class JWTServiceTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(Map.of("ok", true, "message", "Token and role are valid"));
+    }
+
+    @Test
+    void tokenToModel_ShouldReturnPlayerForCaptainRole() {
+        User user = new User("captain@example.com", "password", "captain");
+        user.setModelId(1L);
+
+        String token = jwtService.generateToken(user);
+
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(java.util.Optional.of(user));
+        Player player = new Player();
+        when(playerService.getById(user.getModelId())).thenReturn(player);
+
+        Object result = jwtService.tokenToModel(token);
+
+        assertThat(result).isInstanceOf(Player.class);
+        assertThat(result).isEqualTo(player);
+    }
+
+    @Test
+    void tokenToModel_ShouldThrowExceptionForInvalidToken() {
+        User user = new User();
+        String token = jwtService.generateToken(user);
+
+        assertThatThrownBy(() -> jwtService.tokenToModel(token))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("User not found");
+    }
+
+    @Test
+    void tokenToModel_ShouldReturnNullForUnknownRole() {
+        User user = new User("unknown@example.com", "password", "unknown");
+        user.setModelId(1L);
+
+        String token = jwtService.generateToken(user);
+
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(java.util.Optional.of(user));
+
+        Object result = jwtService.tokenToModel(token);
+
+        assertThat(result).isNull();
     }
 }
