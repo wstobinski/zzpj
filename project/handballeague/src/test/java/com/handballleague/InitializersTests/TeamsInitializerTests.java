@@ -104,44 +104,4 @@ class TeamsInitializerTests {
         verify(teamRepository, times(6)).findByTeamName(anyString());
         verify(teamService, times(6)).create(any(Team.class));
     }
-
-//    @Test
-//    void fetchAndFillData_shouldFetchAndAddTeams() throws IOException, InterruptedException {
-//        HttpResponse<String> mockResponse = mock(HttpResponse.class);
-//
-//        when(mockResponse.statusCode()).thenReturn(200);
-//        when(mockResponse.body()).thenReturn("{ \"response\": [ { \"name\": \"Team1\" }, { \"name\": \"Team2\" } ] }");
-//        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenReturn(mockResponse);
-//
-//        teamsInitializer = new TeamsInitializer(teamService, teamRepository);
-//
-//        when(teamRepository.findByTeamName(anyString())).thenReturn(null);
-//        when(teamService.create(any(Team.class))).thenAnswer(invocation -> {
-//            Team team = invocation.getArgument(0);
-//            team.setUuid(1L);
-//            return team;
-//        });
-//
-//        List<Long> result = teamsInitializer.fetchAndFillData("123", "2024");
-//
-//        assertEquals(2, result.size());
-//        verify(teamRepository, times(2)).findByTeamName(anyString());
-//        verify(teamService, times(2)).create(any(Team.class));
-//    }
-
-//    @Test
-//    void fetchAndFillData_shouldHandleFailedRequest() throws IOException, InterruptedException {
-//        HttpResponse<String> mockResponse = mock(HttpResponse.class);
-//
-//        when(mockResponse.statusCode()).thenReturn(400);
-//        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenReturn(mockResponse);
-//
-//        teamsInitializer = new TeamsInitializer(teamService, teamRepository);
-//
-//        List<Long> result = teamsInitializer.fetchAndFillData("123", "2024");
-//
-//        assertEquals(Collections.emptyList(), result);
-//        verify(teamRepository, never()).findByTeamName(anyString());
-//        verify(teamService, never()).create(any(Team.class));
-//    }
 }
