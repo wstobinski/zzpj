@@ -8,7 +8,6 @@ import com.handballleague.services.JWTService;
 import com.handballleague.services.PlayerService;
 import com.handballleague.services.RefereeService;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,10 +25,9 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
-class JWTServiceTest {
+class JWTServiceTests {
 
     @Mock
     private UserRepository userRepository;

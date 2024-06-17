@@ -69,13 +69,12 @@ class TeamContestServiceTests {
         given(teamService.checkIfEntityExistsInDb(team)).willReturn(true);
         given(leagueService.checkIfEntityExistsInDb(league)).willReturn(true);
 
-        underTestService.create(teamContest);
+        TeamContest created = underTestService.create(teamContest);
         ArgumentCaptor<TeamContest> argumentCaptor = ArgumentCaptor.forClass(TeamContest.class);
 
         verify(teamContestRepository).save(argumentCaptor.capture());
-
         assertThat(argumentCaptor.getValue()).isEqualTo(teamContest);
-
+        assertThat(created).isEqualTo(teamContest);
     }
 
     @Test
@@ -109,10 +108,7 @@ class TeamContestServiceTests {
         TeamContest teamContest = TeamContest.builder()
                 .team(team)
                 .league(league).build();
-        given(teamService.checkIfEntityExistsInDb(team)).willReturn(true);
-        given(leagueService.checkIfEntityExistsInDb(league)).willReturn(true);
 
-        underTestService.create(teamContest);
         given(teamContestRepository.findAll()).willReturn(List.of(teamContest));
 
         //when
@@ -122,7 +118,7 @@ class TeamContestServiceTests {
                 .hasMessageContaining("TeamContest with given data already exists in the database");
 
         //then
-        verify(teamContestRepository, times(1)).save(teamContest);
+        verify(teamContestRepository, never()).save(teamContest);
 
     }
 
@@ -232,17 +228,21 @@ class TeamContestServiceTests {
     @Test
     void create_WithExistingTeamContest_ThrowsEntityAlreadyExistsException() {
         long leagueID = 1L;
+        long league2Id = 2L;
         long teamID = 1L;
 
         Team team = Team.builder().uuid(teamID).build();
         League league = League.builder().build();
+        League league2 = League.builder().build();
         league.setUuid(leagueID);
+        league2.setUuid(league2Id);
         TeamContest teamContest = TeamContest.builder().league(league).team(team).build();
+        TeamContest teamContest2 = TeamContest.builder().league(league2).team(team).build();
         given(teamService.getById(teamID)).willReturn(team);
         given(leagueService.getById(leagueID)).willReturn(league);
         given(teamContestRepository.save(teamContest)).willReturn(teamContest);
         underTestService.create(leagueID, teamID);
-        given(teamContestRepository.findAll()).willReturn(List.of(teamContest));
+        given(teamContestRepository.findAll()).willReturn(List.of(teamContest, teamContest2));
 
         // when & then
         assertThatThrownBy(() -> underTestService.create(leagueID, teamID))
@@ -255,11 +255,11 @@ class TeamContestServiceTests {
         long teamContestId = 1L;
         given(teamContestRepository.existsById(teamContestId)).willReturn(true);
         // when
-        underTestService.delete(teamContestId);
+        boolean result = underTestService.delete(teamContestId);
 
         // then
         verify(teamContestRepository, times(1)).deleteById(teamContestId);
-
+        assertThat(result).isTrue();
     }
 
     @Test
@@ -294,22 +294,23 @@ class TeamContestServiceTests {
         TeamContest existingTeamContest = TeamContest.builder().team(team).league(initialLeague).build();
         given(teamContestRepository.findById(teamContestId)).willReturn(Optional.of(existingTeamContest));
 
-        TeamContest updatedTeamContest = TeamContest.builder().team(team).league(newLeague).build();
+        TeamContest updatedTeamContest = TeamContest.builder().team(team).league(newLeague).points(3).build();
 
-        given(teamContestRepository.save(existingTeamContest)).willReturn(existingTeamContest);
+        given(teamContestRepository.save(updatedTeamContest)).willReturn(updatedTeamContest);
         // when
         TeamContest result = underTestService.update(teamContestId, updatedTeamContest);
 
         // then
         assertThat(result.getTeam()).isEqualTo(updatedTeamContest.getTeam());
         assertThat(result.getLeague()).isEqualTo(updatedTeamContest.getLeague());
+        assertThat(result.getPoints()).isEqualTo(updatedTeamContest.getPoints());
 
         verify(teamContestRepository).save(existingTeamContest);
     }
 
     @Test
     void updateTeamContest_WithInvalidId_ThrowsInvalidArgumentException() {
-        long invalidId = -1L;
+        long invalidId = 0L;
         TeamContest teamContest = TeamContest.builder().build();
 
         assertThatThrownBy(
@@ -385,7 +386,7 @@ class TeamContestServiceTests {
 
     @Test
     void getById_WithInvalidId_ThrowsInvalidArgumentException() {
-        long invalidId = -1L;
+        long invalidId = 0L;
 
         assertThatThrownBy(
                 () -> underTestService.getById(invalidId))

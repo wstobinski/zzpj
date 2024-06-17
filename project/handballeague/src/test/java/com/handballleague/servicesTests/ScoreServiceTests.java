@@ -240,13 +240,11 @@ public class ScoreServiceTests {
 
     @Test
     public void testCreateScore_WithNullInput_ThrowsException() {
-
         assertThrows(InvalidArgumentException.class, () -> scoreService.create(null));
     }
 
     @Test
     public void testUpdateScore_WithNullInput_ThrowsException() {
-
         Long id = 1L;
 
         assertThrows(InvalidArgumentException.class, () -> scoreService.update(id, null));
@@ -254,9 +252,7 @@ public class ScoreServiceTests {
 
     @Test
     public void testDeleteScore_WithInvalidId_ThrowsException() {
-
         Long id = -1L;
-
 
         assertThrows(InvalidArgumentException.class, () -> scoreService.delete(id));
     }
@@ -299,7 +295,6 @@ public class ScoreServiceTests {
 
         when(scoreRepository.findAll()).thenReturn(List.of(score));
 
-        // Act and Assert
         assertThrows(EntityAlreadyExistsException.class, () -> scoreService.create(score));
     }
 

@@ -2,6 +2,7 @@ package com.handballleague.initialization;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.handballleague.exceptions.InitializerException;
 import com.handballleague.model.Team;
 import com.handballleague.repositories.TeamRepository;
 import com.handballleague.services.TeamService;
@@ -25,8 +26,7 @@ public class TeamsInitializer {
     private String apiKey;
 
     private final TeamService teamService;
-
-    private TeamRepository teamRepository;
+    private final TeamRepository teamRepository;
 
     @Autowired
     public TeamsInitializer(TeamService teamService, TeamRepository teamRepository) {
@@ -34,14 +34,13 @@ public class TeamsInitializer {
         this.teamService = teamService;
     }
 
-
     public List<Long> addTeamsToDatabase(String jsonData) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode rootNode = objectMapper.readTree(jsonData);
         JsonNode teamsNode = rootNode.get("response");
 
         if (teamsNode == null) {
-            throw new IOException("Invalid JSON format: response node not found");
+            throw new InitializerException("Response node not found in JSON data");
         }
 
         List<Long> addedTeamIds = new ArrayList<>();
@@ -63,29 +62,23 @@ public class TeamsInitializer {
         return addedTeamIds;
     }
 
-    public List<Long> fetchAndFillData(String leagueId, String season) {
-        HttpClient client = HttpClient.newHttpClient();
 
+
+    public List<Long> fetchAndFillData(String leagueId, String season) throws IOException, InterruptedException {
+        HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://v1.handball.api-sports.io/teams?league=" + leagueId + "&season=" + season))
                 .header("x-apisports-key", apiKey)
                 .build();
 
-        try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() != 200) {
-                throw new IOException("HTTP request failed with status code: " + response.statusCode());
+                throw new InitializerException("HTTP request failed with status code: " + response.statusCode());
             }
 
             String responseBody = response.body();
-            return  addTeamsToDatabase(responseBody);
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        return Collections.emptyList();
+            return addTeamsToDatabase(responseBody);
+
     }
-
-
-
 }

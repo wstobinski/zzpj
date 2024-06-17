@@ -10,7 +10,6 @@ import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mindrot.jbcrypt.BCrypt;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -27,7 +26,7 @@ import java.util.Optional;
 import java.util.Properties;
 
 @ExtendWith(MockitoExtension.class)
-class EmailServiceTest {
+class EmailServiceTests {
     @Mock
     private UserRepository userRepository;
 
