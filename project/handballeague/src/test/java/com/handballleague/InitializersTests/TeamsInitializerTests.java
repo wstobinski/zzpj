@@ -1,5 +1,6 @@
 package com.handballleague.InitializersTests;
 
+import com.handballleague.exceptions.InitializerException;
 import com.handballleague.initialization.TeamsInitializer;
 import com.handballleague.model.Team;
 import com.handballleague.repositories.TeamRepository;
@@ -28,8 +29,6 @@ class TeamsInitializerTests {
     @Mock
     private TeamRepository teamRepository;
 
-    @Mock
-    private HttpClient httpClient;
 
     @InjectMocks
     private TeamsInitializer teamsInitializer;
@@ -74,11 +73,11 @@ class TeamsInitializerTests {
     void addTeamsToDatabase_shouldThrowExceptionWhenJsonIsInvalid() {
         String invalidJsonData = "{ \"invalid\": \"data\" }";
 
-        Exception exception = assertThrows(IOException.class, () -> {
+        Exception exception = assertThrows(InitializerException.class, () -> {
             teamsInitializer.addTeamsToDatabase(invalidJsonData);
         });
 
-        String expectedMessage = "Invalid JSON format: response node not found";
+        String expectedMessage = "Response node not found in JSON data";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
@@ -104,44 +103,4 @@ class TeamsInitializerTests {
         verify(teamRepository, times(6)).findByTeamName(anyString());
         verify(teamService, times(6)).create(any(Team.class));
     }
-
-//    @Test
-//    void fetchAndFillData_shouldFetchAndAddTeams() throws IOException, InterruptedException {
-//        HttpResponse<String> mockResponse = mock(HttpResponse.class);
-//
-//        when(mockResponse.statusCode()).thenReturn(200);
-//        when(mockResponse.body()).thenReturn("{ \"response\": [ { \"name\": \"Team1\" }, { \"name\": \"Team2\" } ] }");
-//        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenReturn(mockResponse);
-//
-//        teamsInitializer = new TeamsInitializer(teamService, teamRepository);
-//
-//        when(teamRepository.findByTeamName(anyString())).thenReturn(null);
-//        when(teamService.create(any(Team.class))).thenAnswer(invocation -> {
-//            Team team = invocation.getArgument(0);
-//            team.setUuid(1L);
-//            return team;
-//        });
-//
-//        List<Long> result = teamsInitializer.fetchAndFillData("123", "2024");
-//
-//        assertEquals(2, result.size());
-//        verify(teamRepository, times(2)).findByTeamName(anyString());
-//        verify(teamService, times(2)).create(any(Team.class));
-//    }
-
-//    @Test
-//    void fetchAndFillData_shouldHandleFailedRequest() throws IOException, InterruptedException {
-//        HttpResponse<String> mockResponse = mock(HttpResponse.class);
-//
-//        when(mockResponse.statusCode()).thenReturn(400);
-//        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenReturn(mockResponse);
-//
-//        teamsInitializer = new TeamsInitializer(teamService, teamRepository);
-//
-//        List<Long> result = teamsInitializer.fetchAndFillData("123", "2024");
-//
-//        assertEquals(Collections.emptyList(), result);
-//        verify(teamRepository, never()).findByTeamName(anyString());
-//        verify(teamService, never()).create(any(Team.class));
-//    }
 }

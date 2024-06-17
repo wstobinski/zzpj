@@ -1,5 +1,6 @@
 package com.handballleague.initialization;
 
+import com.handballleague.exceptions.InitializerException;
 import com.handballleague.model.Player;
 import com.handballleague.services.PlayerService;
 import com.handballleague.services.TeamService;
@@ -27,8 +28,8 @@ public class PlayersInitializer {
 
     @Value("${google.api.key}")
     private String apiKey;
-    private PlayerService playerService;
-    private TeamService teamService;
+    private final PlayerService playerService;
+    private final TeamService teamService;
 
     @Autowired
     public PlayersInitializer(PlayerService playerService, TeamService teamService) {
@@ -66,7 +67,7 @@ public class PlayersInitializer {
 
     }
 
-    private List<String> getPromptResult(String nationality, int numberOfPlayers, Optional<Integer> numberOfTeams) throws Exception {
+    private List<String> getPromptResult(String nationality, int numberOfPlayers, Optional<Integer> numberOfTeams) throws InitializerException, IOException, InterruptedException {
         String jsonInputString;
         if (numberOfTeams.isPresent()) {
             jsonInputString = getFormattedStringPlayersTeams(nationality, numberOfPlayers, numberOfTeams.get());
@@ -85,7 +86,7 @@ public class PlayersInitializer {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() != 200) {
-            throw new IOException("HTTP request failed with status code: " + response.statusCode());
+            throw new InitializerException("HTTP request failed with status code: " + response.statusCode());
         }
 
         return getPlayersFromResponse(response.body());
