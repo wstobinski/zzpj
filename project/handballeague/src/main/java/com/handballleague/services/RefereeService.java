@@ -51,7 +51,7 @@ public class RefereeService implements HandBallService<Referee>{
         if (id <= 0)
             throw new InvalidArgumentException("Passed id is invalid.");
         if (entity == null)
-            throw new InvalidArgumentException("New refere is null.");
+            throw new InvalidArgumentException("New referee is null.");
         if(entity.getFirstName().isEmpty() ||
                 entity.getLastName().isEmpty() ||
                 entity.getPhoneNumber().isEmpty()) throw new InvalidArgumentException("At least one of referees parameters is invalid.");

@@ -45,4 +45,10 @@ public class Comment {
     @DecimalMax("1.0")
     private double sentimentScore;
 
+    public Comment(String content, Player author, Referee referee, Match match) {
+        this.content = content;
+        this.match = match;
+        this.referee = referee;
+        this.author = author;
+    }
 }

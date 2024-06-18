@@ -51,4 +51,11 @@ public class Referee {
     )
     private double rating;
 
+    public Referee(String firstName, String lastName, String phoneNumber, String email, double rating) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+        this.rating = rating;
+    }
 }
