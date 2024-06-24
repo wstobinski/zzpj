@@ -139,7 +139,6 @@ This system is designed to manage various aspects of a sports league effectively
 
 This comprehensive set of features ensures that each user can efficiently perform their role within the system, facilitating smooth and organized management of the sports league. The system's security measures protect against unauthorized access, and its scalability allows for adjustments based on the league's needs. Additionally, the system is designed to be user-friendly and compliant with relevant regulations, including data protection laws.
 
-_For more examples, please refer to the [Documentation](https://example.com)_
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
